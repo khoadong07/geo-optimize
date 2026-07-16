@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8" />
+<title>GEO Dashboard</title>
+<style>
+  body { font-family: system-ui, sans-serif; margin: 2rem; color: #1a1a1a; }
+  h1 { font-size: 1.25rem; }
+  input, button { font-size: 1rem; padding: 0.4rem; }
+  table { border-collapse: collapse; width: 100%; margin-top: 1rem; }
+  th, td { border: 1px solid #ddd; padding: 0.5rem; text-align: left; font-size: 0.9rem; vertical-align: top; }
+  th { background: #f4f4f4; }
+  .muted { color: #777; font-size: 0.85rem; }
+  .score { font-weight: 600; }
+</style>
+</head>
+<body>
+  <h1>GEO Visibility Dashboard (MVP)</h1>
+  <p class="muted">Nhập Project ID để xem bảng xếp hạng brand vs đối thủ theo từng prompt.</p>
+  <input id="projectId" placeholder="project id" size="30" />
+  <button id="load">Xem</button>
+  <div id="output"></div>
+
+  <script>
+    const output = document.getElementById('output');
+
+    async function loadDashboard() {
+      const projectId = document.getElementById('projectId').value.trim();
+      if (!projectId) return;
+      output.innerHTML = '<p class="muted">Đang tải...</p>';
+
+      const res = await fetch(`/api/projects/${encodeURIComponent(projectId)}/dashboard`);
+      if (!res.ok) {
+        output.innerHTML = `<p style="color:red">Lỗi: ${res.status} ${res.statusText}</p>`;
+        return;
+      }
+      const data = await res.json();
+
+      if (data.prompts.length === 0) {
+        output.innerHTML = `<p class="muted">Project "${data.project.name}" chưa có prompt ACTIVE nào.</p>`;
+        return;
+      }
+
+      const rows = data.prompts.map((p) => `
+        <tr>
+          <td>${p.promptSetName}<br/><span class="muted">${p.intent}</span></td>
+          <td>${p.text ?? ''}</td>
+          <td>${p.totalRuns}</td>
+          <td>${p.appearanceRate ?? '-'}%</td>
+          <td class="score">${p.avgVisibilityScore ?? '-'}</td>
+          <td>
+            ${Object.entries(p.sentimentBreakdown).map(([k, v]) => `${k}: ${v}`).join('<br/>')}
+          </td>
+          <td>
+            ${p.competitors.map((c) => `${c.name}: ${c.appearanceRate}% (avg vị trí ${c.avgPosition})`).join('<br/>') || '<span class="muted">—</span>'}
+          </td>
+        </tr>
+      `).join('');
+
+      output.innerHTML = `
+        <h2>${data.project.name}</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Prompt Set / Intent</th>
+              <th>Câu hỏi</th>
+              <th>Số run</th>
+              <th>Tỷ lệ xuất hiện</th>
+              <th>Visibility Score TB</th>
+              <th>Sentiment</th>
+              <th>Đối thủ</th>
+            </tr>
+          </thead>
+          <tbody>${rows}</tbody>
+        </table>
+      `;
+    }
+
+    document.getElementById('load').addEventListener('click', loadDashboard);
+  </script>
+</body>
+</html>

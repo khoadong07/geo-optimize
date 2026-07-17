@@ -107,6 +107,13 @@ enum TierChangeReason {
   MANUAL_OVERRIDE
 }
 
+enum SentimentLabel {
+  POSITIVE
+  NEUTRAL
+  NEGATIVE
+  NOT_APPLICABLE
+}
+
 // =========================================================================
 // PLACEHOLDER ACTOR MODEL
 // Module 1 has no auth system yet; reviewedBy/createdBy/ownerId need a real
@@ -151,6 +158,7 @@ model Project {
   platformConfigs ProjectPlatformConfig[]
   targetConfigs   TargetConfig[]
   scheduleConfigs ScheduleConfig[]
+  runs            Run[]
 
   @@index([status])
 }
@@ -279,6 +287,7 @@ model PromptVersion {
   sourceCandidate  GeneratedPromptCandidate? @relation(fields: [sourceCandidateId], references: [id])
   createdBy        User?                     @relation("PromptVersionCreatedBy", fields: [createdById], references: [id])
   currentForPrompt Prompt?                   @relation("PromptCurrentVersion")
+  runs             Run[]
 
   @@unique([promptId, versionNumber])
 }
@@ -358,6 +367,7 @@ model ProjectPlatformConfig {
   updatedAt DateTime     @updatedAt
 
   project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  runs    Run[]
 
   @@unique([projectId, platform])
 }
@@ -423,6 +433,7 @@ model ScheduleConfig {
   prompt      Prompt?               @relation(fields: [promptId], references: [id], onDelete: Cascade)
   promptGroup PromptGroup?          @relation(fields: [promptGroupId], references: [id], onDelete: Cascade)
   tierHistory ScheduleTierHistory[]
+  runs        Run[]
 
   @@index([projectId, priorityTier])
 }
@@ -442,4 +453,48 @@ model ScheduleTierHistory {
   changedBy      User?          @relation("TierChangedBy", fields: [changedById], references: [id])
 
   @@index([scheduleConfigId, changedAt])
+}
+
+// =========================================================================
+// RUN / SENTIMENT (Module 2 — minimal MVP slice)
+// One execution of a PromptVersion against a platform: raw response, a
+// simple brand/competitor mention scan, and an MVP visibility score.
+// =========================================================================
+
+model Run {
+  id                   String   @id @default(cuid())
+  projectId            String
+  promptVersionId      String
+  platformConfigId     String
+  scheduleConfigId     String?
+  runIndexInCycle      Int      @default(1)
+  modelName            String
+  rawResponse          String   @db.Text
+  brandMentioned       Boolean  @default(false)
+  brandMentionPosition Int? // 1 = first brand/competitor name mentioned in the response, null if brand not mentioned
+  competitorsMentioned Json? // [{ competitorId, name, position }]
+  visibilityScore      Decimal  @db.Decimal(6, 2) // 0-100, see visibilityService for the MVP formula
+  executedAt           DateTime @default(now())
+  createdAt            DateTime @default(now())
+
+  project        Project               @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  promptVersion  PromptVersion         @relation(fields: [promptVersionId], references: [id], onDelete: Restrict)
+  platformConfig ProjectPlatformConfig @relation(fields: [platformConfigId], references: [id], onDelete: Restrict)
+  scheduleConfig ScheduleConfig?       @relation(fields: [scheduleConfigId], references: [id], onDelete: SetNull)
+  sentiment      RunSentiment?
+
+  @@index([projectId, executedAt])
+  @@index([promptVersionId])
+}
+
+model RunSentiment {
+  id         String         @id @default(cuid())
+  runId      String         @unique
+  label      SentimentLabel
+  reasoning  String         @db.Text
+  topics     Json? // e.g. ["price", "trust", "service speed"]
+  judgeModel String
+  createdAt  DateTime       @default(now())
+
+  run Run @relation(fields: [runId], references: [id], onDelete: Cascade)
 }

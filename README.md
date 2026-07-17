@@ -6,11 +6,12 @@ GEO (Generative Engine Optimization) tracking platform for the Vietnamese market
 
 ```bash
 cp .env.example .env   # fill in OPENAI_API_KEY / GEMINI_API_KEY (or just DEEPINFRA_API_KEY, see below)
-docker compose up -d   # starts Postgres
-npm install
-npm run prisma:migrate
-npm run dev             # http://localhost:3000, dashboard at /dashboard.html
+docker compose up -d --build   # Postgres + API (app) + dashboard UI (web)
 ```
+
+Or without Docker, backend only: `npm install && npm run prisma:migrate && npm run dev` (http://localhost:3000,
+static dashboard at `/dashboard.html`). For the React UI without Docker: `cd web && npm install && npm run dev`
+(proxies to the backend on :3000, see `web/vite.config.ts`).
 
 ### Don't have OpenAI/Gemini API keys yet?
 
@@ -27,6 +28,6 @@ those take over automatically — no code changes needed either way.
 - **Platform / Target / Schedule config** per project.
 - **Run execution**: calls the enabled platform's real API (OpenAI or Gemini, falling back to DeepInfra when a real key isn't configured — see above), scans the response for brand/competitor mentions, computes a simple visibility score, and classifies sentiment via an LLM-as-judge.
 - **Scheduler**: hourly cron checks due `ScheduleConfig`s and executes runs (`POST /api/scheduler/tick` to trigger manually).
-- **Dashboard**: `GET /api/projects/:projectId/dashboard` (JSON) and `public/dashboard.html` (simple table view).
+- **Dashboard**: `GET /api/projects/:projectId/dashboard` (JSON); a React UI (`web/`, its own docker-compose service on `WEB_PORT`, default 8080) and a minimal static fallback (`public/dashboard.html`, served by `app` itself) both consume it.
 
 See `prisma/schema.prisma` for the full data model.

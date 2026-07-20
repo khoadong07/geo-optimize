@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { useParams, usePathname, useRouter } from 'next/navigation';
 import { useCallback, useEffect, useState } from 'react';
-import { IconAgent, IconAmplify, IconGap, IconOverview, IconRanking, IconSentiment, IconTarget } from './icons';
+import { IconAgent, IconAmplify, IconGap, IconOverview, IconRanking, IconSentiment, IconSignOut, IconTarget } from './icons';
 import { industryLabel } from '../../industry';
 import { API, authHeader, brandInitials, Project, ProjectContext } from './project-context';
 
@@ -130,14 +130,21 @@ export default function ProjectLayout({ children }: { children: React.ReactNode 
           </div>
 
           <div className="gb-sidebar-footer">
-            <div style={{ color: 'var(--text)' }}>{username}</div>
+            <div className="gb-user-row">
+              <div className="gb-user-avatar">{brandInitials(username || '?')}</div>
+              <div className="gb-user-meta">
+                <div className="gb-user-name">{username}</div>
+                <div className="gb-user-role">Signed in</div>
+              </div>
+            </div>
             <button
-              className="gb-btn gb-btn-ghost"
+              className="gb-signout-btn"
               onClick={() => {
                 window.localStorage.removeItem('geo_token');
                 router.replace('/');
               }}
             >
+              <IconSignOut />
               Sign out
             </button>
           </div>

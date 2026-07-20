@@ -70,3 +70,13 @@ export function IconTarget() {
     </svg>
   );
 }
+
+export function IconSignOut() {
+  return (
+    <svg {...common}>
+      <path d="M6.5 2.2H3.6a1 1 0 0 0-1 1v9.6a1 1 0 0 0 1 1h2.9" />
+      <line x1="14" y1="8" x2="6.3" y2="8" />
+      <path d="M10.8 5 14 8l-3.2 3" />
+    </svg>
+  );
+}

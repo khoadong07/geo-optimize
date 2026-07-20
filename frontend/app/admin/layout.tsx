@@ -11,6 +11,25 @@ const NAV_ITEMS = [
   { href: '/admin/users', label: 'Users' },
 ];
 
+function IconSignOut() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M6.5 2.2H3.6a1 1 0 0 0-1 1v9.6a1 1 0 0 0 1 1h2.9" />
+      <line x1="14" y1="8" x2="6.3" y2="8" />
+      <path d="M10.8 5 14 8l-3.2 3" />
+    </svg>
+  );
+}
+
+function initials(name: string) {
+  return name
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((w) => w[0]?.toUpperCase())
+    .join('');
+}
+
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const pathname = usePathname();
@@ -99,11 +118,17 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           </nav>
 
           <div className="gb-sidebar-footer">
-            <div>
-              <div style={{ color: 'var(--text)' }}>{session.username}</div>
-              <span className="gb-role-badge admin">admin</span>
+            <div className="gb-user-row">
+              <div className="gb-user-avatar">{initials(session.username || '?')}</div>
+              <div className="gb-user-meta">
+                <div className="gb-user-name">{session.username}</div>
+                <span className="gb-role-badge admin" style={{ marginTop: 2, display: 'inline-block' }}>
+                  admin
+                </span>
+              </div>
             </div>
-            <button className="gb-btn gb-btn-ghost" onClick={handleLogout}>
+            <button className="gb-signout-btn" onClick={handleLogout}>
+              <IconSignOut />
               Sign out
             </button>
           </div>

@@ -3,13 +3,13 @@ import { PromptIntent } from './prompt-set.schema';
 
 const INTENT_GUIDANCE: Record<PromptIntent, string> = {
   Discovery:
-    'Câu hỏi khám phá/tìm kiếm chung — người dùng CHƯA biết tới thương hiệu cụ thể, chỉ đang tìm giải pháp cho nhu cầu (ví dụ: "ứng dụng nào tốt nhất để...", "nên chọn... nào").',
+    'General discovery/search questions — the user does NOT yet know about a specific brand, they are just looking for a solution to a need (e.g. "what\'s the best app for...", "which one should I choose for...").',
   Comparison:
-    'Câu hỏi so sánh trực tiếp thương hiệu với một hoặc nhiều đối thủ cạnh tranh đã liệt kê ở trên (ví dụ: "A vs B: nên chọn cái nào", "so sánh A và B về...").',
+    'Questions that directly compare the brand against one or more of the listed competitors (e.g. "A vs B: which should I choose", "compare A and B on...").',
   Branded:
-    'Câu hỏi hỏi trực tiếp về chính thương hiệu này — độ uy tín, tính năng, có nên dùng không, có được cấp phép không.',
+    "Questions asking directly about this specific brand — its reputation, features, whether it's worth using, whether it's licensed/trustworthy.",
   'Long-tail':
-    'Câu hỏi dài, cụ thể, chi tiết về một tình huống hoặc nhu cầu ngách liên quan tới ngành (không nhất thiết nhắc brand hay đối thủ).',
+    'Long, specific, detailed questions about a niche situation or need related to the industry (not necessarily mentioning the brand or competitors).',
 };
 
 function buildGenerationPrompt(params: {
@@ -21,22 +21,22 @@ function buildGenerationPrompt(params: {
   trendingTopics?: string[];
 }): string {
   const trendingBlock = params.trendingTopics?.length
-    ? `\nCác chủ đề đang trending trong ngành (ưu tiên bám sát các chủ đề này khi phù hợp với ý định, để câu hỏi có tính thời sự và hiệu quả hơn):\n${params.trendingTopics.map((t) => `- ${t}`).join('\n')}\n`
+    ? `\nCurrently trending topics in this industry (lean into these where they fit the intent, to make the questions timelier and more effective):\n${params.trendingTopics.map((t) => `- ${t}`).join('\n')}\n`
     : '';
 
-  return `Bạn là chuyên gia nghiên cứu thị trường. Nhiệm vụ: sinh ra các câu hỏi mà người dùng thật có thể gõ vào một trợ lý AI (như ChatGPT, Gemini) khi tìm kiếm thông tin liên quan tới ngành "${params.industry}".
+  return `You are a market research expert. Task: generate questions that a real user might type into an AI assistant (like ChatGPT, Gemini) when searching for information related to the "${params.industry}" industry.
 
-Thông tin thương hiệu:
-- Tên thương hiệu: ${params.brandName}
-- Đối thủ cạnh tranh: ${params.competitors.length ? params.competitors.join(', ') : 'chưa xác định'}
+Brand information:
+- Brand name: ${params.brandName}
+- Competitors: ${params.competitors.length ? params.competitors.join(', ') : 'not specified'}
 ${trendingBlock}
-Loại ý định cần sinh: ${params.intent}
+Intent type to generate: ${params.intent}
 ${INTENT_GUIDANCE[params.intent]}
 
-Sinh ra chính xác ${params.count} câu hỏi bằng tiếng Việt, tự nhiên như người dùng thật sẽ gõ, đa dạng cách diễn đạt, không trùng lặp ý.
+Generate exactly ${params.count} questions in English, written naturally as a real user would type them, with varied phrasing and no duplicate meanings.
 
-Chỉ trả về JSON thuần dạng mảng chuỗi, không kèm giải thích hay markdown code fence, theo đúng cấu trúc:
-["câu hỏi 1", "câu hỏi 2", "câu hỏi 3"]`;
+Return ONLY a plain JSON array of strings, with no explanation or markdown code fence, in exactly this shape:
+["question 1", "question 2", "question 3"]`;
 }
 
 export async function generatePromptCandidates(params: {
@@ -48,7 +48,7 @@ export async function generatePromptCandidates(params: {
   trendingTopics?: string[];
 }): Promise<string[]> {
   const prompt = buildGenerationPrompt(params);
-  const { text } = await deepInfraOpenaiFallbackClient.generateText(prompt, 'Bạn chỉ trả lời bằng JSON thuần, không kèm giải thích.');
+  const { text } = await deepInfraOpenaiFallbackClient.generateText(prompt, 'You only respond with plain JSON, no explanation.');
 
   const jsonSlice = text.slice(text.indexOf('['), text.lastIndexOf(']') + 1);
   const parsed = JSON.parse(jsonSlice.length > 0 ? jsonSlice : text);

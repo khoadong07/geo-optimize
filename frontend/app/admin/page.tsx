@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { industryLabel } from '../industry';
 import { API, authHeader } from './admin-context';
 
 type Project = {
@@ -91,7 +92,7 @@ export default function AdminProjectsPage() {
                 {projects.map((project) => (
                   <tr key={project._id}>
                     <td>{project.name}</td>
-                    <td>{project.industry || <span className="gb-mono">—</span>}</td>
+                    <td>{industryLabel(project.industry) || <span className="gb-mono">—</span>}</td>
                     <td className="gb-mono">{project.ownerId}</td>
                     <td className="gb-mono">{project.createdAt ? new Date(project.createdAt).toLocaleString() : '—'}</td>
                     <td>

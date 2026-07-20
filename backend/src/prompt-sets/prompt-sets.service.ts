@@ -84,7 +84,7 @@ export class PromptSetsService {
     try {
       const candidates = await generatePromptCandidates({
         brandName: project.name,
-        industry: project.industry || 'chưa xác định',
+        industry: project.industry || 'unspecified',
         competitors: project.competitors,
         intent,
         count: 7,

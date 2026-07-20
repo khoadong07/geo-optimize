@@ -1,6 +1,7 @@
 'use client';
 
 import { FormEvent, useEffect, useState } from 'react';
+import { industryLabel } from '../../../industry';
 import { API, authHeader, useProjectContext } from '../project-context';
 
 const INTENTS = ['Discovery', 'Comparison', 'Branded', 'Long-tail'];
@@ -277,7 +278,7 @@ export default function PromptsPage() {
       <div className="gb-card" style={{ marginBottom: 20 }}>
         <h2>Generate questions with AI</h2>
         <p className="gb-card-sub">
-          Based on the industry &quot;{project.industry || 'unspecified'}&quot;, brand &quot;{project.name}&quot;, and configured competitors — generates 7 questions for the intent selected below.
+          Based on the industry &quot;{industryLabel(project.industry) || 'unspecified'}&quot;, brand &quot;{project.name}&quot;, and configured competitors — generates 7 questions for the intent selected below.
         </p>
 
         <div className="gb-field">Industry trending topics (optional — keeps questions on-trend)</div>

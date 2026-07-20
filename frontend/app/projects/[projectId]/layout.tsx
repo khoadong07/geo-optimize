@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { useParams, usePathname, useRouter } from 'next/navigation';
 import { useCallback, useEffect, useState } from 'react';
 import { IconAgent, IconAmplify, IconGap, IconOverview, IconRanking, IconSentiment, IconTarget } from './icons';
+import { industryLabel } from '../../industry';
 import { API, authHeader, brandInitials, Project, ProjectContext } from './project-context';
 
 const NAV_ITEMS = [
@@ -148,7 +149,7 @@ export default function ProjectLayout({ children }: { children: React.ReactNode 
               <div className="gb-brand-badge">{brandInitials(project.name)}</div>
               <div>
                 <div className="gb-brand-name">{project.name}</div>
-                <div className="gb-brand-meta">{project.industry || 'Uncategorized'}</div>
+                <div className="gb-brand-meta">{industryLabel(project.industry) || 'Uncategorized'}</div>
               </div>
             </div>
             <div className="gb-header-right">

@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import ChangePasswordForm from './ChangePasswordForm';
+import { industryLabel } from './industry';
 
 const API = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
 
@@ -13,6 +14,8 @@ type Project = {
   industry?: string;
   domain?: string;
 };
+
+const INDUSTRY_OPTIONS = ['Banking'];
 
 export default function HomePage() {
   const router = useRouter();
@@ -27,7 +30,7 @@ export default function HomePage() {
 
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [newName, setNewName] = useState('');
-  const [newIndustry, setNewIndustry] = useState('');
+  const [newIndustry, setNewIndustry] = useState(INDUSTRY_OPTIONS[0]);
   const [newCompetitors, setNewCompetitors] = useState('');
   const [creating, setCreating] = useState(false);
   const [createError, setCreateError] = useState('');
@@ -212,7 +215,13 @@ export default function HomePage() {
             <input className="gb-input" value={newName} onChange={(e) => setNewName(e.target.value)} required placeholder="Acme" />
 
             <div className="gb-field">Industry</div>
-            <input className="gb-input" value={newIndustry} onChange={(e) => setNewIndustry(e.target.value)} placeholder="Digital banking" />
+            <select className="gb-input" value={newIndustry} onChange={(e) => setNewIndustry(e.target.value)}>
+              {INDUSTRY_OPTIONS.map((industry) => (
+                <option key={industry} value={industry}>
+                  {industry}
+                </option>
+              ))}
+            </select>
 
             <div className="gb-field">Competitors (comma-separated, optional)</div>
             <input className="gb-input" value={newCompetitors} onChange={(e) => setNewCompetitors(e.target.value)} placeholder="Competitor A, Competitor B" />
@@ -236,7 +245,7 @@ export default function HomePage() {
                 <h3 className="gb-project-name">{project.name}</h3>
                 <div style={{ color: 'var(--text-faint)', fontSize: 12 }}>{project.description || 'GEO tracking ready to run.'}</div>
               </div>
-              <span className="gb-badge neutral">{project.industry || 'Uncategorized'}</span>
+              <span className="gb-badge neutral">{industryLabel(project.industry) || 'Uncategorized'}</span>
             </button>
           ))}
         </div>

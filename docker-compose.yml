@@ -6,10 +6,10 @@ services:
       MONGO_INITDB_DATABASE: ${MONGO_DB_NAME:-geo-optimize}
       MONGO_INITDB_ROOT_USERNAME: ${MONGO_ROOT_USERNAME:?set MONGO_ROOT_USERNAME in .env}
       MONGO_INITDB_ROOT_PASSWORD: ${MONGO_ROOT_PASSWORD:?set MONGO_ROOT_PASSWORD in .env}
-    ports:
-      - "${MONGO_PORT:-27017}:27017"
     volumes:
       - mongo_data:/data/db
+    networks:
+      - geobase
 
   backend:
     build:
@@ -31,20 +31,28 @@ services:
       DEEPINFRA_API_KEY: ${DEEPINFRA_API_KEY:-}
       DEEPINFRA_OPENAI_MODEL: ${DEEPINFRA_OPENAI_MODEL:-openai/gpt-oss-120b}
       DEEPINFRA_GEMINI_MODEL: ${DEEPINFRA_GEMINI_MODEL:-google/gemini-2.5-flash}
-    ports:
-      - "${BACKEND_PORT:-4000}:4000"
+    networks:
+      - geobase
 
   frontend:
     build:
       context: ./frontend
       dockerfile: Dockerfile
       args:
-        NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://localhost:4000}
+        NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-/api}
     restart: unless-stopped
     depends_on:
       - backend
+    environment:
+      BACKEND_INTERNAL_URL: http://backend:${BACKEND_PORT:-4000}
     ports:
       - "${FRONTEND_PORT:-3001}:3001"
+    networks:
+      - geobase
+
+networks:
+  geobase:
+    driver: bridge
 
 volumes:
   mongo_data:

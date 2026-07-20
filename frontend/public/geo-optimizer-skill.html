@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>geo-optimizer-skill — summary</title>
+<style>
+  :root{
+    --bg:#14161A;--surface:#1B1E23;--surface-2:#22262C;
+    --border:#2A2E33;--text:#ECEDEE;--text-dim:#9A9FA6;--text-faint:#6B7078;
+    --accent:#FF8A3D;--accent-dim:rgba(255,138,61,.14);
+    --blue:#5B9BD5;--blue-dim:rgba(91,155,213,.14);
+    --green:#4CB782;--green-dim:rgba(76,183,130,.14);
+    --red:#E5484D;--red-dim:rgba(229,72,77,.14);
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{background:var(--bg);color:var(--text);font-family:'IBM Plex Sans',-apple-system,sans-serif;font-size:14px;line-height:1.6;padding:28px 32px 60px}
+  h1,h2,h3{font-weight:700;letter-spacing:-.01em}
+  h1{font-size:20px;margin:0 0 4px}
+  h2{font-size:15px;margin:32px 0 12px;padding-top:16px;border-top:1px solid var(--border)}
+  h2:first-of-type{border-top:none;padding-top:0}
+  p{color:var(--text-dim);margin:0 0 12px}
+  a{color:var(--accent)}
+  .eyebrow{font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);margin:0 0 6px}
+  .meta-row{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0 20px}
+  .chip{font-family:'IBM Plex Mono',monospace;font-size:11px;background:var(--surface-2);border:1px solid var(--border);color:var(--text-dim);padding:4px 9px;border-radius:4px}
+  .lede{font-size:14px;color:var(--text)}
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px;margin-top:4px}
+  .card{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:14px 16px}
+  .card h3{font-size:13px;margin:0 0 4px;color:var(--text)}
+  .card p{font-size:12.5px;margin:0;color:var(--text-faint)}
+  table{width:100%;border-collapse:collapse;font-size:12.5px;margin-top:4px}
+  th{text-align:left;font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.05em;color:var(--text-faint);font-weight:600;padding:0 10px 8px;border-bottom:1px solid var(--border)}
+  td{padding:9px 10px;border-bottom:1px solid var(--border);vertical-align:top;color:var(--text-dim)}
+  tr:last-child td{border-bottom:none}
+  code{font-family:'IBM Plex Mono',monospace;background:var(--surface-2);padding:2px 5px;border-radius:3px;font-size:12px;color:var(--text)}
+  .badge{display:inline-flex;font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:600;padding:3px 8px;border-radius:4px}
+  .badge.core{background:var(--green-dim);color:var(--green)}
+  .badge.extra{background:var(--blue-dim);color:var(--blue)}
+  .integration{background:var(--surface);border:1px solid var(--accent);border-radius:8px;padding:16px 18px;margin-top:8px}
+  .integration p{color:var(--text-dim)}
+  ul{margin:6px 0 0;padding-left:18px;color:var(--text-dim)}
+  li{margin-bottom:4px}
+  footer{margin-top:36px;padding-top:16px;border-top:1px solid var(--border);font-size:11.5px;color:var(--text-faint)}
+</style>
+</head>
+<body>
+
+  <p class="eyebrow">Third-party tool used by GeoBase</p>
+  <h1>geo-optimizer-skill</h1>
+  <p class="lede">An open-source toolkit that audits and optimizes websites for citation by AI answer engines — ChatGPT, Perplexity, Gemini, Google AI Overviews, and Claude.</p>
+
+  <div class="meta-row">
+    <span class="chip">MIT license</span>
+    <span class="chip">v4.15.0</span>
+    <span class="chip">Python ≥3.9</span>
+    <span class="chip">596 stars · 71 forks</span>
+    <span class="chip">1,720 tests</span>
+  </div>
+
+  <h2>What it does</h2>
+  <p>The core command, <code>geo audit</code>, fetches a live URL and scores it 0-100 on how ready it is to be crawled and cited by AI answer engines — the same kind of technical readiness that used to matter for search-engine crawlers, adapted for LLM-based ones. It ships as a CLI, a Python library, a GitHub Action, an MCP server, and an Astro framework integration.</p>
+
+  <h2>The 8 core scoring categories <span class="badge core" style="margin-left:6px">used by GeoBase</span></h2>
+  <table>
+    <thead><tr><th>Category</th><th>What it checks</th></tr></thead>
+    <tbody>
+      <tr><td>Robots.txt</td><td>Whether known AI crawlers (GPTBot, ClaudeBot, PerplexityBot, Google-Extended, etc.) are explicitly allowed.</td></tr>
+      <tr><td>llms.txt</td><td>Presence of the emerging <code>/llms.txt</code> convention for structuring a site for AI indexing.</td></tr>
+      <tr><td>Schema JSON-LD</td><td>Structured data — Website/WebApp/FAQ schema types found on the page.</td></tr>
+      <tr><td>Meta tags</td><td>Title and description tags AI systems use to understand page intent.</td></tr>
+      <tr><td>Content</td><td>Heading structure (H1 presence, hierarchy) and general content quality signals.</td></tr>
+      <tr><td>Page signals</td><td>Language declaration and other page-level technical signals.</td></tr>
+      <tr><td>AI discovery</td><td>Whether AI-facing discovery endpoints are present.</td></tr>
+      <tr><td>Brand entity</td><td>Whether the brand name is referenced consistently across the page.</td></tr>
+    </tbody>
+  </table>
+
+  <h2>Additional signals <span class="badge extra" style="margin-left:6px">available, not yet surfaced</span></h2>
+  <div class="grid">
+    <div class="card"><h3>Negative signals</h3><p>CTA density, popups, thin content, keyword stuffing, boilerplate ratio.</p></div>
+    <div class="card"><h3>WebMCP readiness</h3><p>Whether the site exposes agent-callable tools/actions.</p></div>
+    <div class="card"><h3>CDN / AI-crawler check</h3><p>Whether a CDN is silently blocking AI crawler user agents.</p></div>
+    <div class="card"><h3>JS rendering</h3><p>Whether critical content requires JavaScript to appear (AI crawlers often don't execute JS).</p></div>
+    <div class="card"><h3>Trust stack</h3><p>Aggregate trust/authority scoring.</p></div>
+    <div class="card"><h3>Prompt injection detection</h3><p>Hidden text or HTML comments attempting to manipulate AI crawlers.</p></div>
+    <div class="card"><h3>RAG chunk &amp; embedding quality</h3><p>How well content would chunk and embed for retrieval-augmented generation.</p></div>
+    <div class="card"><h3>Content decay &amp; platform citation</h3><p>Whether content is going stale, and citation behavior per platform.</p></div>
+  </div>
+
+  <h2>CLI surface</h2>
+  <table>
+    <thead><tr><th>Command</th><th>Purpose</th></tr></thead>
+    <tbody>
+      <tr><td><code>geo audit</code></td><td>Full 0-100 GEO readiness audit of a URL (what GeoBase calls).</td></tr>
+      <tr><td><code>geo citations</code></td><td>Check whether AI engines are actually citing the brand.</td></tr>
+      <tr><td><code>geo llms</code></td><td>Generate an <code>/llms.txt</code> file.</td></tr>
+      <tr><td><code>geo schema</code></td><td>Generate JSON-LD structured-data markup.</td></tr>
+      <tr><td><code>geo fix</code></td><td>Auto-generate missing optimization files.</td></tr>
+      <tr><td>+ 10 more</td><td>track / monitor / history / diff / drift / snapshots / logs / access / authority / coherence / perception.</td></tr>
+    </tbody>
+  </table>
+
+  <h2>How GeoBase integrates it</h2>
+  <div class="integration">
+    <p>GeoBase does not reimplement this tool's logic — it installs the real Python package into the backend image and calls it directly.</p>
+    <ul>
+      <li>The backend spawns <code>geo audit --url &lt;domain&gt; --format json</code> as a subprocess, in a background job (a full audit can take 10-60s).</li>
+      <li>The parsed score, 8-category breakdown, and recommendations are stored in MongoDB and shown on the <strong>Gap &amp; Citation</strong> page.</li>
+      <li>The project's website is set once on <strong>Target Position</strong>, then audits can be re-run any time.</li>
+    </ul>
+  </div>
+
+  <footer>
+    Source: <a href="https://github.com/Auriti-Labs/geo-optimizer-skill" target="_blank" rel="noreferrer">github.com/Auriti-Labs/geo-optimizer-skill</a> · MIT licensed · maintained by Auriti Labs.
+  </footer>
+
+</body>
+</html>

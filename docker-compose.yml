@@ -1,39 +1,50 @@
 services:
-  postgres:
-    image: postgres:16-alpine
+  mongo:
+    image: mongo:7
     restart: unless-stopped
     environment:
-      POSTGRES_USER: ${POSTGRES_USER:-postgres}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
-      POSTGRES_DB: ${POSTGRES_DB:-geo_optimize}
+      MONGO_INITDB_DATABASE: ${MONGO_DB_NAME:-geo-optimize}
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_ROOT_USERNAME:?set MONGO_ROOT_USERNAME in .env}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_ROOT_PASSWORD:?set MONGO_ROOT_PASSWORD in .env}
     ports:
-      - "${POSTGRES_PORT:-5432}:5432"
+      - "${MONGO_PORT:-27017}:27017"
     volumes:
-      - postgres_data:/var/lib/postgresql/data
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres} -d ${POSTGRES_DB:-geo_optimize}"]
-      interval: 5s
-      timeout: 5s
-      retries: 10
+      - mongo_data:/data/db
 
-  app:
+  backend:
     build:
-      context: .
+      context: ./backend
       dockerfile: Dockerfile
     restart: unless-stopped
     depends_on:
-      postgres:
-        condition: service_healthy
+      - mongo
     environment:
-      # Always points at the `postgres` service by container network name —
-      # deliberately NOT read from .env's DATABASE_URL, which targets
-      # localhost for running Prisma CLI commands from the host.
-      DATABASE_URL: postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres}@postgres:5432/${POSTGRES_DB:-geo_optimize}?schema=public
+      BACKEND_PORT: ${BACKEND_PORT:-4000}
+      AUTH_USERNAME: ${AUTH_USERNAME:?set AUTH_USERNAME in .env}
+      AUTH_PASSWORD: ${AUTH_PASSWORD:?set AUTH_PASSWORD in .env}
+      JWT_SECRET: ${JWT_SECRET:?set JWT_SECRET in .env}
+      MONGODB_URI: ${MONGODB_URI_DOCKER:?set MONGODB_URI_DOCKER in .env}
       OPENAI_API_KEY: ${OPENAI_API_KEY:-}
       GEMINI_API_KEY: ${GEMINI_API_KEY:-}
+      OPENAI_MODEL: ${OPENAI_MODEL:-gpt-4o-mini}
+      GEMINI_MODEL: ${GEMINI_MODEL:-gemini-2.5-flash}
       DEEPINFRA_API_KEY: ${DEEPINFRA_API_KEY:-}
+      DEEPINFRA_OPENAI_MODEL: ${DEEPINFRA_OPENAI_MODEL:-openai/gpt-oss-120b}
+      DEEPINFRA_GEMINI_MODEL: ${DEEPINFRA_GEMINI_MODEL:-google/gemini-2.5-flash}
     ports:
-      - "${APP_PORT:-3000}:3000"
+      - "${BACKEND_PORT:-4000}:4000"
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    depends_on:
+      - backend
+    environment:
+      NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://localhost:4000}
+    ports:
+      - "${FRONTEND_PORT:-3001}:3001"
 
 volumes:
-  postgres_data:
+  mongo_data:

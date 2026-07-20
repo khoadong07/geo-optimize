@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<title>GEO Signal — Tạo dự án (Bước 1)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#12151C; --surface:#181D27; --surface-2:#1F2531; --surface-3:#262E3D;
+    --border:#2A3140; --border-soft:#232937;
+    --text:#ECEEF2; --text-dim:#8B93A5; --text-faint:#565F73;
+    --teal:#4FD1C5; --teal-dim:rgba(79,209,197,0.14);
+    --amber:#F2994A; --amber-dim:rgba(242,153,74,0.14);
+    --red:#E5636A; --red-dim:rgba(229,99,106,0.14);
+    --indigo:#8DA2FF; --indigo-dim:rgba(141,162,255,0.14);
+    --slate:#8993A8; --slate-dim:rgba(137,147,168,0.14);
+    --font-display:'Space Grotesk',sans-serif; --font-body:'IBM Plex Sans',sans-serif; --font-mono:'IBM Plex Mono',monospace;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;background:var(--bg);color:var(--text);font-family:var(--font-body);}
+  body{-webkit-font-smoothing:antialiased;}
+  .page{max-width:920px;margin:0 auto;padding:34px 26px 80px;}
+
+  .head{text-align:center;margin-bottom:30px;}
+  .head h1{font-family:var(--font-display);font-size:23px;font-weight:700;margin:0 0 6px;}
+  .head p{font-size:13px;color:var(--text-faint);margin:0;}
+
+  /* PROGRESS */
+  .progress{display:flex;align-items:center;justify-content:center;margin-bottom:34px;}
+  .pnode{display:flex;flex-direction:column;align-items:center;gap:7px;position:relative;width:150px;}
+  .pnode .circle{width:32px;height:32px;border-radius:50%;background:var(--surface-2);border:2px solid var(--border);display:flex;align-items:center;justify-content:center;font-family:var(--font-mono);font-size:13px;font-weight:600;color:var(--text-faint);z-index:1;}
+  .pnode .plabel{font-size:10.5px;color:var(--text-faint);font-weight:600;text-align:center;}
+  .pnode .pline{position:absolute;top:15px;left:50%;width:100%;height:2px;background:var(--border);z-index:0;}
+  .pnode:last-child .pline{display:none;}
+  .pnode.done .circle{background:var(--teal);border-color:var(--teal);color:#0B1712;}
+  .pnode.done .pline{background:var(--teal);}
+  .pnode.active .circle{border-color:var(--teal);color:var(--teal);background:var(--teal-dim);}
+  .pnode.active .plabel{color:var(--text);}
+
+  .panel{display:none;}
+  .panel.active{display:block;animation:fade .25s ease;}
+  @keyframes fade{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
+
+  .card{background:var(--surface);border:1px solid var(--border-soft);border-radius:16px;padding:26px;margin-bottom:16px;}
+  .card h2{font-family:var(--font-display);font-size:16px;font-weight:600;margin:0 0 4px;}
+  .card .cardsub{font-size:12.5px;color:var(--text-faint);margin:0 0 20px;}
+
+  /* STEP 1: INDUSTRY */
+  .industry-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;}
+  @media (max-width:700px){ .industry-grid{grid-template-columns:repeat(2,1fr);} }
+  .industry-card{border:1px solid var(--border);background:var(--surface-2);border-radius:12px;padding:16px 12px;text-align:center;cursor:pointer;transition:.15s;}
+  .industry-card .ic{width:38px;height:38px;border-radius:10px;margin:0 auto 10px;display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-weight:700;font-size:14px;}
+  .industry-card .nm{font-size:12px;font-weight:600;line-height:1.3;}
+  .industry-card.selected{border-color:var(--teal);background:var(--teal-dim);box-shadow:0 0 0 1px var(--teal) inset;}
+  .industry-card.selected .nm{color:var(--teal);}
+
+  /* STEP 2: BRAND FORM */
+  .field-label{font-size:11px;text-transform:uppercase;letter-spacing:0.05em;color:var(--text-faint);font-weight:600;margin-bottom:7px;margin-top:16px;}
+  .field-label:first-child{margin-top:0;}
+  .finput{width:100%;background:var(--surface-2);border:1px solid var(--border);border-radius:9px;padding:10px 13px;font-size:13.5px;color:var(--text);font-family:var(--font-body);}
+  textarea.finput{resize:vertical;min-height:64px;font-family:var(--font-body);}
+  .chip-row{display:flex;flex-wrap:wrap;gap:8px;}
+  .chip{font-size:12px;padding:6px 11px;border-radius:8px;background:var(--surface-2);border:1px solid var(--border);color:var(--text-dim);display:flex;align-items:center;gap:7px;}
+  .chip .x{color:var(--text-faint);cursor:pointer;}
+  .chip.suggest{color:var(--teal);border-color:rgba(79,209,197,0.35);border-style:dashed;cursor:pointer;}
+
+  /* STEP 3: PROMPT SET */
+  .prompt-summary{display:flex;justify-content:space-between;align-items:center;background:var(--surface-2);border-radius:10px;padding:12px 16px;margin-bottom:16px;}
+  .prompt-summary .n{font-family:var(--font-display);font-size:20px;font-weight:700;}
+  .prompt-summary .n span{font-family:var(--font-mono);font-size:12px;color:var(--text-faint);font-weight:400;}
+  .intent-group{margin-bottom:16px;}
+  .intent-head{display:flex;align-items:center;gap:9px;margin-bottom:8px;}
+  .intent-tag{font-size:9.5px;font-weight:700;letter-spacing:0.03em;text-transform:uppercase;padding:3px 8px;border-radius:5px;}
+  .intent-Discovery{background:var(--teal-dim);color:var(--teal);}
+  .intent-Comparison{background:var(--amber-dim);color:var(--amber);}
+  .intent-Branded{background:var(--indigo-dim);color:var(--indigo);}
+  .intent-Long-tail{background:var(--slate-dim);color:var(--slate);}
+  .intent-head .cnt{font-size:11px;color:var(--text-faint);font-family:var(--font-mono);}
+  .prompt-item{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--border-soft);}
+  .prompt-item:last-child{border-bottom:none;}
+  .prompt-item input[type=checkbox]{width:16px;height:16px;accent-color:var(--teal);flex:none;}
+  .prompt-item .txt{font-size:13px;flex:1;}
+  .ai-badge{font-size:9px;font-family:var(--font-mono);color:var(--text-faint);background:var(--surface-3);padding:2px 5px;border-radius:4px;}
+  .add-btn{margin-top:6px;font-size:12.5px;color:var(--teal);background:var(--teal-dim);border:1px solid rgba(79,209,197,0.3);padding:9px 14px;border-radius:9px;cursor:pointer;font-weight:600;}
+
+  /* STEP 4: PLATFORM + RUN */
+  .platform-select{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:18px;}
+  @media (max-width:600px){ .platform-select{grid-template-columns:1fr;} }
+  .pcard{border:1px solid var(--border);background:var(--surface-2);border-radius:12px;padding:16px;cursor:pointer;position:relative;}
+  .pcard.selected{border-color:var(--teal);box-shadow:0 0 0 1px var(--teal) inset;}
+  .pcard .check{position:absolute;top:14px;right:14px;width:18px;height:18px;border-radius:5px;border:1.5px solid var(--border);}
+  .pcard.selected .check{background:var(--teal);border-color:var(--teal);}
+  .pcard .picn{width:34px;height:34px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-weight:700;font-size:13px;margin-bottom:10px;}
+  .pcard .pname{font-size:13.5px;font-weight:600;}
+  .pcard .pnote{font-size:11px;color:var(--text-faint);margin-top:3px;}
+  .run-config{display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid var(--border-soft);}
+  .run-config:last-of-type{border-bottom:none;}
+  .run-config .l{font-size:12.5px;color:var(--text-dim);}
+  .stepper{display:flex;align-items:center;gap:8px;}
+  .stepper button{width:24px;height:24px;border-radius:6px;background:var(--surface-2);border:1px solid var(--border);color:var(--text-dim);cursor:pointer;font-size:13px;}
+  .stepper .n{font-family:var(--font-mono);font-size:13px;width:20px;text-align:center;}
+  .cost-est{margin-top:14px;background:var(--surface-2);border-radius:10px;padding:12px 16px;font-size:12.5px;color:var(--text-dim);display:flex;justify-content:space-between;}
+  .cost-est b{font-family:var(--font-mono);color:var(--teal);}
+
+  /* NAV BUTTONS */
+  .navrow{display:flex;justify-content:space-between;margin-top:6px;}
+  .btn{padding:11px 20px;border-radius:10px;font-weight:600;font-size:13px;border:none;cursor:pointer;font-family:var(--font-body);}
+  .btn-primary{background:var(--teal);color:#0B1712;}
+  .btn-ghost{background:transparent;color:var(--text-dim);border:1px solid var(--border);}
+  .btn-primary:disabled{opacity:0.4;cursor:not-allowed;}
+
+  /* LOADING */
+  .loading-wrap{text-align:center;padding:50px 20px;}
+  .spinner{width:52px;height:52px;border-radius:50%;border:3px solid var(--surface-2);border-top-color:var(--teal);margin:0 auto 22px;animation:spin 0.9s linear infinite;}
+  @keyframes spin{to{transform:rotate(360deg);}}
+  .loading-title{font-family:var(--font-display);font-size:16px;font-weight:600;margin-bottom:18px;}
+  .loading-lines{display:inline-flex;flex-direction:column;gap:9px;text-align:left;font-size:12.5px;color:var(--text-faint);font-family:var(--font-mono);}
+  .loading-lines .ln{display:flex;align-items:center;gap:9px;opacity:0.3;}
+  .loading-lines .ln.on{opacity:1;color:var(--text-dim);}
+  .loading-lines .ln .tick{width:14px;color:var(--teal);}
+
+  /* STEP 5: RESULTS */
+  .result-hero{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:16px;}
+  @media (max-width:650px){ .result-hero{grid-template-columns:1fr;} }
+  .gauge-wrap{display:flex;flex-direction:column;align-items:center;}
+  .gauge-num{font-family:var(--font-display);font-size:34px;font-weight:700;margin-top:-38px;}
+  .gauge-num sub{font-family:var(--font-mono);font-size:12px;color:var(--text-faint);font-weight:500;}
+  .donut-row{display:flex;align-items:center;gap:18px;justify-content:center;height:100%;}
+  .legend{display:flex;flex-direction:column;gap:8px;}
+  .legend-item{display:flex;align-items:center;gap:8px;font-size:12px;}
+  .legend-item i{width:8px;height:8px;border-radius:3px;flex:none;}
+  .legend-item b{font-family:var(--font-mono);margin-left:auto;padding-left:12px;}
+
+  table{width:100%;border-collapse:collapse;}
+  thead th{text-align:left;font-size:10px;text-transform:uppercase;letter-spacing:0.05em;color:var(--text-faint);font-weight:600;padding:0 0 8px;border-bottom:1px solid var(--border-soft);}
+  tbody td{padding:11px 0;border-bottom:1px solid var(--border-soft);font-size:12.5px;}
+  tbody tr:last-child td{border-bottom:none;}
+  .plat-mini-icn{width:22px;height:22px;border-radius:6px;display:inline-flex;align-items:center;justify-content:center;font-family:var(--font-display);font-weight:700;font-size:9.5px;margin-right:7px;vertical-align:middle;}
+  .status-badge{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:600;padding:4px 9px;border-radius:6px;}
+  .status-yes{background:var(--teal-dim);color:var(--teal);}
+  .status-no{background:var(--surface-3);color:var(--text-faint);}
+  .sent-pos{color:var(--teal);} .sent-neu{color:var(--indigo);} .sent-neg{color:var(--red);}
+
+  .cta-row{display:flex;justify-content:center;margin-top:20px;}
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="head">
+    <h1>Tạo dự án GEO mới</h1>
+    <p>Bước 1 — từ chọn ngành đến kết quả truy vấn LLM đầu tiên</p>
+  </div>
+
+  <div class="progress" id="progress"></div>
+
+  <!-- PANEL 1: INDUSTRY -->
+  <div class="panel active" id="p1">
+    <div class="card">
+      <h2>Chọn ngành nghề của brand</h2>
+      <p class="cardsub">Dùng để gợi ý bộ prompt và danh sách đối thủ phù hợp ở bước sau</p>
+      <div class="industry-grid" id="industryGrid"></div>
+    </div>
+    <div class="navrow"><div></div><button class="btn btn-primary" onclick="goTo(2)">Tiếp theo →</button></div>
+  </div>
+
+  <!-- PANEL 2: BRAND -->
+  <div class="panel" id="p2">
+    <div class="card">
+      <h2>Thông tin thương hiệu</h2>
+      <p class="cardsub">Ngành đã chọn: <b style="color:var(--teal)">Ví điện tử &amp; Ngân hàng số</b></p>
+
+      <div class="field-label">Tên thương hiệu</div>
+      <input class="finput" value="Vinly">
+
+      <div class="field-label">Website chính thức</div>
+      <input class="finput" value="vinly.vn">
+
+      <div class="field-label">Mô tả ngắn (giúp AI sinh prompt sát hơn)</div>
+      <textarea class="finput">Ví điện tử &amp; ứng dụng ngân hàng số phục vụ chuyển tiền, vay tiêu dùng, thẻ tín dụng online cho người dùng cá nhân tại Việt Nam.</textarea>
+
+      <div style="margin-top:16px;background:var(--surface-2);border:1px dashed var(--border);border-radius:10px;padding:12px 14px;font-size:12px;color:var(--text-faint);line-height:1.6;">
+        💡 Không cần khai báo đối thủ cạnh tranh ở bước này — hệ thống sẽ <b style="color:var(--text-dim)">tự động phát hiện đối thủ</b> từ chính các brand xuất hiện cùng trong câu trả lời của Gemini/OpenAI ở bước chạy truy vấn, sau đó liệt kê ở phần Phân tích (Bước 2).
+      </div>
+    </div>
+    <div class="navrow"><button class="btn btn-ghost" onclick="goTo(1)">← Quay lại</button><button class="btn btn-primary" onclick="goTo(3)">Tiếp theo →</button></div>
+  </div>
+
+  <!-- PANEL 3: PROMPT SET -->
+  <div class="panel" id="p3">
+    <div class="card">
+      <h2>Bộ Prompt được đề xuất</h2>
+      <p class="cardsub">Tự động sinh từ ngành + mô tả brand ở bước trước, có thể chỉnh sửa trước khi chạy</p>
+
+      <div class="prompt-summary"><div><div class="n">18 <span>/ 22 prompt được chọn</span></div></div><button class="add-btn">✦ Sinh thêm bằng AI</button></div>
+
+      <div class="intent-group">
+        <div class="intent-head"><span class="intent-tag intent-Discovery">Discovery</span><span class="cnt">6 prompt</span></div>
+        <div class="prompt-item"><input type="checkbox" checked><span class="txt">Ví điện tử nào an toàn nhất để chuyển tiền ở Việt Nam?</span></div>
+        <div class="prompt-item"><input type="checkbox" checked><span class="txt">Ứng dụng vay tiêu dùng nào giải ngân trong ngày?</span></div>
+        <div class="prompt-item"><input type="checkbox" checked><span class="txt">Nên dùng ví điện tử nào để thanh toán học phí online? <span class="ai-badge">AI-sinh</span></span></div>
+      </div>
+
+      <div class="intent-group">
+        <div class="intent-head"><span class="intent-tag intent-Comparison">Comparison</span><span class="cnt">5 prompt</span></div>
+        <div class="prompt-item"><input type="checkbox" checked><span class="txt">So sánh Vinly và PayNova về phí rút tiền</span></div>
+        <div class="prompt-item"><input type="checkbox" checked><span class="txt">Vinly vs MoBank: nên chọn app nào để tiết kiệm?</span></div>
+        <div class="prompt-item"><input type="checkbox"><span class="txt">Vinly vs ZaloPay: app nào có ưu đãi tốt hơn? <span class="ai-badge">AI-sinh</span></span></div>
+      </div>
+
+      <div class="intent-group">
+        <div class="intent-head"><span class="intent-tag intent-Branded">Branded</span><span class="cnt">4 prompt</span></div>
+        <div class="prompt-item"><input type="checkbox" checked><span class="txt">Vinly có uy tín không, có nên dùng không?</span></div>
+        <div class="prompt-item"><input type="checkbox" checked><span class="txt">Vinly có được cấp phép bởi Ngân hàng Nhà nước không? <span class="ai-badge">AI-sinh</span></span></div>
+      </div>
+
+      <div class="intent-group" style="margin-bottom:0">
+        <div class="intent-head"><span class="intent-tag intent-Long-tail">Long-tail</span><span class="cnt">7 prompt</span></div>
+        <div class="prompt-item"><input type="checkbox" checked><span class="txt">Thủ tục mở thẻ tín dụng online nhanh nhất</span></div>
+        <div class="prompt-item"><input type="checkbox" checked><span class="txt">Cách hủy liên kết ngân hàng khỏi ví điện tử an toàn</span></div>
+      </div>
+    </div>
+    <div class="navrow"><button class="btn btn-ghost" onclick="goTo(2)">← Quay lại</button><button class="btn btn-primary" onclick="goTo(4)">Tiếp theo →</button></div>
+  </div>
+
+  <!-- PANEL 4: PLATFORM + RUN -->
+  <div class="panel" id="p4">
+    <div class="card">
+      <h2>Chọn nền tảng AI &amp; cấu hình chạy</h2>
+      <p class="cardsub">18 prompt đã chọn sẽ được gửi tới các nền tảng bên dưới</p>
+
+      <div class="platform-select">
+        <div class="pcard selected" onclick="this.classList.toggle('selected')">
+          <div class="check"></div>
+          <div class="picn" style="background:var(--indigo-dim);color:var(--indigo)">Ge</div>
+          <div class="pname">Gemini</div>
+          <div class="pnote">Grounding with Google Search: bật</div>
+        </div>
+        <div class="pcard selected" onclick="this.classList.toggle('selected')">
+          <div class="check"></div>
+          <div class="picn" style="background:var(--teal-dim);color:var(--teal)">Op</div>
+          <div class="pname">OpenAI (ChatGPT)</div>
+          <div class="pnote">Không có citation nếu không bật web-search tool</div>
+        </div>
+      </div>
+
+      <div class="run-config"><span class="l">Số lần chạy mỗi prompt (giảm nhiễu do LLM không ổn định)</span>
+        <div class="stepper"><button onclick="stepRun(-1)">−</button><span class="n" id="runCount">5</span><button onclick="stepRun(1)">+</button></div>
+      </div>
+      <div class="run-config"><span class="l">Tần suất lặp lại sau lần chạy đầu</span>
+        <span style="font-size:12.5px;color:var(--text-dim)">Hằng ngày, 06:00</span>
+      </div>
+
+      <div class="cost-est"><span>Ước tính chi phí lần chạy đầu tiên (18 prompt × 2 nền tảng × 5 lần)</span><b id="costEst">≈ $6.85</b></div>
+    </div>
+    <div class="navrow"><button class="btn btn-ghost" onclick="goTo(3)">← Quay lại</button><button class="btn btn-primary" onclick="startRun()">Chạy truy vấn ngay ▸</button></div>
+  </div>
+
+  <!-- PANEL LOADING -->
+  <div class="panel" id="pLoading">
+    <div class="card loading-wrap">
+      <div class="spinner"></div>
+      <div class="loading-title">Đang thực hiện truy vấn trên các nền tảng AI...</div>
+      <div class="loading-lines" id="loadingLines">
+        <div class="ln"><span class="tick">○</span> Gửi 18 prompt tới Gemini (grounding bật)</div>
+        <div class="ln"><span class="tick">○</span> Gửi 18 prompt tới OpenAI</div>
+        <div class="ln"><span class="tick">○</span> Phát hiện brand &amp; đối thủ trong câu trả lời</div>
+        <div class="ln"><span class="tick">○</span> Phân loại sentiment bằng LLM-as-judge</div>
+        <div class="ln"><span class="tick">○</span> Tính Visibility Score cho từng prompt</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PANEL 5: RESULTS -->
+  <div class="panel" id="p5">
+    <div class="card">
+      <h2>Kết quả lần chạy đầu tiên</h2>
+      <p class="cardsub">180 lần chạy hoàn tất (18 prompt × 2 nền tảng × 5 lần) — dữ liệu này sẽ là baseline cho Target Position</p>
+
+      <div class="result-hero">
+        <div class="card" style="margin:0;background:var(--surface-2);border:none">
+          <div class="gauge-wrap">
+            <svg width="200" height="118" viewBox="0 0 200 118">
+              <path d="M 18 100 A 82 82 0 0 1 182 100" fill="none" stroke="#232937" stroke-width="14" stroke-linecap="round"/>
+              <path id="gaugeArc" fill="none" stroke="var(--teal)" stroke-width="14" stroke-linecap="round"/>
+            </svg>
+            <div class="gauge-num">51<sub>/100</sub></div>
+            <div style="font-size:11.5px;color:var(--text-faint);margin-top:4px">Visibility Score baseline</div>
+          </div>
+        </div>
+        <div class="card" style="margin:0;background:var(--surface-2);border:none">
+          <div class="donut-row">
+            <svg width="110" height="110" viewBox="0 0 110 110"><g id="donutG" transform="rotate(-90 55 55)"></g></svg>
+            <div class="legend">
+              <div class="legend-item"><i style="background:var(--teal)"></i>Tích cực<b>38%</b></div>
+              <div class="legend-item"><i style="background:var(--indigo)"></i>Trung lập<b>41%</b></div>
+              <div class="legend-item"><i style="background:var(--red)"></i>Tiêu cực<b>12%</b></div>
+              <div class="legend-item"><i style="background:var(--slate)"></i>Không liên quan<b>9%</b></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <table>
+        <thead><tr><th style="width:40%">Prompt</th><th>Nền tảng</th><th>Kết quả</th><th>Sentiment</th></tr></thead>
+        <tbody>
+          <tr><td>Ví điện tử nào an toàn nhất để chuyển tiền...</td><td><span class="plat-mini-icn" style="background:var(--indigo-dim);color:var(--indigo)">Ge</span>Gemini</td><td><span class="status-badge status-yes">4/5 lần</span></td><td class="sent-pos">Tích cực</td></tr>
+          <tr><td>So sánh Vinly và PayNova về phí rút tiền</td><td><span class="plat-mini-icn" style="background:var(--teal-dim);color:var(--teal)">Op</span>OpenAI</td><td><span class="status-badge status-no">0/5 lần</span></td><td class="sent-neu">—</td></tr>
+          <tr><td>Vinly có uy tín không, có nên dùng không?</td><td><span class="plat-mini-icn" style="background:var(--indigo-dim);color:var(--indigo)">Ge</span>Gemini</td><td><span class="status-badge status-yes">5/5 lần</span></td><td class="sent-neu">Trung lập</td></tr>
+          <tr><td>Ứng dụng vay tiêu dùng nào giải ngân trong ngày?</td><td><span class="plat-mini-icn" style="background:var(--teal-dim);color:var(--teal)">Op</span>OpenAI</td><td><span class="status-badge status-no">1/5 lần</span></td><td class="sent-neg">Tiêu cực</td></tr>
+        </tbody>
+      </table>
+
+      <div class="cta-row"><button class="btn btn-primary" onclick="goTo(6)">Tiếp theo: Xem đối thủ được phát hiện →</button></div>
+    </div>
+  </div>
+
+  <!-- PANEL 6: ĐỐI THỦ PHÁT HIỆN TỰ ĐỘNG -->
+  <div class="panel" id="p6">
+    <div class="card">
+      <h2>Đối thủ được phát hiện tự động</h2>
+      <p class="cardsub">Từ 180 lần chạy vừa xong — không cần khai báo trước, hệ thống tự nhận diện brand nào xuất hiện cùng Vinly</p>
+
+      <table>
+        <thead><tr><th style="width:26%">Brand phát hiện</th><th>Số lần được nhắc</th><th>Số prompt xuất hiện cùng</th><th>Trạng thái</th><th></th></tr></thead>
+        <tbody>
+          <tr>
+            <td style="font-weight:600">PayNova</td>
+            <td>29 lần</td>
+            <td>14/18 prompt</td>
+            <td><span class="status-badge status-yes">Đề xuất theo dõi</span></td>
+            <td><button class="add-btn" style="margin:0;padding:5px 10px;font-size:11px">+ Thêm theo dõi</button></td>
+          </tr>
+          <tr>
+            <td style="font-weight:600">MoBank</td>
+            <td>21 lần</td>
+            <td>11/18 prompt</td>
+            <td><span class="status-badge status-yes">Đề xuất theo dõi</span></td>
+            <td><button class="add-btn" style="margin:0;padding:5px 10px;font-size:11px">+ Thêm theo dõi</button></td>
+          </tr>
+          <tr>
+            <td style="font-weight:600">ZaloPay</td>
+            <td>9 lần</td>
+            <td>6/18 prompt</td>
+            <td><span class="status-badge" style="background:var(--amber-dim);color:var(--amber)">Gợi ý mới</span></td>
+            <td><button class="add-btn" style="margin:0;padding:5px 10px;font-size:11px">+ Thêm theo dõi</button></td>
+          </tr>
+          <tr>
+            <td style="font-weight:600;color:var(--text-faint)">Timo</td>
+            <td style="color:var(--text-faint)">2 lần</td>
+            <td style="color:var(--text-faint)">1/18 prompt</td>
+            <td><span class="status-badge status-no">Bỏ qua — quá ít dữ liệu</span></td>
+            <td></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div style="margin-top:16px;background:var(--surface-2);border-radius:10px;padding:12px 16px;font-size:12px;color:var(--text-faint);line-height:1.6;">
+        💡 Brand được xác nhận "theo dõi" sẽ được đưa vào tính <b style="color:var(--text-dim)">Share of Voice</b> và <b style="color:var(--text-dim)">Competitor Gap Analysis</b> ở Bước 2. Có thể thêm/bỏ bất kỳ lúc nào, không giới hạn ở lần chạy đầu.
+      </div>
+    </div>
+    <div class="navrow"><button class="btn btn-ghost" onclick="goTo(5)">← Quay lại kết quả</button><button class="btn btn-primary">Xác nhận & Xem phân tích ▸ Bước 2</button></div>
+  </div>
+
+</div>
+
+<script>
+const steps = [
+  {n:1, label:"Ngành nghề"},
+  {n:2, label:"Thương hiệu"},
+  {n:3, label:"Bộ Prompt"},
+  {n:4, label:"Chạy truy vấn"},
+  {n:5, label:"Kết quả"},
+  {n:6, label:"Đối thủ"},
+];
+function renderProgress(current){
+  document.getElementById('progress').innerHTML = steps.map(s=>{
+    let cls = s.n < current ? 'done' : (s.n===current?'active':'');
+    return `<div class="pnode ${cls}"><div class="circle">${s.n < current ? '✓' : s.n}</div><div class="plabel">${s.label}</div><div class="pline"></div></div>`;
+  }).join('');
+}
+function goTo(n){
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.getElementById('p'+n).classList.add('active');
+  renderProgress(n);
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+renderProgress(1);
+
+// industries
+const industries = [
+  {ic:"Ví",nm:"Ví điện tử & Ngân hàng số",color:"var(--indigo)",bg:"var(--indigo-dim)",sel:true},
+  {ic:"BĐ",nm:"Bất động sản",color:"var(--amber)",bg:"var(--amber-dim)"},
+  {ic:"GD",nm:"Giáo dục & Đào tạo",color:"var(--teal)",bg:"var(--teal-dim)"},
+  {ic:"DL",nm:"Du lịch & Khách sạn",color:"var(--slate)",bg:"var(--slate-dim)"},
+  {ic:"FB",nm:"F&B / Ẩm thực",color:"var(--red)",bg:"var(--red-dim)"},
+  {ic:"TT",nm:"Thời trang & Làm đẹp",color:"var(--indigo)",bg:"var(--indigo-dim)"},
+  {ic:"SaaS",nm:"Công nghệ / SaaS",color:"var(--teal)",bg:"var(--teal-dim)"},
+  {ic:"Ô",nm:"Ô tô & Xe máy",color:"var(--amber)",bg:"var(--amber-dim)"},
+];
+document.getElementById('industryGrid').innerHTML = industries.map(i=>`
+  <div class="industry-card ${i.sel?'selected':''}" onclick="selectIndustry(this)">
+    <div class="ic" style="background:${i.bg};color:${i.color}">${i.ic}</div>
+    <div class="nm">${i.nm}</div>
+  </div>`).join('');
+function selectIndustry(el){
+  document.querySelectorAll('.industry-card').forEach(c=>c.classList.remove('selected'));
+  el.classList.add('selected');
+}
+
+// run count stepper
+let runN = 5;
+function stepRun(d){
+  runN = Math.max(1, Math.min(10, runN+d));
+  document.getElementById('runCount').textContent = runN;
+  document.getElementById('costEst').textContent = '≈ $' + (runN*1.37).toFixed(2);
+}
+
+// simulate run
+function startRun(){
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.getElementById('pLoading').classList.add('active');
+  window.scrollTo({top:0,behavior:'smooth'});
+  const lines = document.querySelectorAll('#loadingLines .ln');
+  lines.forEach(l=>{ l.classList.remove('on'); l.querySelector('.tick').textContent='○'; });
+  let i=0;
+  const iv = setInterval(()=>{
+    if(i>0){ lines[i-1].querySelector('.tick').textContent='✓'; }
+    if(i<lines.length){
+      lines[i].classList.add('on');
+      i++;
+    } else {
+      clearInterval(iv);
+      setTimeout(()=>{ goTo(5); }, 500);
+    }
+  }, 650);
+}
+
+// gauge for results (baseline score 51)
+function polarToCartesian(cx, cy, r, angleInDegrees){
+  const a = (angleInDegrees-90) * Math.PI / 180.0;
+  return { x: cx + r*Math.cos(a), y: cy + r*Math.sin(a) };
+}
+function describeArc(cx, cy, r, startAngle, endAngle){
+  const start = polarToCartesian(cx, cy, r, endAngle);
+  const end = polarToCartesian(cx, cy, r, startAngle);
+  const largeArcFlag = endAngle - startAngle <= 180 ? "0" : "1";
+  return ["M", start.x, start.y, "A", r, r, 0, largeArcFlag, 0, end.x, end.y].join(" ");
+}
+const bValue = 51;
+const bStart = -90, bEnd = -90 + (bValue/100)*180;
+document.getElementById('gaugeArc').setAttribute('d', describeArc(100,100,82,bStart,bEnd));
+
+// donut for results sentiment
+const r2=42, C2=2*Math.PI*r2;
+const segs2=[{v:38,color:'var(--teal)'},{v:41,color:'var(--indigo)'},{v:12,color:'var(--red)'},{v:9,color:'var(--slate)'}];
+let cum2=0;
+const g2=document.getElementById('donutG');
+segs2.forEach(s=>{
+  const len=(s.v/100)*C2;
+  const c=document.createElementNS('http://www.w3.org/2000/svg','circle');
+  c.setAttribute('cx',55); c.setAttribute('cy',55); c.setAttribute('r',r2);
+  c.setAttribute('fill','none'); c.setAttribute('stroke',s.color); c.setAttribute('stroke-width',14);
+  c.setAttribute('stroke-dasharray', len+' '+(C2-len));
+  c.setAttribute('stroke-dashoffset', -cum2);
+  g2.appendChild(c);
+  cum2+=len;
+});
+</script>
+</body>
+</html>

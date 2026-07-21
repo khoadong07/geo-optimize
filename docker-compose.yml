@@ -31,6 +31,12 @@ services:
       DEEPINFRA_API_KEY: ${DEEPINFRA_API_KEY:-}
       DEEPINFRA_OPENAI_MODEL: ${DEEPINFRA_OPENAI_MODEL:-openai/gpt-oss-120b}
       DEEPINFRA_GEMINI_MODEL: ${DEEPINFRA_GEMINI_MODEL:-google/gemini-2.5-flash}
+      SMTP_HOST: ${SMTP_HOST:-smtp.gmail.com}
+      SMTP_PORT: ${SMTP_PORT:-465}
+      SMTP_USER: ${SMTP_USER:-}
+      SMTP_PASS: ${SMTP_PASS:-}
+      MAIL_FROM: ${MAIL_FROM:-}
+      APP_URL: ${APP_URL:-http://localhost:3002}
     networks:
       - geobase
 

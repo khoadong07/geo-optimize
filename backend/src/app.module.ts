@@ -6,6 +6,7 @@ import { PromptSetsModule } from './prompt-sets/prompt-sets.module';
 import { RunsModule } from './runs/runs.module';
 import { SiteAuditModule } from './site-audit/site-audit.module';
 import { TrendingModule } from './trending/trending.module';
+import { TrialRequestsModule } from './trial-requests/trial-requests.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { TrendingModule } from './trending/trending.module';
     RunsModule,
     SiteAuditModule,
     TrendingModule,
+    TrialRequestsModule,
   ],
 })
 export class AppModule {}

@@ -1,12 +1,23 @@
-import { BadRequestException, ConflictException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import { ConflictException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import * as bcrypt from 'bcryptjs';
+import { randomInt } from 'crypto';
 import { Model } from 'mongoose';
 import { User, UserDocument } from './user.schema';
 
 export type Role = 'admin' | 'user';
 
-export const DEFAULT_PASSWORD = '123456';
+// Excludes visually ambiguous characters (0/O, 1/l/I) so passwords stay easy to
+// retype from an email or a one-time admin banner.
+const PASSWORD_CHARSET = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789';
+
+export function generateRandomPassword(length = 8): string {
+  let password = '';
+  for (let i = 0; i < length; i++) {
+    password += PASSWORD_CHARSET[randomInt(PASSWORD_CHARSET.length)];
+  }
+  return password;
+}
 
 @Injectable()
 export class UsersService {
@@ -54,9 +65,6 @@ export class UsersService {
     const user = await this.findById(id);
     if (!user || !(await bcrypt.compare(currentPassword, user.passwordHash))) {
       throw new UnauthorizedException('Current password is incorrect');
-    }
-    if (newPassword === DEFAULT_PASSWORD) {
-      throw new BadRequestException('New password cannot match the default password');
     }
     user.passwordHash = await bcrypt.hash(newPassword, 10);
     user.mustChangePassword = false;

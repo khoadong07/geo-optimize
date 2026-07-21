@@ -15,7 +15,7 @@ export default function AdminUsersPage() {
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
+  const [created, setCreated] = useState<{ username: string; password: string } | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<User | null>(null);
   const [deleting, setDeleting] = useState(false);
 
@@ -39,7 +39,7 @@ export default function AdminUsersPage() {
     e.preventDefault();
     setCreating(true);
     setError('');
-    setSuccess('');
+    setCreated(null);
     const res = await fetch(`${API}/users`, {
       method: 'POST',
       headers: { ...authHeader(), 'Content-Type': 'application/json' },
@@ -51,7 +51,7 @@ export default function AdminUsersPage() {
       setError(data.message || 'Could not create account.');
       return;
     }
-    setSuccess(`Created account "${data.username}" with the default password — they must change it on first sign-in.`);
+    setCreated({ username: data.username, password: data.password });
     setUsername('');
     setRole('user');
     loadUsers();
@@ -100,7 +100,12 @@ export default function AdminUsersPage() {
       </div>
 
       {error ? <div className="gb-banner error">{error}</div> : null}
-      {success ? <div className="gb-banner info">{success}</div> : null}
+      {created ? (
+        <div className="gb-banner info">
+          Created account <b>{created.username}</b> — password <code className="gb-mono" style={{ background: 'var(--surface-2)', padding: '2px 6px', borderRadius: 4 }}>{created.password}</code>.
+          Share this now; it won&apos;t be shown again. They must change it on first sign-in.
+        </div>
+      ) : null}
 
       <div className="gb-stats">
         <div className="gb-stat-tile">
@@ -135,7 +140,7 @@ export default function AdminUsersPage() {
             </select>
           </div>
           <div style={{ gridColumn: 'span 2', fontSize: 11.5, color: 'var(--text-faint)', alignSelf: 'center' }}>
-            New accounts get the default password and must change it on first sign-in.
+            New accounts get a random 8-character password, shown once above, and must change it on first sign-in.
           </div>
           <button className="gb-btn gb-btn-primary" type="submit" disabled={creating}>
             {creating ? 'Creating...' : 'Create account'}

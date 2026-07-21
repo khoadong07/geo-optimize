@@ -31,7 +31,7 @@ export default function ProjectLayout({ children }: { children: React.ReactNode 
   const load = useCallback(() => {
     const token = window.localStorage.getItem('geo_token');
     if (!token) {
-      router.replace('/');
+      router.replace('/login');
       return;
     }
     fetch(`${API}/auth/me`, { headers: authHeader() })
@@ -58,7 +58,7 @@ export default function ProjectLayout({ children }: { children: React.ReactNode 
         setError(err.message === 'unauthorized' ? '' : err.message || 'Could not load project');
         if (err.message === 'unauthorized') {
           window.localStorage.removeItem('geo_token');
-          router.replace('/');
+          router.replace('/login');
           return;
         }
         setStatus('error');
@@ -87,7 +87,7 @@ export default function ProjectLayout({ children }: { children: React.ReactNode 
       <div className="gb-shell">
         <div className="gb-content">
           <div className="gb-banner error">{error || 'Could not load project.'}</div>
-          <button className="gb-btn gb-btn-ghost" onClick={() => router.push('/')}>
+          <button className="gb-btn gb-btn-ghost" onClick={() => router.push('/login')}>
             Back to projects
           </button>
         </div>
@@ -104,7 +104,7 @@ export default function ProjectLayout({ children }: { children: React.ReactNode 
             GeoBase
           </div>
 
-          <button className="gb-btn gb-btn-ghost" style={{ width: '100%' }} onClick={() => router.push('/')}>
+          <button className="gb-btn gb-btn-ghost" style={{ width: '100%' }} onClick={() => router.push('/login')}>
             All projects
           </button>
 
@@ -141,7 +141,7 @@ export default function ProjectLayout({ children }: { children: React.ReactNode 
               className="gb-signout-btn"
               onClick={() => {
                 window.localStorage.removeItem('geo_token');
-                router.replace('/');
+                router.replace('/login');
               }}
             >
               <IconSignOut />

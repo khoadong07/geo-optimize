@@ -3,7 +3,7 @@ import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { Roles } from '../auth/roles.decorator';
 import { RolesGuard } from '../auth/roles.guard';
 import { CreateUserDto, SetRoleDto } from './dto';
-import { DEFAULT_PASSWORD, UsersService } from './users.service';
+import { generateRandomPassword, UsersService } from './users.service';
 
 @Controller('users')
 @UseGuards(JwtAuthGuard, RolesGuard)
@@ -17,8 +17,10 @@ export class UsersController {
   }
 
   @Post()
-  create(@Body() body: CreateUserDto) {
-    return this.usersService.create(body.username, DEFAULT_PASSWORD, body.role, true);
+  async create(@Body() body: CreateUserDto) {
+    const password = generateRandomPassword();
+    const user = await this.usersService.create(body.username, password, body.role, true);
+    return { ...user, password };
   }
 
   @Patch(':id/role')

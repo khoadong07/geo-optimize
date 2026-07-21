@@ -9,6 +9,7 @@ import { AdminSession, AdminSessionContext, API, authHeader } from './admin-cont
 const NAV_ITEMS = [
   { href: '/admin', label: 'Projects' },
   { href: '/admin/users', label: 'Users' },
+  { href: '/admin/trial-requests', label: 'Trial requests' },
 ];
 
 function IconSignOut() {
@@ -40,7 +41,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   useEffect(() => {
     const storedToken = typeof window !== 'undefined' ? window.localStorage.getItem('geo_token') : null;
     if (!storedToken) {
-      router.replace('/');
+      router.replace('/login');
       return;
     }
     setToken(storedToken);
@@ -55,7 +56,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           return;
         }
         if (me.role !== 'admin') {
-          router.replace('/');
+          router.replace('/login');
           setStatus('denied');
           return;
         }
@@ -64,14 +65,14 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       })
       .catch(() => {
         window.localStorage.removeItem('geo_token');
-        router.replace('/');
+        router.replace('/login');
         setStatus('denied');
       });
   }, [router]);
 
   function handleLogout() {
     window.localStorage.removeItem('geo_token');
-    router.replace('/');
+    router.replace('/login');
   }
 
   if (status === 'must-change-password') {

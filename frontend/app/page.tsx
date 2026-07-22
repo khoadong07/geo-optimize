@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { FormEvent, useState } from 'react';
 import DemoAnimation from './DemoAnimation';
 import { useLanguage } from './i18n';
+import ReportsSection from './ReportsSection';
 import { IconAmplify, IconAudit, IconContentAgent, IconPlatforms, IconPrompts, IconSentiment, IconTrending, IconVisibility } from './icons';
 
 const API = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
@@ -49,6 +50,7 @@ export default function MarketingLandingPage() {
           </div>
           <div className="gb-mkt-nav-links">
             <a href="#product">{t.nav.product}</a>
+            <a href="#reports">{t.nav.reports}</a>
             <a href="#pricing">{t.nav.pricing}</a>
             <a href="#trial">{t.nav.trial}</a>
           </div>
@@ -171,6 +173,8 @@ export default function MarketingLandingPage() {
           </div>
         </div>
       </section>
+
+      <ReportsSection />
 
       <section className="gb-mkt-section" id="pricing">
         <div className="gb-mkt-wrap">

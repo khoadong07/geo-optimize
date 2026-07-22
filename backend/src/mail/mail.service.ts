@@ -1,5 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import * as nodemailer from 'nodemailer';
+import { reportOrderReceivedEmailHtml } from './templates/report-order-received.template';
 import { trialWelcomeEmailHtml } from './templates/trial-welcome.template';
 
 @Injectable()
@@ -26,22 +27,28 @@ export class MailService {
     return process.env.MAIL_FROM || `GeoBase <${process.env.SMTP_USER}>`;
   }
 
-  async sendTrialWelcomeEmail(to: string, username: string, password: string) {
-    const appUrl = process.env.APP_URL || 'http://localhost:3002';
-    const subject = 'Your GeoBase trial account is ready';
-    const html = trialWelcomeEmailHtml({ username, password, appUrl, year: new Date().getFullYear() });
-
+  private async send(to: string, subject: string, html: string, devLogSummary: string) {
     if (!this.transporter) {
-      this.logger.log(`[dev mode, no SMTP configured] Would send welcome email to ${to}: username=${username} password=${password}`);
+      this.logger.log(`[dev mode, no SMTP configured] Would send "${subject}" to ${to}: ${devLogSummary}`);
       return { sent: false };
     }
-
     try {
       await this.transporter.sendMail({ from: this.fromAddress, to, subject, html });
       return { sent: true };
     } catch (err) {
-      this.logger.error(`Failed to send welcome email to ${to}`, err as Error);
+      this.logger.error(`Failed to send "${subject}" to ${to}`, err as Error);
       return { sent: false };
     }
+  }
+
+  async sendTrialWelcomeEmail(to: string, username: string, password: string) {
+    const appUrl = process.env.APP_URL || 'http://localhost:3002';
+    const html = trialWelcomeEmailHtml({ username, password, appUrl, year: new Date().getFullYear() });
+    return this.send(to, 'Your GeoBase trial account is ready', html, `username=${username} password=${password}`);
+  }
+
+  async sendReportOrderReceivedEmail(to: string, name: string, reportTitle: string, priceVnd: number) {
+    const html = reportOrderReceivedEmailHtml({ name, reportTitle, priceVnd, year: new Date().getFullYear() });
+    return this.send(to, `Your request for "${reportTitle}"`, html, `report=${reportTitle} price=${priceVnd}`);
   }
 }

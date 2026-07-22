@@ -5,7 +5,7 @@ import { createContext, useContext, useEffect, useMemo, useState } from 'react';
 export type Lang = 'en' | 'vi';
 
 export interface Translations {
-  nav: { product: string; pricing: string; trial: string; signIn: string; startTrial: string };
+  nav: { product: string; reports: string; pricing: string; trial: string; signIn: string; startTrial: string };
   hero: {
     eyebrow: string;
     h1Pre: string;
@@ -52,6 +52,33 @@ export interface Translations {
     successBody: string;
   };
   footer: { product: string; pricing: string; signIn: string; copyright: string };
+  reports: {
+    eyebrow: string;
+    h2: string;
+    lede: string;
+    filterAll: string;
+    categories: Record<string, string>;
+    sortLabel: string;
+    sortNewest: string;
+    free: string;
+    comingSoon: string;
+    previewCta: string;
+    downloadCta: string;
+    buyCta: string;
+    priceLabel: string;
+    emptyTitle: string;
+    emptyBody: string;
+    buyForm: {
+      name: string;
+      email: string;
+      company: string;
+      submit: string;
+      submitting: string;
+      successTitle: string;
+      successBody: string;
+      genericError: string;
+    };
+  };
   app: {
     common: {
       project: string;
@@ -278,7 +305,7 @@ export function interpolate(str: string, vars: Record<string, string | number>) 
 
 export const translations: Record<Lang, Translations> = {
   en: {
-    nav: { product: 'Product', pricing: 'Pricing', trial: 'Trial', signIn: 'Sign in', startTrial: 'Start free trial' },
+    nav: { product: 'Product', reports: 'Reports', pricing: 'Pricing', trial: 'Trial', signIn: 'Sign in', startTrial: 'Start free trial' },
     hero: {
       eyebrow: 'GEO · Generative Engine Optimization',
       h1Pre: 'Know if AI ',
@@ -393,6 +420,33 @@ export const translations: Record<Lang, Translations> = {
       pricing: 'Pricing',
       signIn: 'Sign in',
       copyright: 'All rights reserved.',
+    },
+    reports: {
+      eyebrow: 'Reports',
+      h2: 'AI Visibility reports',
+      lede: 'Real benchmark data from GeoBase, published by our team.',
+      filterAll: 'All',
+      categories: { banking: 'Banking', fmcg: 'FMCG', insurance: 'Insurance', telecom: 'Telecom', real_estate: 'Real Estate', general: 'General' },
+      sortLabel: 'Sort',
+      sortNewest: 'Newest',
+      free: 'Free',
+      comingSoon: 'Coming soon',
+      previewCta: 'Preview',
+      downloadCta: 'Download free',
+      buyCta: 'Buy & download',
+      priceLabel: 'Price',
+      emptyTitle: 'No reports published yet',
+      emptyBody: 'Check back soon — new AI Visibility reports are on the way.',
+      buyForm: {
+        name: 'Full name',
+        email: 'Work email',
+        company: 'Company (optional)',
+        submit: 'Request purchase',
+        submitting: 'Submitting...',
+        successTitle: 'Request received',
+        successBody: "Thanks — we'll email {{email}} with payment details shortly.",
+        genericError: 'Could not submit your request. Please try again.',
+      },
     },
     app: {
       common: {
@@ -629,7 +683,7 @@ export const translations: Record<Lang, Translations> = {
     },
   },
   vi: {
-    nav: { product: 'Sản phẩm', pricing: 'Bảng giá', trial: 'Dùng thử', signIn: 'Đăng nhập', startTrial: 'Dùng thử miễn phí' },
+    nav: { product: 'Sản phẩm', reports: 'Báo cáo', pricing: 'Bảng giá', trial: 'Dùng thử', signIn: 'Đăng nhập', startTrial: 'Dùng thử miễn phí' },
     hero: {
       eyebrow: 'GEO · Tối ưu hóa cho công cụ AI',
       h1Pre: 'Biết ngay khi AI ',
@@ -744,6 +798,33 @@ export const translations: Record<Lang, Translations> = {
       pricing: 'Bảng giá',
       signIn: 'Đăng nhập',
       copyright: 'Đã đăng ký bản quyền.',
+    },
+    reports: {
+      eyebrow: 'Báo cáo',
+      h2: 'Báo cáo AI Visibility',
+      lede: 'Dữ liệu benchmark thật từ GeoBase, được đội ngũ của chúng tôi xuất bản.',
+      filterAll: 'Tất cả',
+      categories: { banking: 'Ngân hàng', fmcg: 'FMCG', insurance: 'Bảo hiểm', telecom: 'Viễn thông', real_estate: 'BĐS', general: 'Tổng hợp' },
+      sortLabel: 'Sắp xếp',
+      sortNewest: 'Mới nhất',
+      free: 'Miễn phí',
+      comingSoon: 'Sắp ra mắt',
+      previewCta: 'Xem trước',
+      downloadCta: 'Tải miễn phí',
+      buyCta: 'Mua & tải',
+      priceLabel: 'Giá',
+      emptyTitle: 'Chưa có báo cáo nào được xuất bản',
+      emptyBody: 'Hãy quay lại sau — các báo cáo AI Visibility mới sắp ra mắt.',
+      buyForm: {
+        name: 'Họ và tên',
+        email: 'Email công việc',
+        company: 'Công ty (không bắt buộc)',
+        submit: 'Gửi yêu cầu mua',
+        submitting: 'Đang gửi...',
+        successTitle: 'Đã nhận yêu cầu',
+        successBody: 'Cảm ơn — chúng tôi sẽ gửi email tới {{email}} kèm hướng dẫn thanh toán trong thời gian sớm nhất.',
+        genericError: 'Không thể gửi yêu cầu. Vui lòng thử lại.',
+      },
     },
     app: {
       common: {

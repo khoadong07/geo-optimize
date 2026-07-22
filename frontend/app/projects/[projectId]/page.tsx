@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { useEffect, useRef, useState } from 'react';
+import { interpolate, useLanguage } from '../../i18n';
 import { API, authHeader, useProjectContext } from './project-context';
 
 type Overview = {
@@ -26,14 +27,6 @@ type Overview = {
 };
 
 type StatusFilter = 'all' | 'target-met' | 'competitor-leading' | 'tracking' | 'no-data';
-
-const STATUS_FILTERS: { value: StatusFilter; label: string }[] = [
-  { value: 'all', label: 'All' },
-  { value: 'competitor-leading', label: 'Competitor leading' },
-  { value: 'tracking', label: 'Tracking' },
-  { value: 'no-data', label: 'No data' },
-  { value: 'target-met', label: 'Target met' },
-];
 
 // Worst-first — surfaces prompts needing attention when sorted.
 const STATUS_PRIORITY: Record<string, number> = {
@@ -82,13 +75,9 @@ function Gauge({ value, target }: { value: number; target: number }) {
   );
 }
 
-function TrendLine({ trend }: { trend: { date: string; score: number }[] }) {
+function TrendLine({ trend, notEnoughDataText, todayText }: { trend: { date: string; score: number }[]; notEnoughDataText: string; todayText: string }) {
   if (trend.length < 2) {
-    return (
-      <div style={{ fontSize: 11.5, color: 'var(--text-faint)', padding: '20px 0' }}>
-        Not enough data to chart a trend yet — needs at least 2 days with runs.
-      </div>
-    );
+    return <div style={{ fontSize: 11.5, color: 'var(--text-faint)', padding: '20px 0' }}>{notEnoughDataText}</div>;
   }
   const w = 280;
   const h = 64;
@@ -109,22 +98,18 @@ function TrendLine({ trend }: { trend: { date: string; score: number }[] }) {
       <div className="gb-trend-meta">
         <span>{trend[0].date}</span>
         <span>
-          Today · <b>{trend[trend.length - 1].score}</b>
+          {todayText} · <b>{trend[trend.length - 1].score}</b>
         </span>
       </div>
     </>
   );
 }
 
-const STATUS_LABEL: Record<string, { label: string; cls: string }> = {
-  'target-met': { label: 'Target met', cls: 'ok' },
-  'competitor-leading': { label: 'Competitor leading', cls: 'bad' },
-  tracking: { label: 'Tracking', cls: 'warn' },
-  'no-data': { label: 'No data', cls: 'neutral' },
-};
-
 export default function OverviewPage() {
   const { project } = useProjectContext();
+  const { t } = useLanguage();
+  const c = t.app.common;
+  const o = t.app.overview;
   const [overview, setOverview] = useState<Overview | null>(null);
   const [loading, setLoading] = useState(true);
   const [triggering, setTriggering] = useState(false);
@@ -133,6 +118,21 @@ export default function OverviewPage() {
   const [statusFilter, setStatusFilter] = useState<StatusFilter>('all');
   const [sortByStatus, setSortByStatus] = useState(false);
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  const STATUS_FILTERS: { value: StatusFilter; label: string }[] = [
+    { value: 'all', label: c.statusAll },
+    { value: 'competitor-leading', label: c.statusCompetitorLeading },
+    { value: 'tracking', label: c.statusTracking },
+    { value: 'no-data', label: c.statusNoData },
+    { value: 'target-met', label: c.statusTargetMet },
+  ];
+
+  const STATUS_LABEL: Record<string, { label: string; cls: string }> = {
+    'target-met': { label: c.statusTargetMet, cls: 'ok' },
+    'competitor-leading': { label: c.statusCompetitorLeading, cls: 'bad' },
+    tracking: { label: c.statusTracking, cls: 'warn' },
+    'no-data': { label: c.statusNoData, cls: 'neutral' },
+  };
 
   function load() {
     return fetch(`${API}/projects/${project._id}/overview`, { headers: authHeader() })
@@ -163,7 +163,7 @@ export default function OverviewPage() {
 
   useEffect(() => {
     load()
-      .catch(() => setError('Could not load overview data.'))
+      .catch(() => setError(o.couldNotLoadOverview))
       .finally(() => setLoading(false));
 
     fetch(`${API}/projects/${project._id}/runs/jobs/latest`, { headers: authHeader() })
@@ -181,7 +181,7 @@ export default function OverviewPage() {
   async function handleRunNow() {
     const pendingPromptIds = overview!.prompts.filter((p) => p.status !== 'target-met').map((p) => p.promptId);
     if (!pendingPromptIds.length) {
-      setError('Every prompt has already met its target — nothing to re-run.');
+      setError(o.everyPromptMetError);
       return;
     }
     setTriggering(true);
@@ -194,7 +194,7 @@ export default function OverviewPage() {
     const data = await res.json();
     setTriggering(false);
     if (!res.ok) {
-      setError(data.message || 'Could not start the run.');
+      setError(data.message || o.couldNotStartRun);
       return;
     }
     setJob({ _id: data.jobId, status: 'running', totalJobs: data.totalJobs, completedJobs: 0, failedJobs: 0 });
@@ -208,25 +208,25 @@ export default function OverviewPage() {
   const progressBanner = isRunning ? (
     <div className="gb-banner info" style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
       <span className="gb-live-dot pulse" />
-      Running tracking... {progressDone}/{job!.totalJobs} done
-      {job!.failedJobs ? ` (${job!.failedJobs} failed)` : ''}
+      {interpolate(o.runningTracking, { done: progressDone, total: job!.totalJobs })}
+      {job!.failedJobs ? interpolate(o.failedSuffix, { n: job!.failedJobs }) : ''}
     </div>
   ) : job?.status === 'failed' ? (
-    <div className="gb-banner error">The last run failed entirely — try again.</div>
+    <div className="gb-banner error">{o.lastRunFailed}</div>
   ) : null;
 
   if (loading || !overview) {
-    return <p style={{ color: 'var(--text-faint)', fontFamily: 'var(--font-mono)', fontSize: 13 }}>Loading...</p>;
+    return <p style={{ color: 'var(--text-faint)', fontFamily: 'var(--font-mono)', fontSize: 13 }}>{c.loading}</p>;
   }
 
   if (!project.enabledPlatforms.length) {
     return (
       <div className="gb-card gb-empty">
-        <strong>No AI platform enabled yet</strong>
-        Go to Target Position to enable Gemini/OpenAI before running tracking for the first time.
+        <strong>{o.noAiPlatformTitle}</strong>
+        {o.noAiPlatformBody}
         <div style={{ marginTop: 16 }}>
           <Link href={`/projects/${project._id}/target`} className="gb-btn gb-btn-primary">
-            Go to Target Position
+            {o.goToTargetPosition}
           </Link>
         </div>
       </div>
@@ -238,18 +238,18 @@ export default function OverviewPage() {
       <>
         {progressBanner}
         <div className="gb-card gb-empty">
-          <strong>No data yet — run tracking for the first time</strong>
-          This project is ready with {overview.prompts.length} prompts and {project.enabledPlatforms.length} AI platforms.
+          <strong>{o.noDataYetTitle}</strong>
+          {interpolate(o.readyWithPrompts, { prompts: overview.prompts.length, platforms: project.enabledPlatforms.length })}
           <div style={{ marginTop: 16 }}>
             <button className="gb-btn gb-btn-primary" onClick={handleRunNow} disabled={triggering || isRunning || !overview.prompts.length}>
-              {isRunning ? `Running (${progressDone}/${job!.totalJobs})...` : triggering ? 'Sending request...' : 'Run tracking now'}
+              {isRunning ? interpolate(o.runningProgress, { done: progressDone, total: job!.totalJobs }) + '...' : triggering ? c.sendingRequest : o.runTrackingNow}
             </button>
           </div>
           {!overview.prompts.length ? (
             <p style={{ marginTop: 12 }}>
-              No prompts yet.{' '}
+              {o.noPromptsYetInline}{' '}
               <Link href={`/projects/${project._id}/prompts`} style={{ color: 'var(--accent)' }}>
-                Create a prompt set first
+                {o.createPromptSetFirst}
               </Link>
               .
             </p>
@@ -266,8 +266,8 @@ export default function OverviewPage() {
 
       <div className="gb-hero-grid">
         <div className="gb-card">
-          <h2>Visibility Score</h2>
-          <p className="gb-card-sub">Avg. over {overview.trend.length} days</p>
+          <h2>{o.visibilityScore}</h2>
+          <p className="gb-card-sub">{interpolate(o.avgOverDays, { days: overview.trend.length })}</p>
           <div className="gb-gauge-wrap">
             <Gauge value={overview.visibilityScore || 0} target={overview.targetVisibilityScore} />
             <div className="gb-gauge-num">
@@ -276,27 +276,27 @@ export default function OverviewPage() {
             </div>
             <div className="gb-gauge-meta">
               <span>
-                Target: {overview.targetVisibilityScore} · Gap{' '}
+                {interpolate(o.targetGap, { target: overview.targetVisibilityScore })}{' '}
                 <b style={{ color: 'var(--accent)', fontFamily: 'var(--font-mono)' }}>
                   {Math.max(0, overview.targetVisibilityScore - (overview.visibilityScore || 0)).toFixed(0)}
                 </b>
               </span>
               <span className={`gb-badge ${(overview.visibilityScore || 0) >= overview.targetVisibilityScore ? 'ok' : 'warn'}`}>
-                {(overview.visibilityScore || 0) >= overview.targetVisibilityScore ? 'Target met' : 'Below target — amplifying'}
+                {(overview.visibilityScore || 0) >= overview.targetVisibilityScore ? o.targetMet : o.belowTarget}
               </span>
             </div>
           </div>
         </div>
 
         <div className="gb-card">
-          <h2>Share of Voice</h2>
-          <p className="gb-card-sub">By mention count</p>
+          <h2>{o.shareOfVoice}</h2>
+          <p className="gb-card-sub">{o.byMentionCount}</p>
           {overview.shareOfVoice.length ? (
             overview.shareOfVoice.map((s, i) => (
               <div className="gb-row" key={s.name}>
                 <span className="gb-row-label" style={{ color: s.isBrand ? 'var(--text)' : 'var(--text-dim)' }}>
                   {s.name}
-                  {s.isBrand ? ' (you)' : ''}
+                  {s.isBrand ? o.youSuffix : ''}
                 </span>
                 <div className="gb-track">
                   <div className="gb-fill" style={{ width: `${s.percent}%`, background: SOV_COLORS[i % SOV_COLORS.length] }} />
@@ -305,19 +305,21 @@ export default function OverviewPage() {
               </div>
             ))
           ) : (
-            <p style={{ fontSize: 12, color: 'var(--text-faint)' }}>No brand or competitor mentions yet.</p>
+            <p style={{ fontSize: 12, color: 'var(--text-faint)' }}>{o.noBrandMentions}</p>
           )}
         </div>
 
         <div className="gb-card">
-          <h2>Trend {overview.trend.length ? `(${overview.trend.length}d)` : '(14d)'}</h2>
-          <p className="gb-card-sub">Visibility Score</p>
-          <TrendLine trend={overview.trend} />
+          <h2>
+            {o.trend} {overview.trend.length ? interpolate(o.trendDays, { n: overview.trend.length }) : o.trendDefault}
+          </h2>
+          <p className="gb-card-sub">{o.trendSub}</p>
+          <TrendLine trend={overview.trend} notEnoughDataText={c.notEnoughDataTrend} todayText={c.today} />
         </div>
       </div>
 
       <div className="gb-section">
-        Tracked by AI platform <span className="count">{project.enabledPlatforms.length} active</span>
+        {o.trackedByPlatform} <span className="count">{interpolate(o.activeCount, { n: project.enabledPlatforms.length })}</span>
       </div>
       <div className="gb-platform-grid">
         {overview.platforms.map((p) => {
@@ -331,7 +333,7 @@ export default function OverviewPage() {
                 <div>
                   <div className="gb-platform-name">{style.label}</div>
                   <div className="gb-platform-sub">
-                    {p.totalRuns ? `Appears ${p.appearanceRatePercent}% · ${p.totalRuns} runs` : 'No runs yet'}
+                    {p.totalRuns ? interpolate(o.appears, { pct: p.appearanceRatePercent ?? 0, n: p.totalRuns }) : o.noRunsYet}
                   </div>
                 </div>
                 <div className="gb-platform-pct">{p.appearanceRatePercent ?? '—'}%</div>
@@ -348,15 +350,15 @@ export default function OverviewPage() {
       </div>
 
       <div className="gb-section">
-        Prompts tracked <span className="count">{overview.prompts.length}</span>
+        {o.promptsTracked} <span className="count">{overview.prompts.length}</span>
         <button
           className="gb-btn gb-btn-ghost"
           style={{ marginLeft: 'auto' }}
           onClick={handleRunNow}
           disabled={triggering || isRunning || !pendingCount}
-          title={!pendingCount ? 'Every prompt has already met its target' : `Only re-run ${pendingCount} prompts below target`}
+          title={!pendingCount ? o.everyPromptMetTooltip : interpolate(o.onlyRerunTooltip, { n: pendingCount })}
         >
-          {isRunning ? `Running (${progressDone}/${job!.totalJobs})` : triggering ? 'Sending...' : `Re-run tracking (${pendingCount} below target)`}
+          {isRunning ? interpolate(o.runningProgress, { done: progressDone, total: job!.totalJobs }) : triggering ? c.sending : interpolate(o.reRunTracking, { n: pendingCount })}
         </button>
       </div>
 
@@ -371,7 +373,7 @@ export default function OverviewPage() {
           </button>
         ))}
         <button className={`gb-btn gb-btn-ghost gb-chip${sortByStatus ? ' active' : ''}`} style={{ marginLeft: 'auto' }} onClick={() => setSortByStatus((v) => !v)}>
-          Sort by status
+          {c.sortByStatus}
         </button>
       </div>
 
@@ -380,11 +382,11 @@ export default function OverviewPage() {
           <table className="gb-table">
             <thead>
               <tr>
-                <th style={{ width: '32%' }}>Prompt</th>
-                <th>Recent signal</th>
-                <th>Visibility</th>
-                <th>SOV vs. competitor</th>
-                <th>Status</th>
+                <th style={{ width: '32%' }}>{o.thPrompt}</th>
+                <th>{o.thRecentSignal}</th>
+                <th>{o.thVisibility}</th>
+                <th>{o.thSovVsCompetitor}</th>
+                <th>{o.thStatus}</th>
               </tr>
             </thead>
             <tbody>
@@ -429,7 +431,7 @@ export default function OverviewPage() {
             </tbody>
           </table>
           {overview.prompts.filter((p) => statusFilter === 'all' || p.status === statusFilter).length === 0 ? (
-            <div className="gb-empty">No prompts match this filter.</div>
+            <div className="gb-empty">{o.noPromptsFilter}</div>
           ) : null}
         </div>
       </div>

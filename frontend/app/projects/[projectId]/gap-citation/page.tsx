@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { useEffect, useRef, useState } from 'react';
+import { interpolate, useLanguage } from '../../../i18n';
 import { API, authHeader, useProjectContext } from '../project-context';
 
 type CheckResult = { score: number; max: number; passed: boolean; details: Record<string, unknown> };
@@ -21,34 +22,26 @@ type SiteAudit = {
 
 type AuditJob = { _id: string; status: 'running' | 'completed' | 'failed'; errorMessage: string | null } | null;
 
-const CHECK_LABELS: Record<string, string> = {
-  robots_txt: 'Robots.txt',
-  llms_txt: 'llms.txt',
-  schema_jsonld: 'Schema JSON-LD',
-  meta_tags: 'Meta tags',
-  content: 'Content',
-  signals: 'Page signals',
-  ai_discovery: 'AI discovery',
-  brand_entity: 'Brand entity',
-};
-
 const CHECK_ORDER = ['robots_txt', 'llms_txt', 'schema_jsonld', 'meta_tags', 'content', 'signals', 'ai_discovery', 'brand_entity'];
-
-const BAND_STYLE: Record<string, { label: string; cls: string }> = {
-  excellent: { label: 'Excellent', cls: 'ok' },
-  good: { label: 'Good', cls: 'ok' },
-  foundation: { label: 'Foundation', cls: 'warn' },
-  critical: { label: 'Critical', cls: 'bad' },
-};
 
 export default function GapCitationPage() {
   const { project } = useProjectContext();
+  const { t } = useLanguage();
+  const c = t.app.common;
+  const g_ = t.app.gapCitation;
   const [audit, setAudit] = useState<SiteAudit | null | undefined>(undefined);
   const [job, setJob] = useState<AuditJob>(null);
   const [triggering, setTriggering] = useState(false);
   const [error, setError] = useState('');
   const [showSkillInfo, setShowSkillInfo] = useState(false);
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  const BAND_STYLE: Record<string, { label: string; cls: string }> = {
+    excellent: { label: g_.bandLabels.excellent, cls: 'ok' },
+    good: { label: g_.bandLabels.good, cls: 'ok' },
+    foundation: { label: g_.bandLabels.foundation, cls: 'warn' },
+    critical: { label: g_.bandLabels.critical, cls: 'bad' },
+  };
 
   function loadAudit() {
     return fetch(`${API}/projects/${project._id}/site-audit`, { headers: authHeader() })
@@ -78,7 +71,7 @@ export default function GapCitationPage() {
   }
 
   useEffect(() => {
-    loadAudit().catch(() => setError('Could not load the audit result.'));
+    loadAudit().catch(() => setError(g_.couldNotLoadAudit));
 
     fetch(`${API}/projects/${project._id}/site-audit/jobs/latest`, { headers: authHeader() })
       .then((res) => (res.ok ? res.json() : { job: null }))
@@ -102,7 +95,7 @@ export default function GapCitationPage() {
     const data = await res.json();
     setTriggering(false);
     if (!res.ok) {
-      setError(data.message || 'Could not start the audit.');
+      setError(data.message || g_.couldNotStartAudit);
       return;
     }
     setJob({ _id: data.jobId, status: 'running', errorMessage: null });
@@ -114,22 +107,22 @@ export default function GapCitationPage() {
   const progressBanner = isRunning ? (
     <div className="gb-banner info" style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
       <span className="gb-live-dot pulse" />
-      Auditing {project.domain} — fetching the live page can take 10-60s...
+      {interpolate(g_.auditingDomain, { domain: project.domain || '' })}
     </div>
   ) : job?.status === 'failed' ? (
-    <div className="gb-banner error">Audit failed: {job.errorMessage || 'unknown error'}</div>
+    <div className="gb-banner error">{interpolate(g_.auditFailed, { message: job.errorMessage || 'unknown error' })}</div>
   ) : null;
 
   return (
     <>
-      <p className="gb-eyebrow">Project</p>
-      <h2 className="gb-title">Gap &amp; Citation</h2>
+      <p className="gb-eyebrow">{c.project}</p>
+      <h2 className="gb-title">{t.app.layout.navGapCitation}</h2>
       <p className="gb-subtitle" style={{ marginBottom: 20 }}>
-        A technical GEO audit of the website — how ready it is for AI crawlers to crawl and cite (scored by{' '}
+        {g_.subtitlePre}
         <button className="gb-link" style={{ fontSize: 'inherit' }} onClick={() => setShowSkillInfo(true)}>
-          geo-optimizer-skill
+          {g_.subtitleLink}
         </button>
-        ).
+        {g_.subtitlePost}
       </p>
 
       {error ? <div className="gb-banner error">{error}</div> : null}
@@ -137,23 +130,23 @@ export default function GapCitationPage() {
 
       {!project.domain ? (
         <div className="gb-card gb-empty">
-          <strong>This project has no website set</strong>
-          Set an &quot;Official website&quot; on Target Position to run a GEO audit.
+          <strong>{g_.noWebsiteTitle}</strong>
+          {g_.noWebsiteBody}
           <div style={{ marginTop: 16 }}>
             <Link href={`/projects/${project._id}/target`} className="gb-btn gb-btn-primary">
-              Go to Target Position
+              {t.app.overview.goToTargetPosition}
             </Link>
           </div>
         </div>
       ) : audit === undefined ? (
-        <p style={{ color: 'var(--text-faint)', fontFamily: 'var(--font-mono)', fontSize: 13 }}>Loading...</p>
+        <p style={{ color: 'var(--text-faint)', fontFamily: 'var(--font-mono)', fontSize: 13 }}>{c.loading}</p>
       ) : !audit ? (
         <div className="gb-card gb-empty">
-          <strong>No audit yet</strong>
-          Run the first audit for {project.domain}.
+          <strong>{g_.noAuditYetTitle}</strong>
+          {interpolate(g_.runFirstAudit, { domain: project.domain })}
           <div style={{ marginTop: 16 }}>
             <button className="gb-btn gb-btn-primary" onClick={handleRunAudit} disabled={triggering || isRunning}>
-              {isRunning ? 'Running...' : triggering ? 'Sending request...' : 'Run audit now'}
+              {isRunning ? c.running : triggering ? c.sendingRequest : g_.runAuditNow}
             </button>
           </div>
         </div>
@@ -161,7 +154,7 @@ export default function GapCitationPage() {
         <>
           <div className="gb-hero-grid" style={{ gridTemplateColumns: '1fr 2fr' }}>
             <div className="gb-card">
-              <h2>GEO score</h2>
+              <h2>{g_.geoScoreTitle}</h2>
               <p className="gb-card-sub">{audit.url}</p>
               <div style={{ textAlign: 'center', padding: '10px 0' }}>
                 <div style={{ fontFamily: 'var(--font-mono)', fontSize: 44, fontWeight: 700 }}>
@@ -173,25 +166,25 @@ export default function GapCitationPage() {
                 </span>
               </div>
               <p style={{ fontSize: 11, color: 'var(--text-faint)', textAlign: 'center' }}>
-                Audited {new Date(audit.createdAt).toLocaleString()}
+                {interpolate(g_.auditedAt, { date: new Date(audit.createdAt).toLocaleString() })}
                 {audit.auditDurationMs ? ` · ${(audit.auditDurationMs / 1000).toFixed(1)}s` : ''}
               </p>
               <button className="gb-btn gb-btn-ghost" style={{ width: '100%' }} onClick={handleRunAudit} disabled={triggering || isRunning}>
-                {isRunning ? 'Running...' : triggering ? 'Sending...' : 'Run audit again'}
+                {isRunning ? c.running : triggering ? c.sending : g_.runAuditAgain}
               </button>
             </div>
 
             <div className="gb-card">
-              <h2>Breakdown by category</h2>
-              <p className="gb-card-sub">8 categories scored by geo-optimizer-skill</p>
+              <h2>{g_.breakdownTitle}</h2>
+              <p className="gb-card-sub">{g_.breakdownSub}</p>
               <div style={{ marginTop: 8 }}>
                 {CHECK_ORDER.filter((key) => audit.checks[key]).map((key) => {
-                  const c = audit.checks[key];
-                  const pct = c.max ? Math.round((c.score / c.max) * 100) : 0;
+                  const cCheck = audit.checks[key];
+                  const pct = cCheck.max ? Math.round((cCheck.score / cCheck.max) * 100) : 0;
                   return (
                     <div className="gb-row" key={key}>
                       <span className="gb-row-label" style={{ width: 140 }}>
-                        {CHECK_LABELS[key] || key}
+                        {g_.checkLabels[key] || key}
                       </span>
                       <div className="gb-track">
                         <div
@@ -200,7 +193,7 @@ export default function GapCitationPage() {
                         />
                       </div>
                       <span className="gb-pct">
-                        {c.score}/{c.max}
+                        {cCheck.score}/{cCheck.max}
                       </span>
                     </div>
                   );
@@ -210,7 +203,7 @@ export default function GapCitationPage() {
           </div>
 
           <div className="gb-section">
-            Recommendations <span className="count">{audit.recommendations.length}</span>
+            {g_.recommendationsTitle} <span className="count">{audit.recommendations.length}</span>
           </div>
           <div className="gb-card">
             {audit.recommendations.length ? (
@@ -222,7 +215,7 @@ export default function GapCitationPage() {
                 ))}
               </ul>
             ) : (
-              <p style={{ fontSize: 12, color: 'var(--text-faint)' }}>No recommendations — every category checks out.</p>
+              <p style={{ fontSize: 12, color: 'var(--text-faint)' }}>{g_.noRecommendations}</p>
             )}
           </div>
         </>
@@ -233,12 +226,10 @@ export default function GapCitationPage() {
           <div className="gb-modal" style={{ maxWidth: 760, height: '80vh' }} onClick={(e) => e.stopPropagation()}>
             <div className="gb-modal-head">
               <div>
-                <h3>geo-optimizer-skill</h3>
-                <p style={{ fontSize: 12, color: 'var(--text-faint)', margin: 0 }}>
-                  The third-party audit tool GeoBase uses on this page.
-                </p>
+                <h3>{g_.skillModalTitle}</h3>
+                <p style={{ fontSize: 12, color: 'var(--text-faint)', margin: 0 }}>{g_.skillModalDesc}</p>
               </div>
-              <button className="gb-modal-close" onClick={() => setShowSkillInfo(false)} aria-label="Close">
+              <button className="gb-modal-close" onClick={() => setShowSkillInfo(false)} aria-label={c.close}>
                 ×
               </button>
             </div>

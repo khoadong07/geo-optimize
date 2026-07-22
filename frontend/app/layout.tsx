@@ -1,5 +1,6 @@
 import { IBM_Plex_Mono, IBM_Plex_Sans } from 'next/font/google';
 import './globals.css';
+import { LanguageProvider } from './i18n';
 
 const plexSans = IBM_Plex_Sans({
   subsets: ['latin', 'vietnamese'],
@@ -23,7 +24,9 @@ export const metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className={`${plexSans.variable} ${plexMono.variable}`}>
-      <body>{children}</body>
+      <body>
+        <LanguageProvider>{children}</LanguageProvider>
+      </body>
     </html>
   );
 }

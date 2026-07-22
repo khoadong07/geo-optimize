@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import ChangePasswordForm from '../ChangePasswordForm';
 import { industryLabel } from '../industry';
+import { Zone, ZONE_OPTIONS } from '../zones';
 
 const API = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
 
@@ -29,11 +30,23 @@ export default function LoginPage() {
   const [pendingPasswordChange, setPendingPasswordChange] = useState<string | null>(null);
 
   const [showCreateForm, setShowCreateForm] = useState(false);
+  const [createStep, setCreateStep] = useState<1 | 2 | 3>(1);
   const [newName, setNewName] = useState('');
+  const [newZone, setNewZone] = useState<Zone>('vietnam');
   const [newIndustry, setNewIndustry] = useState(INDUSTRY_OPTIONS[0]);
   const [newCompetitors, setNewCompetitors] = useState('');
   const [creating, setCreating] = useState(false);
   const [createError, setCreateError] = useState('');
+
+  function toggleCreateForm() {
+    setShowCreateForm((v) => !v);
+    setCreateStep(1);
+    setNewName('');
+    setNewZone('vietnam');
+    setNewIndustry(INDUSTRY_OPTIONS[0]);
+    setNewCompetitors('');
+    setCreateError('');
+  }
 
   function loadProjects(token: string) {
     return fetch(`${API}/projects`, { headers: { Authorization: `Bearer ${token}` } })
@@ -122,7 +135,7 @@ export default function LoginPage() {
     const res = await fetch(`${API}/projects`, {
       method: 'POST',
       headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name: newName, industry: newIndustry || undefined, competitors }),
+      body: JSON.stringify({ name: newName, zone: newZone, industry: newIndustry || undefined, competitors }),
     });
     const data = await res.json();
     setCreating(false);
@@ -130,9 +143,6 @@ export default function LoginPage() {
       setCreateError(data.message || 'Could not create project.');
       return;
     }
-    setNewName('');
-    setNewIndustry('');
-    setNewCompetitors('');
     setShowCreateForm(false);
     router.push(`/projects/${data._id}`);
   }
@@ -197,7 +207,7 @@ export default function LoginPage() {
           <p className="gb-subtitle">Pick a project to open its analytics dashboard, or create a new one.</p>
         </div>
         <div className="gb-header-right">
-          <button className="gb-btn gb-btn-primary" onClick={() => setShowCreateForm((v) => !v)}>
+          <button className="gb-btn gb-btn-primary" onClick={toggleCreateForm}>
             {showCreateForm ? 'Close' : '+ New project'}
           </button>
           <button className="gb-btn gb-btn-ghost" onClick={handleLogout}>
@@ -209,30 +219,95 @@ export default function LoginPage() {
       {showCreateForm ? (
         <div className="gb-card" style={{ marginBottom: 20, maxWidth: 480 }}>
           <h2>New project</h2>
-          <p className="gb-card-sub">Enter the brand details to start tracking its GEO visibility.</p>
-          <form onSubmit={handleCreateProject}>
-            <div className="gb-field">Brand name</div>
-            <input className="gb-input" value={newName} onChange={(e) => setNewName(e.target.value)} required placeholder="Acme" />
+          <p className="gb-card-sub">
+            Step {createStep} of 3 —{' '}
+            {createStep === 1 ? 'Name your brand' : createStep === 2 ? 'Choose a market' : 'Industry & competitors'}
+          </p>
 
-            <div className="gb-field">Industry</div>
-            <select className="gb-input" value={newIndustry} onChange={(e) => setNewIndustry(e.target.value)}>
-              {INDUSTRY_OPTIONS.map((industry) => (
-                <option key={industry} value={industry}>
-                  {industry}
-                </option>
-              ))}
-            </select>
+          <form
+            onSubmit={(e) => {
+              if (createStep < 3) {
+                e.preventDefault();
+                return;
+              }
+              handleCreateProject(e);
+            }}
+          >
+            {createStep === 1 ? (
+              <>
+                <div className="gb-field">Brand name</div>
+                <input className="gb-input" value={newName} onChange={(e) => setNewName(e.target.value)} required placeholder="Acme" autoFocus />
 
-            <div className="gb-field">Competitors (comma-separated, optional)</div>
-            <input className="gb-input" value={newCompetitors} onChange={(e) => setNewCompetitors(e.target.value)} placeholder="Competitor A, Competitor B" />
+                <div style={{ marginTop: 16 }}>
+                  <button
+                    type="button"
+                    className="gb-btn gb-btn-primary"
+                    onClick={() => newName.trim() && setCreateStep(2)}
+                    disabled={!newName.trim()}
+                  >
+                    Next
+                  </button>
+                </div>
+              </>
+            ) : null}
 
-            {createError ? <div className="gb-banner error" style={{ marginTop: 14 }}>{createError}</div> : null}
+            {createStep === 2 ? (
+              <>
+                <div className="gb-field">Market</div>
+                <p style={{ fontSize: 12, color: 'var(--text-faint)', marginTop: -4, marginBottom: 12 }}>
+                  Which market is this brand tracked in? Some features (like trending topics) are only available for Vietnam.
+                </p>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: 10 }}>
+                  {ZONE_OPTIONS.map((z) => (
+                    <div
+                      key={z.value}
+                      className={`gb-pick${newZone === z.value ? ' selected' : ''}`}
+                      onClick={() => setNewZone(z.value)}
+                    >
+                      <div style={{ fontWeight: 600, fontSize: 13.5 }}>
+                        {z.flag} {z.label}
+                      </div>
+                    </div>
+                  ))}
+                </div>
 
-            <div style={{ marginTop: 16 }}>
-              <button className="gb-btn gb-btn-primary" type="submit" disabled={creating}>
-                {creating ? 'Creating...' : 'Create project'}
-              </button>
-            </div>
+                <div style={{ display: 'flex', gap: 10, marginTop: 16 }}>
+                  <button type="button" className="gb-btn gb-btn-ghost" onClick={() => setCreateStep(1)}>
+                    Back
+                  </button>
+                  <button type="button" className="gb-btn gb-btn-primary" onClick={() => setCreateStep(3)}>
+                    Next
+                  </button>
+                </div>
+              </>
+            ) : null}
+
+            {createStep === 3 ? (
+              <>
+                <div className="gb-field">Industry</div>
+                <select className="gb-input" value={newIndustry} onChange={(e) => setNewIndustry(e.target.value)}>
+                  {INDUSTRY_OPTIONS.map((industry) => (
+                    <option key={industry} value={industry}>
+                      {industry}
+                    </option>
+                  ))}
+                </select>
+
+                <div className="gb-field">Competitors (comma-separated, optional)</div>
+                <input className="gb-input" value={newCompetitors} onChange={(e) => setNewCompetitors(e.target.value)} placeholder="Competitor A, Competitor B" />
+
+                {createError ? <div className="gb-banner error" style={{ marginTop: 14 }}>{createError}</div> : null}
+
+                <div style={{ display: 'flex', gap: 10, marginTop: 16 }}>
+                  <button type="button" className="gb-btn gb-btn-ghost" onClick={() => setCreateStep(2)} disabled={creating}>
+                    Back
+                  </button>
+                  <button className="gb-btn gb-btn-primary" type="submit" disabled={creating}>
+                    {creating ? 'Creating...' : 'Create project'}
+                  </button>
+                </div>
+              </>
+            ) : null}
           </form>
         </div>
       ) : null}

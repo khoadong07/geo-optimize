@@ -10,6 +10,7 @@ const NAV_ITEMS = [
   { href: '/admin', label: 'Projects' },
   { href: '/admin/users', label: 'Users' },
   { href: '/admin/trial-requests', label: 'Trial requests' },
+  { href: '/admin/trending-topics', label: 'Trending topics' },
 ];
 
 function IconSignOut() {

@@ -17,6 +17,9 @@ export class Project {
   @Prop()
   industry?: string;
 
+  @Prop({ enum: ['vietnam', 'thailand', 'indonesia', 'international'], default: 'vietnam' })
+  zone?: string;
+
   @Prop()
   domain?: string;
 

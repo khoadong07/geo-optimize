@@ -6,6 +6,7 @@ import { PromptSetsModule } from './prompt-sets/prompt-sets.module';
 import { RunsModule } from './runs/runs.module';
 import { SiteAuditModule } from './site-audit/site-audit.module';
 import { TrendingModule } from './trending/trending.module';
+import { TrendingTopicsModule } from './trending-topics/trending-topics.module';
 import { TrialRequestsModule } from './trial-requests/trial-requests.module';
 
 @Module({
@@ -17,6 +18,7 @@ import { TrialRequestsModule } from './trial-requests/trial-requests.module';
     RunsModule,
     SiteAuditModule,
     TrendingModule,
+    TrendingTopicsModule,
     TrialRequestsModule,
   ],
 })

@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import ReactMarkdown from 'react-markdown';
+import { interpolate, useLanguage } from '../../../i18n';
 import { API, authHeader, useProjectContext } from '../project-context';
 
 type Breakdown = { positive: number; neutral: number; negative: number; notApplicable: number } | null;
@@ -30,20 +31,7 @@ type RunsPage = { items: Run[]; total: number; page: number; limit: number };
 
 type PlatformFilter = 'all' | 'GEMINI' | 'OPENAI';
 
-const PLATFORM_FILTERS: { value: PlatformFilter; label: string }[] = [
-  { value: 'all', label: 'All platforms' },
-  { value: 'GEMINI', label: 'Gemini' },
-  { value: 'OPENAI', label: 'OpenAI' },
-];
-
 const PLATFORM_LABEL: Record<Run['platform'], string> = { GEMINI: 'Gemini', OPENAI: 'OpenAI' };
-
-const LABEL_TEXT: Record<Run['sentimentLabel'], string> = {
-  POSITIVE: 'Positive',
-  NEUTRAL: 'Neutral',
-  NEGATIVE: 'Negative',
-  NOT_APPLICABLE: 'Not applicable',
-};
 
 const LABEL_CLASS: Record<Run['sentimentLabel'], string> = {
   POSITIVE: 'ok',
@@ -102,13 +90,9 @@ function StackedBar({ split }: { split: SentimentSplit }) {
   );
 }
 
-function PositiveRateTrend({ trend }: { trend: SentimentStats['trend'] }) {
+function PositiveRateTrend({ trend, notEnoughDataText, todayPositiveText }: { trend: SentimentStats['trend']; notEnoughDataText: string; todayPositiveText: string }) {
   if (trend.length < 2) {
-    return (
-      <p style={{ fontSize: 11.5, color: 'var(--text-faint)', padding: '20px 0' }}>
-        Not enough data to chart a trend yet — needs at least 2 days with runs.
-      </p>
-    );
+    return <p style={{ fontSize: 11.5, color: 'var(--text-faint)', padding: '20px 0' }}>{notEnoughDataText}</p>;
   }
   const w = 280;
   const h = 64;
@@ -126,7 +110,7 @@ function PositiveRateTrend({ trend }: { trend: SentimentStats['trend'] }) {
       <div className="gb-trend-meta">
         <span>{trend[0].date}</span>
         <span>
-          Today · <b>{trend[trend.length - 1].positive}% positive</b>
+          <b>{todayPositiveText}</b>
         </span>
       </div>
     </>
@@ -135,6 +119,9 @@ function PositiveRateTrend({ trend }: { trend: SentimentStats['trend'] }) {
 
 export default function SentimentPage() {
   const { project } = useProjectContext();
+  const { t } = useLanguage();
+  const c = t.app.common;
+  const s_ = t.app.sentiment;
   const [breakdown, setBreakdown] = useState<Breakdown>(null);
   const [stats, setStats] = useState<SentimentStats | null>(null);
   const [runsPage, setRunsPage] = useState<RunsPage | null>(null);
@@ -144,15 +131,28 @@ export default function SentimentPage() {
   const [platformFilter, setPlatformFilter] = useState<PlatformFilter>('all');
   const [page, setPage] = useState(1);
 
+  const LABEL_TEXT: Record<Run['sentimentLabel'], string> = {
+    POSITIVE: s_.positiveLabel,
+    NEUTRAL: s_.neutralLabel,
+    NEGATIVE: s_.negativeLabel,
+    NOT_APPLICABLE: s_.notApplicableLabel,
+  };
+
+  const PLATFORM_FILTERS: { value: PlatformFilter; label: string }[] = [
+    { value: 'all', label: s_.allPlatforms },
+    { value: 'GEMINI', label: 'Gemini' },
+    { value: 'OPENAI', label: 'OpenAI' },
+  ];
+
   useEffect(() => {
     fetch(`${API}/projects/${project._id}/overview`, { headers: authHeader() })
       .then((res) => res.json())
       .then((data) => setBreakdown(data.sentimentBreakdown))
-      .catch(() => setError('Could not load sentiment data.'));
+      .catch(() => setError(s_.couldNotLoadSentiment));
     fetch(`${API}/projects/${project._id}/sentiment-stats`, { headers: authHeader() })
       .then((res) => res.json())
       .then((data: SentimentStats) => setStats(data))
-      .catch(() => setError('Could not load sentiment data.'));
+      .catch(() => setError(s_.couldNotLoadSentiment));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [project._id]);
 
@@ -163,8 +163,9 @@ export default function SentimentPage() {
     fetch(`${API}/projects/${project._id}/runs?${params.toString()}`, { headers: authHeader() })
       .then((res) => res.json())
       .then((data: RunsPage) => setRunsPage(data))
-      .catch(() => setError('Could not load the run list.'))
+      .catch(() => setError(s_.couldNotLoadRunList))
       .finally(() => setLoadingRuns(false));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [project._id, platformFilter, page]);
 
   function handleFilterChange(f: PlatformFilter) {
@@ -176,41 +177,45 @@ export default function SentimentPage() {
 
   return (
     <>
-      <p className="gb-eyebrow">Project</p>
-      <h2 className="gb-title">Sentiment</h2>
+      <p className="gb-eyebrow">{c.project}</p>
+      <h2 className="gb-title">{t.app.layout.navSentiment}</h2>
       <p className="gb-subtitle" style={{ marginBottom: 20 }}>
-        How the AI's response treats the brand, scored by an LLM-as-judge.
+        {s_.subtitle}
       </p>
 
       {error ? <div className="gb-banner error">{error}</div> : null}
 
       <div className="gb-card" style={{ marginBottom: 20 }}>
-        <h2>Sentiment overview</h2>
-        <p className="gb-card-sub">Across every recorded run, all platforms</p>
+        <h2>{s_.overviewTitle}</h2>
+        <p className="gb-card-sub">{s_.overviewSub}</p>
         {breakdown ? (
           <div className="gb-donut-row" style={{ marginTop: 12 }}>
             <Donut breakdown={breakdown} />
             <div className="gb-legend">
               <div className="gb-legend-item">
                 <i style={{ background: 'var(--green)' }} />
-                Positive<b>{breakdown.positive}%</b>
+                {s_.positiveLabel}
+                <b>{breakdown.positive}%</b>
               </div>
               <div className="gb-legend-item">
                 <i style={{ background: 'var(--blue)' }} />
-                Neutral<b>{breakdown.neutral}%</b>
+                {s_.neutralLabel}
+                <b>{breakdown.neutral}%</b>
               </div>
               <div className="gb-legend-item">
                 <i style={{ background: 'var(--red)' }} />
-                Negative<b>{breakdown.negative}%</b>
+                {s_.negativeLabel}
+                <b>{breakdown.negative}%</b>
               </div>
               <div className="gb-legend-item">
                 <i style={{ background: 'var(--text-faint)' }} />
-                Not applicable<b>{breakdown.notApplicable}%</b>
+                {s_.notApplicableLabel}
+                <b>{breakdown.notApplicable}%</b>
               </div>
             </div>
           </div>
         ) : (
-          <p style={{ fontSize: 12, color: 'var(--text-faint)', marginTop: 12 }}>No runs recorded yet.</p>
+          <p style={{ fontSize: 12, color: 'var(--text-faint)', marginTop: 12 }}>{s_.noRunsRecorded}</p>
         )}
       </div>
 
@@ -218,8 +223,8 @@ export default function SentimentPage() {
         <>
           <div className="gb-hero-grid" style={{ gridTemplateColumns: '1fr 1fr' }}>
             <div className="gb-card">
-              <h2>By platform</h2>
-              <p className="gb-card-sub">Sentiment split per AI engine</p>
+              <h2>{s_.byPlatformTitle}</h2>
+              <p className="gb-card-sub">{s_.byPlatformSub}</p>
               <div style={{ marginTop: 8 }}>
                 {stats.byPlatform.map((p) => (
                   <div className="gb-row" key={p.platform}>
@@ -232,8 +237,8 @@ export default function SentimentPage() {
             </div>
 
             <div className="gb-card">
-              <h2>By intent</h2>
-              <p className="gb-card-sub">Sentiment split per prompt intent</p>
+              <h2>{s_.byIntentTitle}</h2>
+              <p className="gb-card-sub">{s_.byIntentSub}</p>
               <div style={{ marginTop: 8 }}>
                 {stats.byIntent.map((i) => (
                   <div className="gb-row" key={i.intent}>
@@ -250,25 +255,31 @@ export default function SentimentPage() {
 
           <div className="gb-hero-grid" style={{ gridTemplateColumns: '1fr 1fr' }}>
             <div className="gb-card">
-              <h2>Positive-rate trend</h2>
-              <p className="gb-card-sub">Share of positive runs per day</p>
-              <PositiveRateTrend trend={stats.trend} />
+              <h2>{s_.positiveTrendTitle}</h2>
+              <p className="gb-card-sub">{s_.positiveTrendSub}</p>
+              <PositiveRateTrend
+                trend={stats.trend}
+                notEnoughDataText={c.notEnoughDataTrend}
+                todayPositiveText={
+                  stats.trend.length ? interpolate(s_.todayPositive, { pct: stats.trend[stats.trend.length - 1].positive }) : ''
+                }
+              />
             </div>
 
             <div className="gb-card">
-              <h2>Top topics</h2>
-              <p className="gb-card-sub">Most frequent themes the judge extracted</p>
+              <h2>{s_.topTopicsTitle}</h2>
+              <p className="gb-card-sub">{s_.topTopicsSub}</p>
               {stats.topTopics.length ? (
                 <div style={{ marginTop: 8, display: 'flex', flexWrap: 'wrap', gap: 8 }}>
-                  {stats.topTopics.map((t) => (
-                    <span key={t.topic} className="gb-pill" style={{ display: 'inline-flex', gap: 6, alignItems: 'center' }}>
-                      {t.topic}
-                      <b style={{ fontFamily: 'var(--font-mono)', color: 'var(--text-faint)' }}>{t.count}</b>
+                  {stats.topTopics.map((tp) => (
+                    <span key={tp.topic} className="gb-pill" style={{ display: 'inline-flex', gap: 6, alignItems: 'center' }}>
+                      {tp.topic}
+                      <b style={{ fontFamily: 'var(--font-mono)', color: 'var(--text-faint)' }}>{tp.count}</b>
                     </span>
                   ))}
                 </div>
               ) : (
-                <p style={{ fontSize: 12, color: 'var(--text-faint)', marginTop: 12 }}>No topics extracted yet.</p>
+                <p style={{ fontSize: 12, color: 'var(--text-faint)', marginTop: 12 }}>{s_.noTopicsExtracted}</p>
               )}
             </div>
           </div>
@@ -276,7 +287,7 @@ export default function SentimentPage() {
       ) : null}
 
       <div className="gb-section">
-        Recent runs <span className="count">{runsPage?.total ?? 0}</span>
+        {s_.recentRuns} <span className="count">{runsPage?.total ?? 0}</span>
       </div>
 
       <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 14 }}>
@@ -293,18 +304,18 @@ export default function SentimentPage() {
 
       <div className="gb-card" style={{ padding: 0 }}>
         {loadingRuns ? (
-          <div className="gb-empty">Loading...</div>
+          <div className="gb-empty">{c.loading}</div>
         ) : runsPage && runsPage.items.length ? (
           <>
             <div className="gb-table-wrap">
               <table className="gb-table">
                 <thead>
                   <tr>
-                    <th style={{ width: '34%' }}>Prompt</th>
-                    <th>Platform</th>
-                    <th>Sentiment</th>
-                    <th>Reasoning</th>
-                    <th>Time</th>
+                    <th style={{ width: '34%' }}>{s_.thPrompt}</th>
+                    <th>{s_.thPlatform}</th>
+                    <th>{s_.thSentiment}</th>
+                    <th>{s_.thReasoning}</th>
+                    <th>{s_.thTime}</th>
                     <th></th>
                   </tr>
                 </thead>
@@ -326,7 +337,7 @@ export default function SentimentPage() {
                       </td>
                       <td>
                         <button className="gb-link" onClick={() => setPreviewRun(r)}>
-                          View response
+                          {c.viewResponse}
                         </button>
                       </td>
                     </tr>
@@ -337,22 +348,20 @@ export default function SentimentPage() {
 
             <div className="gb-pagination">
               <button className="gb-btn gb-btn-ghost" onClick={() => setPage((p) => Math.max(1, p - 1))} disabled={page <= 1}>
-                Previous
+                {c.previous}
               </button>
-              <span>
-                Page {page} of {totalPages}
-              </span>
+              <span>{interpolate(c.pageOf, { page, total: totalPages })}</span>
               <button className="gb-btn gb-btn-ghost" onClick={() => setPage((p) => Math.min(totalPages, p + 1))} disabled={page >= totalPages}>
-                Next
+                {c.next}
               </button>
             </div>
           </>
         ) : (
           <div className="gb-empty">
-            <strong>No runs yet</strong>
+            <strong>{s_.noRunsYetTitle}</strong>
             {platformFilter === 'all'
-              ? 'Run tracking from the Overview page to start recording sentiment.'
-              : `No runs recorded on ${PLATFORM_FILTERS.find((f) => f.value === platformFilter)?.label}.`}
+              ? s_.noRunsYetAllBody
+              : interpolate(s_.noRunsYetFilteredBody, { platform: PLATFORM_FILTERS.find((f) => f.value === platformFilter)?.label || '' })}
           </div>
         )}
       </div>
@@ -371,7 +380,7 @@ export default function SentimentPage() {
                   </span>
                 </div>
               </div>
-              <button className="gb-modal-close" onClick={() => setPreviewRun(null)} aria-label="Close">
+              <button className="gb-modal-close" onClick={() => setPreviewRun(null)} aria-label={c.close}>
                 ×
               </button>
             </div>

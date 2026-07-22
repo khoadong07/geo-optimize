@@ -248,6 +248,11 @@ table.gb-table tbody tr:hover td{background:var(--surface-2)}
 .gb-mkt-nav-links a{color:var(--text-dim);font-size:13.5px;font-weight:500}
 .gb-mkt-nav-links a:hover{color:var(--text)}
 .gb-mkt-nav-actions{display:flex;align-items:center;gap:10px}
+.gb-lang-switch{display:flex;align-items:center;border:1px solid var(--border);border-radius:6px;overflow:hidden;font-family:var(--font-mono),monospace}
+.gb-lang-switch button{background:transparent;border:none;color:var(--text-faint);font-size:11.5px;font-weight:600;letter-spacing:.03em;padding:6px 10px;cursor:pointer}
+.gb-lang-switch button:hover{color:var(--text-dim)}
+.gb-lang-switch button.active{background:var(--surface-2);color:var(--text)}
+.gb-lang-switch button+button{border-left:1px solid var(--border)}
 
 .gb-mkt-hero{padding:76px 0 64px}
 .gb-mkt-hero-grid{display:grid;grid-template-columns:1fr 1fr;gap:56px;align-items:center}

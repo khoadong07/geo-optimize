@@ -1,14 +1,19 @@
+'use client';
+
+import { useLanguage } from '../../../i18n';
+
 export default function AmplifyPage() {
+  const { t } = useLanguage();
   return (
     <>
-      <p className="gb-eyebrow">Project</p>
-      <h2 className="gb-title">Amplify</h2>
+      <p className="gb-eyebrow">{t.app.common.project}</p>
+      <h2 className="gb-title">{t.app.layout.navAmplify}</h2>
       <p className="gb-subtitle" style={{ marginBottom: 20 }}>
-        Suggested actions to improve the Visibility Score for prompts that haven&apos;t hit their target yet.
+        {t.app.amplify.subtitle}
       </p>
       <div className="gb-card gb-empty">
-        <strong>Coming soon</strong>
-        Content and PR amplification suggestions haven&apos;t been built yet.
+        <strong>{t.app.common.comingSoon}</strong>
+        {t.app.amplify.comingSoonBody}
       </div>
     </>
   );

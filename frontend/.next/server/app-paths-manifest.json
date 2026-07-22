@@ -1,0 +1,16 @@
+{
+  "/_not-found/page": "app/_not-found/page.js",
+  "/login/page": "app/login/page.js",
+  "/page": "app/page.js",
+  "/admin/trending-topics/page": "app/admin/trending-topics/page.js",
+  "/admin/page": "app/admin/page.js",
+  "/admin/trial-requests/page": "app/admin/trial-requests/page.js",
+  "/admin/users/page": "app/admin/users/page.js",
+  "/projects/[projectId]/ai-agent/page": "app/projects/[projectId]/ai-agent/page.js",
+  "/projects/[projectId]/page": "app/projects/[projectId]/page.js",
+  "/projects/[projectId]/sentiment/page": "app/projects/[projectId]/sentiment/page.js",
+  "/projects/[projectId]/amplify/page": "app/projects/[projectId]/amplify/page.js",
+  "/projects/[projectId]/target/page": "app/projects/[projectId]/target/page.js",
+  "/projects/[projectId]/prompts/page": "app/projects/[projectId]/prompts/page.js",
+  "/projects/[projectId]/gap-citation/page": "app/projects/[projectId]/gap-citation/page.js"
+}

@@ -1,8 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-
-const QUERY = 'Which digital bank has the best mobile app experience?';
+import { useLanguage } from './i18n';
 
 type Step = 'typing' | 'thinking' | 'gemini' | 'openai' | 'hold';
 
@@ -47,6 +46,10 @@ function EngineCard({
   revealed,
   score,
   rank,
+  answer,
+  rankLabel,
+  positiveLabel,
+  waitingLabel,
 }: {
   name: string;
   monogram: string;
@@ -56,6 +59,10 @@ function EngineCard({
   revealed: boolean;
   score: number;
   rank: number;
+  answer: string;
+  rankLabel: string;
+  positiveLabel: string;
+  waitingLabel: string;
 }) {
   return (
     <div className="gb-mkt-engine">
@@ -74,13 +81,12 @@ function EngineCard({
         </>
       ) : revealed ? (
         <>
-          <div className="gb-mkt-engine-text">
-            &ldquo;For everyday banking, <b>Meridian Bank</b> stands out for its mobile app — fast transfers, biometric login, and responsive
-            support.&rdquo;
-          </div>
+          <div className="gb-mkt-engine-text">&ldquo;{answer}&rdquo;</div>
           <div className="gb-mkt-engine-meta">
-            <span className="gb-badge ok">Rank #{rank}</span>
-            <span className="gb-badge info">Positive</span>
+            <span className="gb-badge ok">
+              {rankLabel} #{rank}
+            </span>
+            <span className="gb-badge info">{positiveLabel}</span>
           </div>
           <div className="gb-mkt-score-row">
             <div className="gb-mkt-score-track">
@@ -91,7 +97,7 @@ function EngineCard({
         </>
       ) : (
         <div className="gb-mkt-engine-text" style={{ color: 'var(--text-faint)' }}>
-          Waiting for query...
+          {waitingLabel}
         </div>
       )}
     </div>
@@ -99,6 +105,9 @@ function EngineCard({
 }
 
 export default function DemoAnimation() {
+  const { t } = useLanguage();
+  const query = t.demo.query;
+  const answer = t.demo.answer.replace('{{brand}}', t.demo.brand);
   const [step, setStep] = useState<Step>('typing');
   const [typedLength, setTypedLength] = useState(0);
   const reducedMotion = useRef(false);
@@ -106,20 +115,23 @@ export default function DemoAnimation() {
   useEffect(() => {
     reducedMotion.current = typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     if (reducedMotion.current) {
-      setTypedLength(QUERY.length);
+      setTypedLength(query.length);
       setStep('hold');
+    } else {
+      setTypedLength(0);
+      setStep('typing');
     }
-  }, []);
+  }, [query]);
 
   useEffect(() => {
-    if (reducedMotion.current || step !== 'typing' || typedLength >= QUERY.length) return;
+    if (reducedMotion.current || step !== 'typing' || typedLength >= query.length) return;
     const t = setTimeout(() => setTypedLength((n) => n + 1), 26);
     return () => clearTimeout(t);
-  }, [step, typedLength]);
+  }, [step, typedLength, query]);
 
   useEffect(() => {
     if (reducedMotion.current) return;
-    if (step === 'typing' && typedLength < QUERY.length) return;
+    if (step === 'typing' && typedLength < query.length) return;
     const t = setTimeout(() => {
       const idx = STEP_ORDER.indexOf(step);
       const next = STEP_ORDER[(idx + 1) % STEP_ORDER.length];
@@ -127,7 +139,7 @@ export default function DemoAnimation() {
       setStep(next);
     }, STEP_DURATIONS[step]);
     return () => clearTimeout(t);
-  }, [step, typedLength]);
+  }, [step, typedLength, query]);
 
   const geminiActive = step === 'gemini' || step === 'openai' || step === 'hold';
   const openaiActive = step === 'openai' || step === 'hold';
@@ -139,13 +151,13 @@ export default function DemoAnimation() {
       <div className="gb-mkt-demo-head">
         <span className="gb-mkt-demo-label">
           <span className="gb-live-dot pulse" aria-hidden="true" />
-          Live tracking demo
+          {t.demo.liveLabel}
         </span>
-        <span className="gb-mkt-demo-clock">Simulated example</span>
+        <span className="gb-mkt-demo-clock">{t.demo.simulated}</span>
       </div>
 
       <div className="gb-mkt-chat">
-        {QUERY.slice(0, typedLength)}
+        {query.slice(0, typedLength)}
         {step === 'typing' ? <span className="gb-mkt-caret" /> : null}
       </div>
 
@@ -159,6 +171,10 @@ export default function DemoAnimation() {
           revealed={geminiActive}
           score={geminiScore}
           rank={1}
+          answer={answer}
+          rankLabel={t.demo.rank}
+          positiveLabel={t.demo.positive}
+          waitingLabel={t.demo.waiting}
         />
         <EngineCard
           name="OpenAI"
@@ -169,6 +185,10 @@ export default function DemoAnimation() {
           revealed={openaiActive}
           score={openaiScore}
           rank={2}
+          answer={answer}
+          rankLabel={t.demo.rank}
+          positiveLabel={t.demo.positive}
+          waitingLabel={t.demo.waiting}
         />
       </div>
     </div>

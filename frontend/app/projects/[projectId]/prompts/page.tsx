@@ -2,6 +2,7 @@
 
 import { FormEvent, useEffect, useState } from 'react';
 import { industryLabel } from '../../../industry';
+import { interpolate, translations, useLanguage } from '../../../i18n';
 import { API, authHeader, useProjectContext } from '../project-context';
 
 const INTENTS = ['Discovery', 'Comparison', 'Branded', 'Long-tail'];
@@ -16,22 +17,7 @@ type PromptRow = {
   status: 'target-met' | 'competitor-leading' | 'tracking' | 'no-data';
 };
 
-const STATUS_LABEL: Record<string, { label: string; cls: string }> = {
-  'target-met': { label: 'Target met', cls: 'ok' },
-  'competitor-leading': { label: 'Competitor leading', cls: 'bad' },
-  tracking: { label: 'Tracking', cls: 'warn' },
-  'no-data': { label: 'No data', cls: 'neutral' },
-};
-
 type StatusFilter = 'all' | 'target-met' | 'competitor-leading' | 'tracking' | 'no-data';
-
-const STATUS_FILTERS: { value: StatusFilter; label: string }[] = [
-  { value: 'all', label: 'All' },
-  { value: 'competitor-leading', label: 'Competitor leading' },
-  { value: 'tracking', label: 'Tracking' },
-  { value: 'no-data', label: 'No data' },
-  { value: 'target-met', label: 'Target met' },
-];
 
 const STATUS_PRIORITY: Record<string, number> = {
   'competitor-leading': 0,
@@ -42,6 +28,13 @@ const STATUS_PRIORITY: Record<string, number> = {
 
 export default function PromptsPage() {
   const { project } = useProjectContext();
+  const { lang, t } = useLanguage();
+  const c = t.app.common;
+  const p_ = t.app.prompts;
+  // Trending topics are Vietnam-market-only, so this section always speaks Vietnamese
+  // regardless of the app's EN/VI toggle.
+  const viC = translations.vi.app.common;
+  const viP = translations.vi.app.prompts;
   const [prompts, setPrompts] = useState<PromptRow[] | null>(null);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
@@ -77,6 +70,21 @@ export default function PromptsPage() {
   const [deleteTargets, setDeleteTargets] = useState<PromptRow[] | null>(null);
   const [deleting, setDeleting] = useState(false);
 
+  const STATUS_FILTERS: { value: StatusFilter; label: string }[] = [
+    { value: 'all', label: c.statusAll },
+    { value: 'competitor-leading', label: c.statusCompetitorLeading },
+    { value: 'tracking', label: c.statusTracking },
+    { value: 'no-data', label: c.statusNoData },
+    { value: 'target-met', label: c.statusTargetMet },
+  ];
+
+  const STATUS_LABEL: Record<string, { label: string; cls: string }> = {
+    'target-met': { label: c.statusTargetMet, cls: 'ok' },
+    'competitor-leading': { label: c.statusCompetitorLeading, cls: 'bad' },
+    tracking: { label: c.statusTracking, cls: 'warn' },
+    'no-data': { label: c.statusNoData, cls: 'neutral' },
+  };
+
   function load() {
     return fetch(`${API}/projects/${project._id}/overview`, { headers: authHeader() })
       .then((res) => res.json())
@@ -84,7 +92,8 @@ export default function PromptsPage() {
   }
 
   useEffect(() => {
-    load().catch(() => setError('Could not load the prompt list.'));
+    load().catch(() => setError(p_.couldNotLoadList));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [project._id]);
 
   async function handleGenerate() {
@@ -99,7 +108,7 @@ export default function PromptsPage() {
     const data = await res.json();
     setGenLoading(false);
     if (!res.ok) {
-      setError(data.message || 'Could not generate questions.');
+      setError(data.message || p_.couldNotGenerate);
       return;
     }
     setCandidates(data.candidates);
@@ -115,7 +124,7 @@ export default function PromptsPage() {
     const data = await res.json();
     setLoadingTrending(false);
     if (!res.ok) {
-      setError(data.message || 'Could not load trending topics.');
+      setError(data.message || viP.couldNotLoadTrending);
       return;
     }
     setTrendingPeriod(period);
@@ -157,10 +166,10 @@ export default function PromptsPage() {
     const data = await res.json();
     setAddingSelected(false);
     if (!res.ok) {
-      setError(data.message || 'Could not add prompts.');
+      setError(data.message || p_.couldNotAddPrompts);
       return;
     }
-    setSuccess(`Added ${selected.size} prompts to "${data.name}".`);
+    setSuccess(interpolate(p_.addedPromptsTo, { n: selected.size, name: data.name }));
     setCandidates(null);
     setSelected(new Set());
     setGenSetName('');
@@ -180,10 +189,10 @@ export default function PromptsPage() {
     const data = await res.json();
     setCreating(false);
     if (!res.ok) {
-      setError(data.message || 'Could not create prompt.');
+      setError(data.message || p_.couldNotCreatePrompt);
       return;
     }
-    setSuccess(`Added prompt to "${data.name}".`);
+    setSuccess(interpolate(p_.addedPromptTo, { name: data.name }));
     setSetName('');
     setPromptText('');
     setIntent('Discovery');
@@ -209,11 +218,11 @@ export default function PromptsPage() {
     const data = await res.json();
     setSavingEdit(false);
     if (!res.ok) {
-      setError(data.message || 'Could not update prompt.');
+      setError(data.message || p_.couldNotUpdatePrompt);
       return;
     }
     setEditingKey(null);
-    setSuccess('Prompt updated.');
+    setSuccess(p_.promptUpdated);
     load();
   }
 
@@ -247,8 +256,8 @@ export default function PromptsPage() {
     const deletedCount = results.length - failedCount;
     setDeleteTargets(null);
     setCheckedKeys(new Set());
-    if (deletedCount) setSuccess(`Deleted ${deletedCount} prompt${deletedCount === 1 ? '' : 's'}.`);
-    if (failedCount) setError(`Failed to delete ${failedCount} prompt${failedCount === 1 ? '' : 's'}.`);
+    if (deletedCount) setSuccess(interpolate(p_.deletedCount, { n: deletedCount }));
+    if (failedCount) setError(interpolate(p_.failedDeleteCount, { n: failedCount }));
     load();
   }
 
@@ -266,83 +275,89 @@ export default function PromptsPage() {
 
   return (
     <>
-      <p className="gb-eyebrow">Project</p>
-      <h2 className="gb-title">Ranking &amp; Prompts</h2>
+      <p className="gb-eyebrow">{c.project}</p>
+      <h2 className="gb-title">{p_.title}</h2>
       <p className="gb-subtitle" style={{ marginBottom: 20 }}>
-        Every tracked prompt and how each question ranks for visibility.
+        {p_.subtitle}
       </p>
 
       {error ? <div className="gb-banner error">{error}</div> : null}
       {success ? <div className="gb-banner info">{success}</div> : null}
 
       <div className="gb-card" style={{ marginBottom: 20 }}>
-        <h2>Generate questions with AI</h2>
+        <h2>{p_.generateTitle}</h2>
         <p className="gb-card-sub">
-          Based on the industry &quot;{industryLabel(project.industry) || 'unspecified'}&quot;, brand &quot;{project.name}&quot;, and configured competitors — generates 7 questions for the intent selected below.
+          {interpolate(p_.generateDesc, { industry: industryLabel(project.industry, lang) || p_.unspecified, brand: project.name })}
         </p>
 
-        <div className="gb-field">Industry trending topics (optional — keeps questions on-trend)</div>
-        <div style={{ display: 'flex', gap: 10, alignItems: 'center', flexWrap: 'wrap' }}>
-          <button
-            type="button"
-            className={`gb-btn gb-btn-ghost gb-chip${trendingPeriod === 'week' ? ' active' : ''}`}
-            onClick={() => handleFetchTrending('week')}
-            disabled={loadingTrending}
-          >
-            Trending this week
-          </button>
-          <button
-            type="button"
-            className={`gb-btn gb-btn-ghost gb-chip${trendingPeriod === 'month' ? ' active' : ''}`}
-            onClick={() => handleFetchTrending('month')}
-            disabled={loadingTrending}
-          >
-            Trending this month
-          </button>
-          {loadingTrending ? <span style={{ fontSize: 12, color: 'var(--text-faint)' }}>Loading...</span> : null}
-          {selectedTrending.size ? <span style={{ fontSize: 12, color: 'var(--accent)' }}>{selectedTrending.size} topics selected</span> : null}
-        </div>
+        {(project.zone || 'vietnam') === 'vietnam' ? (
+          <>
+            <div className="gb-field">{viP.trendingTopicsLabel}</div>
+            <div style={{ display: 'flex', gap: 10, alignItems: 'center', flexWrap: 'wrap' }}>
+              <button
+                type="button"
+                className={`gb-btn gb-btn-ghost gb-chip${trendingPeriod === 'week' ? ' active' : ''}`}
+                onClick={() => handleFetchTrending('week')}
+                disabled={loadingTrending}
+              >
+                {viP.trendingWeek}
+              </button>
+              <button
+                type="button"
+                className={`gb-btn gb-btn-ghost gb-chip${trendingPeriod === 'month' ? ' active' : ''}`}
+                onClick={() => handleFetchTrending('month')}
+                disabled={loadingTrending}
+              >
+                {viP.trendingMonth}
+              </button>
+              {loadingTrending ? <span style={{ fontSize: 12, color: 'var(--text-faint)' }}>{viC.loading}</span> : null}
+              {selectedTrending.size ? (
+                <span style={{ fontSize: 12, color: 'var(--accent)' }}>{interpolate(viP.topicsSelected, { n: selectedTrending.size })}</span>
+              ) : null}
+            </div>
 
-        {trendingItems ? (
-          <div style={{ marginTop: 12, marginBottom: 4, maxHeight: 200, overflowY: 'auto', border: '1px solid var(--border)', borderRadius: 6, padding: '8px 12px' }}>
-            {trendingItems.map((item) => (
-              <label key={item} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '6px 0', borderBottom: '1px solid var(--border-soft)', fontSize: 12.5 }}>
-                <input type="checkbox" className="gb-checkbox" checked={selectedTrending.has(item)} onChange={() => toggleTrending(item)} />
-                <span>{item}</span>
-              </label>
-            ))}
-          </div>
+            {trendingItems ? (
+              <div style={{ marginTop: 12, marginBottom: 4, maxHeight: 200, overflowY: 'auto', border: '1px solid var(--border)', borderRadius: 6, padding: '8px 12px' }}>
+                {trendingItems.map((item) => (
+                  <label key={item} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '6px 0', borderBottom: '1px solid var(--border-soft)', fontSize: 12.5 }}>
+                    <input type="checkbox" className="gb-checkbox" checked={selectedTrending.has(item)} onChange={() => toggleTrending(item)} />
+                    <span>{item}</span>
+                  </label>
+                ))}
+              </div>
+            ) : null}
+          </>
         ) : null}
 
-        <div className="gb-field">Intent</div>
+        <div className="gb-field">{p_.intentLabel}</div>
         <div style={{ display: 'flex', gap: 10, alignItems: 'center', flexWrap: 'wrap' }}>
           <select className="gb-input" style={{ maxWidth: 220 }} value={genIntent} onChange={(e) => setGenIntent(e.target.value)}>
             {INTENTS.map((i) => (
               <option key={i} value={i}>
-                {i}
+                {p_.intentLabels[i] || i}
               </option>
             ))}
           </select>
           <button type="button" className="gb-btn gb-btn-primary" onClick={handleGenerate} disabled={genLoading}>
-            {genLoading ? 'Generating...' : 'Generate 7 questions'}
+            {genLoading ? p_.generating : p_.generate7}
           </button>
         </div>
 
         {candidates ? (
           <div style={{ marginTop: 18 }}>
-            {candidates.map((c) => (
-              <label key={c} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 0', borderBottom: '1px solid var(--border-soft)', fontSize: 13 }}>
-                <input type="checkbox" className="gb-checkbox" checked={selected.has(c)} onChange={() => toggleCandidate(c)} />
-                <span>{c}</span>
+            {candidates.map((cItem) => (
+              <label key={cItem} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 0', borderBottom: '1px solid var(--border-soft)', fontSize: 13 }}>
+                <input type="checkbox" className="gb-checkbox" checked={selected.has(cItem)} onChange={() => toggleCandidate(cItem)} />
+                <span>{cItem}</span>
               </label>
             ))}
 
-            <div className="gb-field">Prompt set name</div>
+            <div className="gb-field">{p_.promptSetName}</div>
             <input className="gb-input" value={genSetName} onChange={(e) => setGenSetName(e.target.value)} required />
 
             <div style={{ marginTop: 16 }}>
               <button className="gb-btn gb-btn-primary" onClick={handleAddSelected} disabled={addingSelected || !selected.size}>
-                {addingSelected ? 'Adding...' : `Add ${selected.size} selected`}
+                {addingSelected ? p_.adding : interpolate(p_.addSelected, { n: selected.size })}
               </button>
             </div>
           </div>
@@ -350,40 +365,40 @@ export default function PromptsPage() {
       </div>
 
       <div className="gb-card" style={{ marginBottom: 20 }}>
-        <h2>Add a prompt manually</h2>
-        <p className="gb-card-sub">Write a specific question instead of letting AI generate one.</p>
+        <h2>{p_.addManualTitle}</h2>
+        <p className="gb-card-sub">{p_.addManualDesc}</p>
         <form onSubmit={handleCreate}>
-          <div className="gb-field">Prompt set name</div>
-          <input className="gb-input" value={setName} onChange={(e) => setSetName(e.target.value)} placeholder="e.g. Discovery — Acme" required />
+          <div className="gb-field">{p_.promptSetName}</div>
+          <input className="gb-input" value={setName} onChange={(e) => setSetName(e.target.value)} placeholder={p_.promptSetNamePlaceholder} required />
 
-          <div className="gb-field">Prompt text</div>
+          <div className="gb-field">{p_.promptTextLabel}</div>
           <input
             className="gb-input"
             value={promptText}
             onChange={(e) => setPromptText(e.target.value)}
-            placeholder="What's the safest app for transferring money?"
+            placeholder={p_.promptTextPlaceholder}
             required
           />
 
-          <div className="gb-field">Intent</div>
+          <div className="gb-field">{p_.intentLabel}</div>
           <select className="gb-input" value={intent} onChange={(e) => setIntent(e.target.value)}>
             {INTENTS.map((i) => (
               <option key={i} value={i}>
-                {i}
+                {p_.intentLabels[i] || i}
               </option>
             ))}
           </select>
 
           <div style={{ marginTop: 16 }}>
             <button className="gb-btn gb-btn-ghost" type="submit" disabled={creating}>
-              {creating ? 'Creating...' : '+ Add prompt'}
+              {creating ? p_.creating : p_.addPrompt}
             </button>
           </div>
         </form>
       </div>
 
       <div className="gb-section">
-        All prompts <span className="count">{prompts?.length ?? 0}</span>
+        {p_.allPrompts} <span className="count">{prompts?.length ?? 0}</span>
       </div>
 
       <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap', marginBottom: 14 }}>
@@ -401,7 +416,7 @@ export default function PromptsPage() {
           style={{ marginLeft: checkedKeys.size ? undefined : 'auto' }}
           onClick={() => setSortByStatus((v) => !v)}
         >
-          Sort by status
+          {c.sortByStatus}
         </button>
         {checkedKeys.size ? (
           <button
@@ -409,14 +424,14 @@ export default function PromptsPage() {
             style={{ marginLeft: 'auto', color: 'var(--red)', borderColor: 'var(--red)' }}
             onClick={() => setDeleteTargets((prompts || []).filter((p) => checkedKeys.has(promptKey(p))))}
           >
-            Delete selected ({checkedKeys.size})
+            {interpolate(p_.deleteSelected, { n: checkedKeys.size })}
           </button>
         ) : null}
       </div>
 
       <div className="gb-card" style={{ padding: 0 }}>
         {!prompts ? (
-          <div className="gb-empty">Loading...</div>
+          <div className="gb-empty">{c.loading}</div>
         ) : prompts.length ? (
           <div className="gb-table-wrap">
             <table className="gb-table">
@@ -425,10 +440,10 @@ export default function PromptsPage() {
                   <th style={{ width: 36 }}>
                     <input type="checkbox" className="gb-checkbox" checked={allVisibleChecked} onChange={toggleCheckAll} />
                   </th>
-                  <th style={{ width: '34%' }}>Prompt</th>
-                  <th>Recent signal</th>
-                  <th>Visibility</th>
-                  <th>Status</th>
+                  <th style={{ width: '34%' }}>{t.app.overview.thPrompt}</th>
+                  <th>{t.app.overview.thRecentSignal}</th>
+                  <th>{t.app.overview.thVisibility}</th>
+                  <th>{t.app.overview.thStatus}</th>
                   <th></th>
                 </tr>
               </thead>
@@ -449,16 +464,16 @@ export default function PromptsPage() {
                             <select className="gb-input" value={editIntent} onChange={(e) => setEditIntent(e.target.value)}>
                               {INTENTS.map((i) => (
                                 <option key={i} value={i}>
-                                  {i}
+                                  {p_.intentLabels[i] || i}
                                 </option>
                               ))}
                             </select>
                             <div style={{ display: 'flex', gap: 8, marginTop: 4 }}>
                               <button className="gb-btn gb-btn-primary" onClick={() => handleSaveEdit(p)} disabled={savingEdit}>
-                                {savingEdit ? 'Saving...' : 'Save'}
+                                {savingEdit ? c.saving : c.save}
                               </button>
                               <button className="gb-btn gb-btn-ghost" onClick={() => setEditingKey(null)}>
-                                Cancel
+                                {c.cancel}
                               </button>
                             </div>
                           </div>
@@ -466,7 +481,7 @@ export default function PromptsPage() {
                           <>
                             {p.text}
                             <br />
-                            <span className={`gb-tag ${p.intent}`}>{p.intent}</span>
+                            <span className={`gb-tag ${p.intent}`}>{p_.intentLabels[p.intent] || p.intent}</span>
                           </>
                         )}
                       </td>
@@ -487,10 +502,10 @@ export default function PromptsPage() {
                         {!isEditing ? (
                           <div style={{ display: 'flex', gap: 8 }}>
                             <button className="gb-link" onClick={() => startEdit(p)}>
-                              Edit
+                              {c.edit}
                             </button>
                             <button className="gb-link danger" onClick={() => setDeleteTargets([p])}>
-                              Delete
+                              {c.delete}
                             </button>
                           </div>
                         ) : null}
@@ -500,12 +515,12 @@ export default function PromptsPage() {
                 })}
               </tbody>
             </table>
-            {visiblePrompts.length === 0 ? <div className="gb-empty">No prompts match this filter.</div> : null}
+            {visiblePrompts.length === 0 ? <div className="gb-empty">{p_.noPromptsMatch}</div> : null}
           </div>
         ) : (
           <div className="gb-empty">
-            <strong>No prompts yet</strong>
-            Use the forms above to add your first one.
+            <strong>{p_.noPromptsYetTitle}</strong>
+            {p_.noPromptsYetBody}
           </div>
         )}
       </div>
@@ -515,10 +530,10 @@ export default function PromptsPage() {
           <div className="gb-modal" style={{ maxWidth: 480 }} onClick={(e) => e.stopPropagation()}>
             <div className="gb-modal-head">
               <div>
-                <h3>Delete {deleteTargets.length} prompt{deleteTargets.length === 1 ? '' : 's'}?</h3>
-                <p style={{ fontSize: 12, color: 'var(--text-faint)', margin: 0 }}>This cannot be undone.</p>
+                <h3>{interpolate(p_.deleteConfirmTitle, { n: deleteTargets.length })}</h3>
+                <p style={{ fontSize: 12, color: 'var(--text-faint)', margin: 0 }}>{p_.deleteCannotUndo}</p>
               </div>
-              <button className="gb-modal-close" onClick={() => setDeleteTargets(null)} aria-label="Close">
+              <button className="gb-modal-close" onClick={() => setDeleteTargets(null)} aria-label={c.close}>
                 ×
               </button>
             </div>
@@ -531,14 +546,14 @@ export default function PromptsPage() {
                 ))}
               </ul>
               {deleteTargets.length > 10 ? (
-                <p style={{ fontSize: 12, color: 'var(--text-faint)', marginTop: 8 }}>and {deleteTargets.length - 10} more...</p>
+                <p style={{ fontSize: 12, color: 'var(--text-faint)', marginTop: 8 }}>{interpolate(p_.andMore, { n: deleteTargets.length - 10 })}</p>
               ) : null}
               <div style={{ display: 'flex', gap: 10, marginTop: 20 }}>
                 <button className="gb-btn gb-btn-ghost" onClick={() => setDeleteTargets(null)} disabled={deleting}>
-                  Cancel
+                  {c.cancel}
                 </button>
                 <button className="gb-btn gb-btn-primary" style={{ background: 'var(--red)' }} onClick={performDelete} disabled={deleting}>
-                  {deleting ? 'Deleting...' : `Delete ${deleteTargets.length} prompt${deleteTargets.length === 1 ? '' : 's'}`}
+                  {deleting ? c.deleting : interpolate(p_.deleteButton, { n: deleteTargets.length })}
                 </button>
               </div>
             </div>

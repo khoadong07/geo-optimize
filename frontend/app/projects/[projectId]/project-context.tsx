@@ -1,6 +1,7 @@
 'use client';
 
 import { createContext, useContext } from 'react';
+import { Zone } from '../../zones';
 
 export const API = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
 
@@ -8,6 +9,7 @@ export type Project = {
   _id: string;
   name: string;
   industry?: string;
+  zone?: Zone;
   domain?: string;
   competitors: string[];
   enabledPlatforms: Array<'GEMINI' | 'OPENAI'>;

@@ -3,110 +3,16 @@
 import Link from 'next/link';
 import { FormEvent, useState } from 'react';
 import DemoAnimation from './DemoAnimation';
+import { useLanguage } from './i18n';
 import { IconAmplify, IconAudit, IconContentAgent, IconPlatforms, IconPrompts, IconSentiment, IconTrending, IconVisibility } from './icons';
 
 const API = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
 
-const STEPS = [
-  {
-    title: 'Ask',
-    body: 'We simulate the real questions your customers type into AI assistants — generated from your industry, brand, and live trending topics.',
-  },
-  {
-    title: 'Track',
-    body: 'Every response is scored for brand visibility, ranking position, and sentiment — across every AI platform you enable.',
-  },
-  {
-    title: 'Improve',
-    body: "Gap & Citation audits your website's AI-readiness and hands you a fix list, so the next answer favors you.",
-  },
-];
-
-const FEATURES = [
-  {
-    title: 'Visibility scoring',
-    body: 'Rank-based scoring shows exactly where your brand lands in every AI answer, not just whether it was mentioned.',
-    icon: IconVisibility,
-  },
-  {
-    title: 'Sentiment analysis',
-    body: 'An LLM-as-judge reads every response and grades tone — positive, neutral, or negative — with its reasoning.',
-    icon: IconSentiment,
-  },
-  {
-    title: 'Multi-platform tracking',
-    body: 'Gemini and OpenAI today, with more AI answer engines on the roadmap.',
-    icon: IconPlatforms,
-  },
-  {
-    title: 'AI-assisted prompts',
-    body: 'Generate on-brand, on-trend questions in one click, tuned to your industry and competitors.',
-    icon: IconPrompts,
-  },
-  {
-    title: 'Trending topics',
-    body: 'Pull real weekly and monthly industry trends straight into your prompt generation, so tracking stays current.',
-    icon: IconTrending,
-  },
-  {
-    title: 'GEO site audit',
-    body: 'A technical readiness score for your site — schema markup, llms.txt, robots.txt, and more.',
-    icon: IconAudit,
-  },
-];
-
-const ROADMAP = [
-  {
-    title: 'Amplify',
-    body: "Turns tracking data into a prioritized action list — see exactly which prompts are missing their visibility target, and what to publish, update, or pitch next to close the gap.",
-    icon: IconAmplify,
-  },
-  {
-    title: 'AI Content Agent',
-    body: 'An agent that drafts the actual content built to amplify your visibility — articles, FAQ pages, and PR angles written to answer the exact questions AI engines are asked.',
-    icon: IconContentAgent,
-  },
-];
-
-const PLANS = [
-  {
-    name: 'Starter',
-    price: '$49',
-    period: '/month',
-    desc: 'For a single brand getting started with GEO.',
-    features: ['1 project', '1 AI platform', '20 tracked prompts / month', 'Sentiment analysis', 'Email support'],
-    cta: 'Start free trial',
-    featured: false,
-  },
-  {
-    name: 'Growth',
-    price: '$199',
-    period: '/month',
-    desc: 'For teams actively managing brand visibility.',
-    features: [
-      '5 projects',
-      'Gemini + OpenAI tracking',
-      'Unlimited tracked prompts',
-      'AI-assisted prompt generation',
-      'Trending topics',
-      'GEO site audits',
-      'Priority support',
-    ],
-    cta: 'Start free trial',
-    featured: true,
-  },
-  {
-    name: 'Enterprise',
-    price: 'Custom',
-    period: '',
-    desc: 'For organizations with multiple brands or agencies.',
-    features: ['Unlimited projects', 'Custom AI platforms', 'Dedicated onboarding', 'SLA & priority support', 'Custom integrations'],
-    cta: 'Contact sales',
-    featured: false,
-  },
-];
+const FEATURE_ICONS = [IconVisibility, IconSentiment, IconPlatforms, IconPrompts, IconTrending, IconAudit];
+const ROADMAP_ICONS = [IconAmplify, IconContentAgent];
 
 export default function MarketingLandingPage() {
+  const { lang, setLang, t } = useLanguage();
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [company, setCompany] = useState('');
@@ -127,7 +33,7 @@ export default function MarketingLandingPage() {
     setSubmitting(false);
     if (!res.ok) {
       const data = await res.json().catch(() => ({}));
-      setError(Array.isArray(data.message) ? data.message[0] : data.message || 'Could not submit your request. Please try again.');
+      setError(Array.isArray(data.message) ? data.message[0] : data.message || t.trial.genericError);
       return;
     }
     setSubmitted(true);
@@ -142,16 +48,24 @@ export default function MarketingLandingPage() {
             GeoBase
           </div>
           <div className="gb-mkt-nav-links">
-            <a href="#product">Product</a>
-            <a href="#pricing">Pricing</a>
-            <a href="#trial">Trial</a>
+            <a href="#product">{t.nav.product}</a>
+            <a href="#pricing">{t.nav.pricing}</a>
+            <a href="#trial">{t.nav.trial}</a>
           </div>
           <div className="gb-mkt-nav-actions">
+            <div className="gb-lang-switch" role="group" aria-label="Language">
+              <button type="button" className={lang === 'en' ? 'active' : ''} onClick={() => setLang('en')}>
+                EN
+              </button>
+              <button type="button" className={lang === 'vi' ? 'active' : ''} onClick={() => setLang('vi')}>
+                VI
+              </button>
+            </div>
             <Link href="/login" className="gb-btn gb-btn-ghost">
-              Sign in
+              {t.nav.signIn}
             </Link>
             <a href="#trial" className="gb-btn gb-btn-primary">
-              Start free trial
+              {t.nav.startTrial}
             </a>
           </div>
         </div>
@@ -160,26 +74,27 @@ export default function MarketingLandingPage() {
       <header className="gb-mkt-hero">
         <div className="gb-mkt-wrap gb-mkt-hero-grid">
           <div>
-            <p className="gb-mkt-eyebrow">GEO · Generative Engine Optimization</p>
+            <p className="gb-mkt-eyebrow">{t.hero.eyebrow}</p>
             <h1 className="gb-mkt-h1">
-              Know if AI <em>recommends</em> your brand.
+              {t.hero.h1Pre}
+              <em>{t.hero.h1Em}</em>
+              {t.hero.h1Post}
             </h1>
-            <p className="gb-mkt-lede">
-              GeoBase tracks how often, where, and how positively AI answer engines like Gemini and ChatGPT mention your brand — so you can act
-              before competitors do.
-            </p>
+            <p className="gb-mkt-lede">{t.hero.lede}</p>
             <div className="gb-mkt-cta-row">
               <a href="#trial" className="gb-btn gb-btn-primary">
-                Start free trial
+                {t.hero.startTrial}
               </a>
               <Link href="/login" className="gb-btn gb-btn-ghost">
-                Sign in
+                {t.hero.signIn}
               </Link>
             </div>
             <div className="gb-mkt-trust-row">
-              <span className="gb-mkt-trust-pill">Tracks Gemini &amp; OpenAI</span>
-              <span className="gb-mkt-trust-pill">LLM-judged sentiment</span>
-              <span className="gb-mkt-trust-pill">Built for the Vietnamese market</span>
+              {t.hero.trustPills.map((pill) => (
+                <span className="gb-mkt-trust-pill" key={pill}>
+                  {pill}
+                </span>
+              ))}
             </div>
           </div>
 
@@ -190,12 +105,12 @@ export default function MarketingLandingPage() {
       <section className="gb-mkt-section tight" id="product">
         <div className="gb-mkt-wrap">
           <div className="gb-mkt-section-head">
-            <p className="gb-mkt-eyebrow">How it works</p>
-            <h2>From question to fix, in three steps</h2>
-            <p>GeoBase runs the same loop your customers do — ask an AI assistant, see what it says, then close the gap.</p>
+            <p className="gb-mkt-eyebrow">{t.steps.eyebrow}</p>
+            <h2>{t.steps.h2}</h2>
+            <p>{t.steps.lede}</p>
           </div>
           <div className="gb-mkt-steps">
-            {STEPS.map((step, i) => (
+            {t.steps.items.map((step, i) => (
               <div className="gb-mkt-step" key={step.title}>
                 <div className="gb-mkt-step-num">0{i + 1}</div>
                 <h3>{step.title}</h3>
@@ -209,20 +124,23 @@ export default function MarketingLandingPage() {
       <section className="gb-mkt-section">
         <div className="gb-mkt-wrap">
           <div className="gb-mkt-section-head">
-            <p className="gb-mkt-eyebrow">Everything you need</p>
-            <h2>Built around how AI answer engines actually work</h2>
-            <p>Every metric below comes from real tracked runs against live AI platforms — not estimates.</p>
+            <p className="gb-mkt-eyebrow">{t.features.eyebrow}</p>
+            <h2>{t.features.h2}</h2>
+            <p>{t.features.lede}</p>
           </div>
           <div className="gb-mkt-features">
-            {FEATURES.map((f) => (
-              <div className="gb-mkt-feature" key={f.title}>
-                <div className="gb-mkt-feature-icon">
-                  <f.icon />
+            {t.features.items.map((f, i) => {
+              const Icon = FEATURE_ICONS[i];
+              return (
+                <div className="gb-mkt-feature" key={f.title}>
+                  <div className="gb-mkt-feature-icon">
+                    <Icon />
+                  </div>
+                  <h3>{f.title}</h3>
+                  <p>{f.body}</p>
                 </div>
-                <h3>{f.title}</h3>
-                <p>{f.body}</p>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
       </section>
@@ -230,23 +148,26 @@ export default function MarketingLandingPage() {
       <section className="gb-mkt-section tight" id="roadmap">
         <div className="gb-mkt-wrap">
           <div className="gb-mkt-section-head">
-            <p className="gb-mkt-eyebrow">Coming next</p>
-            <h2>From insight to action</h2>
-            <p>Two upcoming modules that turn what GeoBase learns into real content and distribution.</p>
+            <p className="gb-mkt-eyebrow">{t.roadmap.eyebrow}</p>
+            <h2>{t.roadmap.h2}</h2>
+            <p>{t.roadmap.lede}</p>
           </div>
           <div className="gb-mkt-features" style={{ gridTemplateColumns: 'repeat(2, 1fr)', maxWidth: 780, margin: '0 auto' }}>
-            {ROADMAP.map((r) => (
-              <div className="gb-mkt-feature" key={r.title}>
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 }}>
-                  <div className="gb-mkt-feature-icon" style={{ marginBottom: 0 }}>
-                    <r.icon />
+            {t.roadmap.items.map((r, i) => {
+              const Icon = ROADMAP_ICONS[i];
+              return (
+                <div className="gb-mkt-feature" key={r.title}>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 }}>
+                    <div className="gb-mkt-feature-icon" style={{ marginBottom: 0 }}>
+                      <Icon />
+                    </div>
+                    <span className="gb-badge warn">{t.roadmap.comingSoon}</span>
                   </div>
-                  <span className="gb-badge warn">Coming soon</span>
+                  <h3>{r.title}</h3>
+                  <p>{r.body}</p>
                 </div>
-                <h3>{r.title}</h3>
-                <p>{r.body}</p>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
       </section>
@@ -254,14 +175,14 @@ export default function MarketingLandingPage() {
       <section className="gb-mkt-section" id="pricing">
         <div className="gb-mkt-wrap">
           <div className="gb-mkt-section-head">
-            <p className="gb-mkt-eyebrow">Pricing</p>
-            <h2>Simple plans that scale with your brand</h2>
-            <p>Every plan starts with a free trial. No credit card required.</p>
+            <p className="gb-mkt-eyebrow">{t.pricing.eyebrow}</p>
+            <h2>{t.pricing.h2}</h2>
+            <p>{t.pricing.lede}</p>
           </div>
           <div className="gb-mkt-pricing">
-            {PLANS.map((plan) => (
-              <div className={`gb-mkt-price${plan.featured ? ' featured' : ''}`} key={plan.name}>
-                {plan.featured ? <span className="gb-mkt-price-badge">Most popular</span> : null}
+            {t.pricing.plans.map((plan, i) => (
+              <div className={`gb-mkt-price${i === 1 ? ' featured' : ''}`} key={plan.name}>
+                {i === 1 ? <span className="gb-mkt-price-badge">{t.pricing.mostPopular}</span> : null}
                 <div className="gb-mkt-price-name">{plan.name}</div>
                 <div className="gb-mkt-price-desc">{plan.desc}</div>
                 <div className="gb-mkt-price-amount">
@@ -273,7 +194,7 @@ export default function MarketingLandingPage() {
                     <li key={f}>{f}</li>
                   ))}
                 </ul>
-                <a href="#trial" className={`gb-btn ${plan.featured ? 'gb-btn-primary' : 'gb-btn-ghost'}`} style={{ textAlign: 'center' }}>
+                <a href="#trial" className={`gb-btn ${i === 1 ? 'gb-btn-primary' : 'gb-btn-ghost'}`} style={{ textAlign: 'center' }}>
                   {plan.cta}
                 </a>
               </div>
@@ -292,48 +213,48 @@ export default function MarketingLandingPage() {
                     <path d="M3 8.5 6.2 12 13 4" />
                   </svg>
                 </div>
-                <h2 style={{ margin: 0 }}>Your account is on its way</h2>
+                <h2 style={{ margin: 0 }}>{t.trial.successTitle}</h2>
                 <p style={{ margin: 0 }}>
-                  Thanks, {name.split(' ')[0]} — we&apos;ve created your trial account and sent sign-in details to{' '}
-                  <b style={{ color: 'var(--text)' }}>{email}</b>. Check your inbox in the next few minutes.
+                  {t.trial.successBody
+                    .split('{{name}}')
+                    .join(name.split(' ')[0])
+                    .split('{{email}}')
+                    .join(email)}
                 </p>
               </div>
             ) : (
               <>
                 <div>
-                  <p className="gb-mkt-eyebrow">Free trial</p>
-                  <h2>Start tracking your brand&apos;s AI visibility</h2>
-                  <p>
-                    Tell us about your brand — we&apos;ll create your account instantly and email you sign-in access. No credit card required,
-                    cancel anytime.
-                  </p>
+                  <p className="gb-mkt-eyebrow">{t.trial.eyebrow}</p>
+                  <h2>{t.trial.h2}</h2>
+                  <p>{t.trial.lede}</p>
                 </div>
                 <form className="gb-mkt-trial-form" onSubmit={handleSubmit}>
                   <label className="gb-label">
-                    Full name
+                    {t.trial.name}
                     <input className="gb-input" value={name} onChange={(e) => setName(e.target.value)} required />
                   </label>
                   <label className="gb-label">
-                    Work email
+                    {t.trial.email}
                     <input type="email" className="gb-input" value={email} onChange={(e) => setEmail(e.target.value)} required />
                   </label>
                   <label className="gb-label">
-                    Company
+                    {t.trial.company}
                     <input className="gb-input" value={company} onChange={(e) => setCompany(e.target.value)} required />
                   </label>
                   <label className="gb-label">
-                    Message (optional)
+                    {t.trial.message}
                     <textarea
                       className="gb-input"
                       rows={3}
                       value={message}
                       onChange={(e) => setMessage(e.target.value)}
-                      placeholder="Which brand and industry would you like to track?"
+                      placeholder={t.trial.messagePlaceholder}
                     />
                   </label>
                   {error ? <div className="gb-banner error">{error}</div> : null}
                   <button className="gb-btn gb-btn-primary" type="submit" disabled={submitting}>
-                    {submitting ? 'Submitting...' : 'Request access'}
+                    {submitting ? t.trial.submitting : t.trial.submit}
                   </button>
                 </form>
               </>
@@ -349,11 +270,13 @@ export default function MarketingLandingPage() {
             GeoBase
           </div>
           <div className="gb-mkt-footer-links">
-            <a href="#product">Product</a>
-            <a href="#pricing">Pricing</a>
-            <Link href="/login">Sign in</Link>
+            <a href="#product">{t.footer.product}</a>
+            <a href="#pricing">{t.footer.pricing}</a>
+            <Link href="/login">{t.footer.signIn}</Link>
           </div>
-          <div className="gb-mkt-footer-copy">© {new Date().getFullYear()} GeoBase. All rights reserved.</div>
+          <div className="gb-mkt-footer-copy">
+            © {new Date().getFullYear()} GeoBase. {t.footer.copyright}
+          </div>
         </div>
       </footer>
     </div>

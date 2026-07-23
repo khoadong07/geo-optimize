@@ -188,7 +188,7 @@ export default function MarketingLandingPage() {
               <div className={`gb-mkt-price${i === 1 ? ' featured' : ''}`} key={plan.name}>
                 {i === 1 ? <span className="gb-mkt-price-badge">{t.pricing.mostPopular}</span> : null}
                 <div className="gb-mkt-price-name">{plan.name}</div>
-                <div className="gb-mkt-price-desc">{plan.desc}</div>
+                {plan.desc ? <div className="gb-mkt-price-desc">{plan.desc}</div> : null}
                 <div className="gb-mkt-price-amount">
                   {plan.price}
                   {plan.period ? <span>{plan.period}</span> : null}
@@ -198,12 +198,19 @@ export default function MarketingLandingPage() {
                     <li key={f}>{f}</li>
                   ))}
                 </ul>
-                <a href="#trial" className={`gb-btn ${i === 1 ? 'gb-btn-primary' : 'gb-btn-ghost'}`} style={{ textAlign: 'center' }}>
-                  {plan.cta}
-                </a>
+                {plan.slug === 'enterprise' ? (
+                  <a href="#trial" className="gb-btn gb-btn-ghost" style={{ textAlign: 'center' }}>
+                    {plan.cta}
+                  </a>
+                ) : (
+                  <Link href={`/checkout/${plan.slug}`} className={`gb-btn ${i === 1 ? 'gb-btn-primary' : 'gb-btn-ghost'}`} style={{ textAlign: 'center' }}>
+                    {plan.cta}
+                  </Link>
+                )}
               </div>
             ))}
           </div>
+          <p className="gb-mkt-pricing-footnote">{t.pricing.footnote}</p>
         </div>
       </section>
 

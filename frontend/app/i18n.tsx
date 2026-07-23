@@ -34,7 +34,8 @@ export interface Translations {
     h2: string;
     lede: string;
     mostPopular: string;
-    plans: { name: string; price: string; period: string; desc: string; features: string[]; cta: string }[];
+    plans: { name: string; price: string; period: string; desc: string; features: string[]; cta: string; slug: string }[];
+    footnote: string;
   };
   trial: {
     eyebrow: string;
@@ -68,16 +69,45 @@ export interface Translations {
     priceLabel: string;
     emptyTitle: string;
     emptyBody: string;
-    buyForm: {
-      name: string;
-      email: string;
-      company: string;
-      submit: string;
-      submitting: string;
-      successTitle: string;
-      successBody: string;
-      genericError: string;
-    };
+  };
+  checkout: {
+    backToPricing: string;
+    eyebrow: string;
+    planLabel: string;
+    priceLabel: string;
+    qrTitle: string;
+    qrPlaceholder: string;
+    instructions: string;
+    contactCta: string;
+    notFoundTitle: string;
+    notFoundBody: string;
+    backHome: string;
+  };
+  reportCheckout: {
+    backToReports: string;
+    steps: string[];
+    orderLabel: string;
+    vatLabel: string;
+    totalLabel: string;
+    emailLabel: string;
+    emailPlaceholder: string;
+    companyLabel: string;
+    discountLabel: string;
+    licenseLabel: string;
+    continueCta: string;
+    submitting: string;
+    genericError: string;
+    paymentMethods: string[];
+    qrScanHint: string;
+    qrWebhookHint: string;
+    simulatePayCta: string;
+    payingCta: string;
+    downloadTitle: string;
+    downloadBody: string;
+    downloadCta: string;
+    notFoundTitle: string;
+    notFoundBody: string;
+    backHome: string;
   };
   app: {
     common: {
@@ -364,41 +394,37 @@ export const translations: Record<Lang, Translations> = {
       eyebrow: 'Pricing',
       h2: 'Simple plans that scale with your brand',
       lede: 'Every plan starts with a free trial. No credit card required.',
-      mostPopular: 'Most popular',
+      mostPopular: 'Popular',
       plans: [
         {
-          name: 'Starter',
-          price: '$49',
+          name: 'Starter VN',
+          price: '₫2.5M',
           period: '/month',
-          desc: 'For a single brand getting started with GEO.',
-          features: ['1 project', '1 AI platform', '20 tracked prompts / month', 'Sentiment analysis', 'Email support'],
-          cta: 'Start free trial',
+          desc: '',
+          features: ['1 brand', 'industry benchmark', '2 AI platforms', 'weekly runs', 'email alerts'],
+          cta: 'Buy via QR',
+          slug: 'starter-vn',
         },
         {
-          name: 'Growth',
-          price: '$199',
+          name: 'Growth VN',
+          price: '₫7.5M',
           period: '/month',
-          desc: 'For teams actively managing brand visibility.',
-          features: [
-            '5 projects',
-            'Gemini + OpenAI tracking',
-            'Unlimited tracked prompts',
-            'AI-assisted prompt generation',
-            'Trending topics',
-            'GEO site audits',
-            'Priority support',
-          ],
-          cta: 'Start free trial',
+          desc: '',
+          features: ['Everything in Starter', '30 custom prompts', 'competitor analysis', 'Amplify', 'monthly report export'],
+          cta: 'Buy via QR',
+          slug: 'growth-vn',
         },
         {
           name: 'Enterprise',
-          price: 'Custom',
+          price: 'Get a quote',
           period: '',
-          desc: 'For organizations with multiple brands or agencies.',
-          features: ['Unlimited projects', 'Custom AI platforms', 'Dedicated onboarding', 'SLA & priority support', 'Custom integrations'],
+          desc: '',
+          features: ['Multi-brand', 'custom prompt sets', 'Zalo alerts', 'managed service by Kompa', 'e-invoice & bank transfer'],
           cta: 'Contact sales',
+          slug: 'enterprise',
         },
       ],
+      footnote: 'Prices exclude VAT · Billed annually · Renews via reminder (no auto-charge) · Full e-invoice provided',
     },
     trial: {
       eyebrow: 'Free trial',
@@ -437,16 +463,6 @@ export const translations: Record<Lang, Translations> = {
       priceLabel: 'Price',
       emptyTitle: 'No reports published yet',
       emptyBody: 'Check back soon — new AI Visibility reports are on the way.',
-      buyForm: {
-        name: 'Full name',
-        email: 'Work email',
-        company: 'Company (optional)',
-        submit: 'Request purchase',
-        submitting: 'Submitting...',
-        successTitle: 'Request received',
-        successBody: "Thanks — we'll email {{email}} with payment details shortly.",
-        genericError: 'Could not submit your request. Please try again.',
-      },
     },
     app: {
       common: {
@@ -681,6 +697,45 @@ export const translations: Record<Lang, Translations> = {
         comingSoonBody: "Content and PR amplification suggestions haven't been built yet.",
       },
     },
+    checkout: {
+      backToPricing: '← Back to pricing',
+      eyebrow: 'Checkout',
+      planLabel: 'Selected plan',
+      priceLabel: 'Amount',
+      qrTitle: 'Payment QR',
+      qrPlaceholder: "We're finalizing the payment QR for this plan.",
+      instructions: 'Our team will send you the payment QR and bank transfer details directly, then activate your plan as soon as payment is confirmed.',
+      contactCta: 'Contact us to complete payment',
+      notFoundTitle: 'Plan not found',
+      notFoundBody: "We couldn't find that plan. Please pick a plan from the pricing page.",
+      backHome: 'Back to pricing',
+    },
+    reportCheckout: {
+      backToReports: '← Back to reports',
+      steps: ['Info', 'Payment', 'Download'],
+      orderLabel: 'Order',
+      vatLabel: 'VAT (10%)',
+      totalLabel: 'Total',
+      emailLabel: 'Email to receive the file *',
+      emailPlaceholder: 'a.nguyen@brand.com',
+      companyLabel: 'Company name + Tax ID (for invoice — optional)',
+      discountLabel: 'Discount code',
+      licenseLabel: 'I agree to the single-organization license terms',
+      continueCta: 'Continue',
+      submitting: 'Submitting...',
+      genericError: 'Could not create the order. Please try again.',
+      paymentMethods: ['VietQR', 'MoMo', 'International card'],
+      qrScanHint: 'Scan with any banking app',
+      qrWebhookHint: 'Auto-confirms via webhook — no need to click anything else',
+      simulatePayCta: '— Simulate: paid →',
+      payingCta: 'Confirming...',
+      downloadTitle: 'Payment successful',
+      downloadBody: 'Your report is ready. A copy has also been emailed to you.',
+      downloadCta: 'Download report',
+      notFoundTitle: 'Report not found',
+      notFoundBody: "We couldn't find that report. Please pick one from the Reports section.",
+      backHome: 'Back to reports',
+    },
   },
   vi: {
     nav: { product: 'Sản phẩm', reports: 'Báo cáo', pricing: 'Bảng giá', trial: 'Dùng thử', signIn: 'Đăng nhập', startTrial: 'Dùng thử miễn phí' },
@@ -742,41 +797,37 @@ export const translations: Record<Lang, Translations> = {
       eyebrow: 'Bảng giá',
       h2: 'Các gói đơn giản, mở rộng theo thương hiệu của bạn',
       lede: 'Mọi gói đều bắt đầu với bản dùng thử miễn phí. Không cần thẻ tín dụng.',
-      mostPopular: 'Phổ biến nhất',
+      mostPopular: 'Phổ biến',
       plans: [
         {
-          name: 'Starter',
-          price: '$49',
+          name: 'Starter VN',
+          price: '2.5trđ',
           period: '/tháng',
-          desc: 'Dành cho một thương hiệu bắt đầu với GEO.',
-          features: ['1 dự án', '1 nền tảng AI', '20 câu hỏi theo dõi / tháng', 'Phân tích cảm xúc', 'Hỗ trợ qua email'],
-          cta: 'Dùng thử miễn phí',
+          desc: '',
+          features: ['1 thương hiệu', 'benchmark ngành', '2 nền tảng AI', 'chạy hàng tuần', 'cảnh báo email'],
+          cta: 'Mua bằng QR',
+          slug: 'starter-vn',
         },
         {
-          name: 'Growth',
-          price: '$199',
+          name: 'Growth VN',
+          price: '7.5trđ',
           period: '/tháng',
-          desc: 'Dành cho các đội nhóm đang chủ động quản lý độ hiển thị thương hiệu.',
-          features: [
-            '5 dự án',
-            'Theo dõi Gemini + OpenAI',
-            'Không giới hạn câu hỏi theo dõi',
-            'Gợi ý câu hỏi bằng AI',
-            'Chủ đề xu hướng',
-            'Kiểm tra website theo chuẩn GEO',
-            'Hỗ trợ ưu tiên',
-          ],
-          cta: 'Dùng thử miễn phí',
+          desc: '',
+          features: ['Toàn bộ tính năng Starter', '30 prompt riêng', 'phân tích đối thủ', 'Amplify', 'xuất báo cáo tháng'],
+          cta: 'Mua bằng QR',
+          slug: 'growth-vn',
         },
         {
           name: 'Enterprise',
-          price: 'Tùy chỉnh',
+          price: 'Báo giá',
           period: '',
-          desc: 'Dành cho tổ chức có nhiều thương hiệu hoặc agency.',
-          features: ['Không giới hạn dự án', 'Nền tảng AI tùy chỉnh', 'Hỗ trợ triển khai riêng', 'SLA & hỗ trợ ưu tiên', 'Tích hợp tùy chỉnh'],
-          cta: 'Liên hệ kinh doanh',
+          desc: '',
+          features: ['Đa thương hiệu', 'prompt set riêng', 'cảnh báo Zalo', 'dịch vụ managed bởi Kompa', 'e-invoice, chuyển khoản'],
+          cta: 'Liên hệ sales',
+          slug: 'enterprise',
         },
       ],
+      footnote: 'Giá chưa gồm VAT · Thanh toán theo năm · Tự gia hạn bằng nhắc hạn (không auto-charge) · Xuất hoá đơn điện tử đầy đủ',
     },
     trial: {
       eyebrow: 'Dùng thử miễn phí',
@@ -815,16 +866,6 @@ export const translations: Record<Lang, Translations> = {
       priceLabel: 'Giá',
       emptyTitle: 'Chưa có báo cáo nào được xuất bản',
       emptyBody: 'Hãy quay lại sau — các báo cáo AI Visibility mới sắp ra mắt.',
-      buyForm: {
-        name: 'Họ và tên',
-        email: 'Email công việc',
-        company: 'Công ty (không bắt buộc)',
-        submit: 'Gửi yêu cầu mua',
-        submitting: 'Đang gửi...',
-        successTitle: 'Đã nhận yêu cầu',
-        successBody: 'Cảm ơn — chúng tôi sẽ gửi email tới {{email}} kèm hướng dẫn thanh toán trong thời gian sớm nhất.',
-        genericError: 'Không thể gửi yêu cầu. Vui lòng thử lại.',
-      },
     },
     app: {
       common: {
@@ -1059,15 +1100,62 @@ export const translations: Record<Lang, Translations> = {
         comingSoonBody: 'Các đề xuất khuếch đại nội dung và PR chưa được xây dựng.',
       },
     },
+    checkout: {
+      backToPricing: '← Quay lại bảng giá',
+      eyebrow: 'Thanh toán',
+      planLabel: 'Gói đã chọn',
+      priceLabel: 'Số tiền',
+      qrTitle: 'Mã QR thanh toán',
+      qrPlaceholder: 'Chúng tôi đang hoàn tất mã QR thanh toán cho gói này.',
+      instructions: 'Đội ngũ Kompa sẽ gửi trực tiếp mã QR và thông tin chuyển khoản cho bạn, sau đó kích hoạt gói ngay khi xác nhận đã thanh toán.',
+      contactCta: 'Liên hệ để hoàn tất thanh toán',
+      notFoundTitle: 'Không tìm thấy gói',
+      notFoundBody: 'Không tìm thấy gói này. Vui lòng chọn gói từ trang bảng giá.',
+      backHome: 'Về trang bảng giá',
+    },
+    reportCheckout: {
+      backToReports: '← Quay lại báo cáo',
+      steps: ['Thông tin', 'Thanh toán', 'Tải về'],
+      orderLabel: 'Đơn hàng',
+      vatLabel: 'VAT (10%)',
+      totalLabel: 'Tổng',
+      emailLabel: 'Email nhận file *',
+      emailPlaceholder: 'a.nguyen@brand.vn',
+      companyLabel: 'Tên công ty + MST (để xuất hoá đơn — không bắt buộc)',
+      discountLabel: 'Mã giảm giá',
+      licenseLabel: 'Đồng ý điều khoản giấy phép 1 tổ chức',
+      continueCta: 'Tiếp tục',
+      submitting: 'Đang gửi...',
+      genericError: 'Không thể tạo đơn hàng. Vui lòng thử lại.',
+      paymentMethods: ['VietQR', 'MoMo', 'Thẻ quốc tế'],
+      qrScanHint: 'Quét bằng app ngân hàng bất kỳ',
+      qrWebhookHint: 'Tự xác nhận qua webhook — không cần bấm gì thêm',
+      simulatePayCta: '— Mô phỏng: đã thanh toán →',
+      payingCta: 'Đang xác nhận...',
+      downloadTitle: 'Thanh toán thành công',
+      downloadBody: 'Báo cáo của bạn đã sẵn sàng. Một bản sao cũng đã được gửi qua email.',
+      downloadCta: 'Tải xuống báo cáo',
+      notFoundTitle: 'Không tìm thấy báo cáo',
+      notFoundBody: 'Không tìm thấy báo cáo này. Vui lòng chọn một báo cáo từ mục Báo cáo.',
+      backHome: 'Về trang báo cáo',
+    },
   },
 };
 
 const LanguageContext = createContext<{ lang: Lang; setLang: (l: Lang) => void; t: Translations } | null>(null);
 
 const STORAGE_KEY = 'geobase-lang';
+const GEO_LANG_COOKIE = 'geobase-geo-lang';
 
-// Trending prompt sets are Vietnam-market-only, so the product defaults to Vietnamese
-// rather than inferring from the browser locale — users can still switch to English.
+function readCookie(name: string): string | null {
+  const match = document.cookie.match(new RegExp(`(?:^|; )${name}=([^;]*)`));
+  return match ? decodeURIComponent(match[1]) : null;
+}
+
+// Language priority: an explicit toggle choice (localStorage) always wins;
+// otherwise fall back to the IP-based country detection set by
+// middleware.ts (Vietnam -> vi, everywhere else -> en); otherwise default to
+// Vietnamese, since trending prompt sets are a Vietnam-market-only feature.
 export function LanguageProvider({ children }: { children: React.ReactNode }) {
   const [lang, setLangState] = useState<Lang>('vi');
 
@@ -1075,6 +1163,11 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
     const stored = window.localStorage.getItem(STORAGE_KEY);
     if (stored === 'en' || stored === 'vi') {
       setLangState(stored);
+      return;
+    }
+    const detected = readCookie(GEO_LANG_COOKIE);
+    if (detected === 'en' || detected === 'vi') {
+      setLangState(detected);
     }
   }, []);
 

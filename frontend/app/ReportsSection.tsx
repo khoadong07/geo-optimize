@@ -1,6 +1,7 @@
 'use client';
 
-import { FormEvent, useEffect, useMemo, useState } from 'react';
+import Link from 'next/link';
+import { useEffect, useMemo, useState } from 'react';
 import { useLanguage } from './i18n';
 
 const API = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
@@ -34,75 +35,11 @@ function ReportCover({ report }: { report: Report }) {
   return <div className="gb-mkt-report-cover-placeholder">Cover</div>;
 }
 
-function BuyForm({ report, onDone }: { report: Report; onDone: () => void }) {
-  const { t } = useLanguage();
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [company, setCompany] = useState('');
-  const [submitting, setSubmitting] = useState(false);
-  const [submitted, setSubmitted] = useState(false);
-  const [error, setError] = useState('');
-
-  async function handleSubmit(e: FormEvent) {
-    e.preventDefault();
-    setSubmitting(true);
-    setError('');
-    const res = await fetch(`${API}/report-orders`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ reportId: report._id, name, email, company: company || undefined }),
-    });
-    setSubmitting(false);
-    if (!res.ok) {
-      const data = await res.json().catch(() => ({}));
-      setError(Array.isArray(data.message) ? data.message[0] : data.message || t.reports.buyForm.genericError);
-      return;
-    }
-    setSubmitted(true);
-  }
-
-  if (submitted) {
-    return (
-      <div className="gb-banner info" style={{ marginTop: 16 }}>
-        <b>{t.reports.buyForm.successTitle}</b>
-        <div style={{ marginTop: 4 }}>{t.reports.buyForm.successBody.split('{{email}}').join(email)}</div>
-      </div>
-    );
-  }
-
-  return (
-    <form onSubmit={handleSubmit} style={{ marginTop: 16, display: 'grid', gap: 12 }}>
-      <label className="gb-label">
-        {t.reports.buyForm.name}
-        <input className="gb-input" value={name} onChange={(e) => setName(e.target.value)} required />
-      </label>
-      <label className="gb-label">
-        {t.reports.buyForm.email}
-        <input type="email" className="gb-input" value={email} onChange={(e) => setEmail(e.target.value)} required />
-      </label>
-      <label className="gb-label">
-        {t.reports.buyForm.company}
-        <input className="gb-input" value={company} onChange={(e) => setCompany(e.target.value)} />
-      </label>
-      {error ? <div className="gb-banner error">{error}</div> : null}
-      <div style={{ display: 'flex', gap: 10 }}>
-        <button type="button" className="gb-btn gb-btn-ghost" onClick={onDone}>
-          {t.app.common.cancel}
-        </button>
-        <button className="gb-btn gb-btn-primary" type="submit" disabled={submitting}>
-          {submitting ? t.reports.buyForm.submitting : t.reports.buyForm.submit}
-        </button>
-      </div>
-    </form>
-  );
-}
-
 export default function ReportsSection() {
   const { t } = useLanguage();
   const [reports, setReports] = useState<Report[] | null>(null);
   const [category, setCategory] = useState<ReportCategory | 'all'>('all');
   const [selected, setSelected] = useState<Report | null>(null);
-  const [buying, setBuying] = useState(false);
 
   useEffect(() => {
     fetch(`${API}/reports`)
@@ -116,14 +53,8 @@ export default function ReportsSection() {
     return category === 'all' ? reports : reports.filter((r) => r.category === category);
   }, [reports, category]);
 
-  function openReport(report: Report) {
-    setSelected(report);
-    setBuying(false);
-  }
-
   function closeModal() {
     setSelected(null);
-    setBuying(false);
   }
 
   return (
@@ -159,7 +90,7 @@ export default function ReportsSection() {
         ) : filtered.length ? (
           <div className="gb-mkt-reports-grid">
             {filtered.map((report) => (
-              <button className="gb-mkt-report-card" key={report._id} onClick={() => openReport(report)}>
+              <button className="gb-mkt-report-card" key={report._id} onClick={() => setSelected(report)}>
                 <ReportCover report={report} />
                 <div className="gb-mkt-report-body">
                   {report.status === 'coming_soon' ? (
@@ -205,16 +136,14 @@ export default function ReportsSection() {
                 <a className="gb-btn gb-btn-primary" href={`${API}/reports/${selected._id}/download`}>
                   {t.reports.downloadCta}
                 </a>
-              ) : buying ? (
-                <BuyForm report={selected} onDone={() => setBuying(false)} />
               ) : (
                 <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
                   <span className="gb-badge warn">
                     {t.reports.priceLabel}: {formatVnd(selected.priceVnd)}
                   </span>
-                  <button className="gb-btn gb-btn-primary" onClick={() => setBuying(true)}>
+                  <Link href={`/checkout/report/${selected._id}`} className="gb-btn gb-btn-primary">
                     {t.reports.buyCta}
-                  </button>
+                  </Link>
                 </div>
               )}
             </div>

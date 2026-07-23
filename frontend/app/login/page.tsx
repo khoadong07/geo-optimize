@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import ChangePasswordForm from '../ChangePasswordForm';
-import { industryLabel } from '../industry';
+import { industryLabel, PROJECT_INDUSTRIES } from '../industry';
 import { Zone, ZONE_OPTIONS } from '../zones';
 
 const API = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
@@ -16,7 +16,7 @@ type Project = {
   domain?: string;
 };
 
-const INDUSTRY_OPTIONS = ['Banking'];
+const INDUSTRY_OPTIONS = PROJECT_INDUSTRIES;
 
 export default function LoginPage() {
   const router = useRouter();
@@ -288,7 +288,7 @@ export default function LoginPage() {
                 <select className="gb-input" value={newIndustry} onChange={(e) => setNewIndustry(e.target.value)}>
                   {INDUSTRY_OPTIONS.map((industry) => (
                     <option key={industry} value={industry}>
-                      {industry}
+                      {industryLabel(industry, 'vi')}
                     </option>
                   ))}
                 </select>

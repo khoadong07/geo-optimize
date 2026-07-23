@@ -2,10 +2,13 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
 
 export type ReportOrderDocument = ReportOrder & Document;
-export type ReportOrderStatus = 'new' | 'contacted' | 'fulfilled';
+export type ReportOrderStatus = 'new' | 'paid' | 'contacted' | 'fulfilled';
 
 @Schema({ timestamps: true })
 export class ReportOrder {
+  @Prop({ required: true })
+  orderNumber!: number;
+
   @Prop({ required: true })
   reportId!: string;
 
@@ -16,6 +19,15 @@ export class ReportOrder {
   priceVnd!: number;
 
   @Prop({ required: true })
+  subtotalVnd!: number;
+
+  @Prop({ required: true })
+  vatVnd!: number;
+
+  @Prop({ required: true })
+  totalVnd!: number;
+
+  @Prop({ required: true })
   name!: string;
 
   @Prop({ required: true })
@@ -24,7 +36,13 @@ export class ReportOrder {
   @Prop({ default: '' })
   company!: string;
 
-  @Prop({ required: true, enum: ['new', 'contacted', 'fulfilled'], default: 'new' })
+  @Prop({ default: '' })
+  taxId!: string;
+
+  @Prop({ default: '' })
+  discountCode!: string;
+
+  @Prop({ required: true, enum: ['new', 'paid', 'contacted', 'fulfilled'], default: 'new' })
   status!: ReportOrderStatus;
 }
 

@@ -5,9 +5,10 @@ export class CreateReportOrderDto {
   @IsString()
   reportId!: string;
 
+  @IsOptional()
   @IsString()
   @MinLength(2)
-  name!: string;
+  name?: string;
 
   @IsEmail()
   email!: string;
@@ -15,9 +16,17 @@ export class CreateReportOrderDto {
   @IsOptional()
   @IsString()
   company?: string;
+
+  @IsOptional()
+  @IsString()
+  taxId?: string;
+
+  @IsOptional()
+  @IsString()
+  discountCode?: string;
 }
 
 export class SetReportOrderStatusDto {
-  @IsIn(['new', 'contacted', 'fulfilled'])
+  @IsIn(['new', 'paid', 'contacted', 'fulfilled'])
   status!: ReportOrderStatus;
 }

@@ -1,5 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import * as nodemailer from 'nodemailer';
+import { reportOrderPaidEmailHtml } from './templates/report-order-paid.template';
 import { reportOrderReceivedEmailHtml } from './templates/report-order-received.template';
 import { trialWelcomeEmailHtml } from './templates/trial-welcome.template';
 
@@ -50,5 +51,12 @@ export class MailService {
   async sendReportOrderReceivedEmail(to: string, name: string, reportTitle: string, priceVnd: number) {
     const html = reportOrderReceivedEmailHtml({ name, reportTitle, priceVnd, year: new Date().getFullYear() });
     return this.send(to, `Your request for "${reportTitle}"`, html, `report=${reportTitle} price=${priceVnd}`);
+  }
+
+  async sendReportOrderPaidEmail(to: string, name: string, reportTitle: string, orderId: string) {
+    const appUrl = process.env.APP_URL || 'http://localhost:3002';
+    const downloadUrl = `${appUrl}/api/report-orders/${orderId}/download`;
+    const html = reportOrderPaidEmailHtml({ name, reportTitle, downloadUrl, year: new Date().getFullYear() });
+    return this.send(to, `Your report is ready: "${reportTitle}"`, html, `report=${reportTitle}`);
   }
 }

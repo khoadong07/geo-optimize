@@ -5,13 +5,15 @@ import { API, authHeader } from '../admin-context';
 
 type ReportOrder = {
   _id: string;
+  orderNumber: number;
   reportId: string;
   reportTitle: string;
   priceVnd: number;
+  totalVnd: number;
   name: string;
   email: string;
   company: string;
-  status: 'new' | 'contacted' | 'fulfilled';
+  status: 'new' | 'paid' | 'contacted' | 'fulfilled';
   createdAt: string;
 };
 
@@ -73,8 +75,8 @@ export default function AdminReportOrdersPage() {
           <p className="gb-eyebrow">System admin</p>
           <h1 className="gb-title-lg">Report orders</h1>
           <p className="gb-subtitle">
-            Purchase requests for paid reports. No payment gateway is wired up yet — follow up manually by email with a payment link, then send
-            the file once paid.
+            Purchase requests for paid reports. Buyers pay via the QR checkout flow (currently a simulated demo payment) — status moves to
+            &quot;paid&quot; automatically once confirmed.
           </p>
         </div>
       </div>
@@ -104,8 +106,9 @@ export default function AdminReportOrdersPage() {
             <table className="gb-table">
               <thead>
                 <tr>
+                  <th>#</th>
                   <th>Report</th>
-                  <th>Price</th>
+                  <th>Total</th>
                   <th>Name</th>
                   <th>Email</th>
                   <th>Company</th>
@@ -117,8 +120,9 @@ export default function AdminReportOrdersPage() {
               <tbody>
                 {orders.map((o) => (
                   <tr key={o._id}>
+                    <td className="gb-mono">#{o.orderNumber}</td>
                     <td>{o.reportTitle}</td>
-                    <td className="gb-mono">{o.priceVnd.toLocaleString('vi-VN')}₫</td>
+                    <td className="gb-mono">{o.totalVnd.toLocaleString('vi-VN')}₫</td>
                     <td>{o.name}</td>
                     <td className="gb-mono">{o.email}</td>
                     <td>{o.company || '—'}</td>
@@ -130,6 +134,7 @@ export default function AdminReportOrdersPage() {
                         onChange={(e) => handleStatusChange(o, e.target.value as ReportOrder['status'])}
                       >
                         <option value="new">New</option>
+                        <option value="paid">Paid</option>
                         <option value="contacted">Contacted</option>
                         <option value="fulfilled">Fulfilled</option>
                       </select>

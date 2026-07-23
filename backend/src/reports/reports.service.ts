@@ -109,6 +109,18 @@ export class ReportsService {
     const report = await this.reportModel.findById(id).lean();
     if (!report || report.status !== 'published') throw new NotFoundException('Report not found');
     if (report.priceVnd > 0) throw new ForbiddenException('This report requires purchase — it is not available for free download');
+    return this.resolveFilePath(report);
+  }
+
+  // Used for paid downloads once a ReportOrder has been marked 'paid' —
+  // authorization comes from the order, not from the report's own price gate.
+  async getDownloadPathForPaidOrder(id: string) {
+    const report = await this.reportModel.findById(id).lean();
+    if (!report || report.status !== 'published') throw new NotFoundException('Report not found');
+    return this.resolveFilePath(report);
+  }
+
+  private resolveFilePath(report: Pick<Report, 'filePath' | 'fileOriginalName'>) {
     if (!report.filePath) throw new NotFoundException('No file has been uploaded for this report yet');
     return { path: join(FILES_DIR, report.filePath), filename: report.fileOriginalName || report.filePath };
   }

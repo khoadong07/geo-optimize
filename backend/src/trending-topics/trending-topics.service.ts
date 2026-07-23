@@ -1,7 +1,20 @@
 import { Injectable, Logger, NotFoundException, OnModuleInit } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { BANKING_MONTHLY, BANKING_WEEKLY, getTrending, TrendingPeriod } from '../trending/trending-data';
+import {
+  BANKING_MONTHLY,
+  BANKING_WEEKLY,
+  FMCG_MONTHLY,
+  FMCG_WEEKLY,
+  getTrending,
+  INSURANCE_MONTHLY,
+  INSURANCE_WEEKLY,
+  REAL_ESTATE_MONTHLY,
+  REAL_ESTATE_WEEKLY,
+  TELECOM_MONTHLY,
+  TELECOM_WEEKLY,
+  TrendingPeriod,
+} from '../trending/trending-data';
 import { TrendingTopic, TrendingTopicDocument } from './trending-topic.schema';
 
 function escapeRegex(value: string) {
@@ -14,18 +27,28 @@ export class TrendingTopicsService implements OnModuleInit {
 
   constructor(@InjectModel(TrendingTopic.name) private readonly model: Model<TrendingTopicDocument>) {}
 
-  // First boot only: seeds the built-in Banking questions so admins have
-  // something to edit right away instead of an empty table. No-ops once any
-  // trending topic already exists in Mongo.
+  // First boot only: seeds the built-in questions for every pre-curated
+  // industry so admins have something to edit right away instead of an empty
+  // table. No-ops once any trending topic already exists in Mongo.
   async onModuleInit() {
     const existingCount = await this.model.estimatedDocumentCount();
     if (existingCount > 0) return;
 
-    await this.model.insertMany([
-      ...BANKING_WEEKLY.map((text) => ({ industry: 'Banking', period: 'week' as const, text })),
-      ...BANKING_MONTHLY.map((text) => ({ industry: 'Banking', period: 'month' as const, text })),
-    ]);
-    this.logger.log('Seeded initial Banking trending topics into MongoDB');
+    const seedSet: Array<{ industry: string; weekly: string[]; monthly: string[] }> = [
+      { industry: 'Banking', weekly: BANKING_WEEKLY, monthly: BANKING_MONTHLY },
+      { industry: 'FMCG', weekly: FMCG_WEEKLY, monthly: FMCG_MONTHLY },
+      { industry: 'Insurance', weekly: INSURANCE_WEEKLY, monthly: INSURANCE_MONTHLY },
+      { industry: 'Telecom', weekly: TELECOM_WEEKLY, monthly: TELECOM_MONTHLY },
+      { industry: 'Real Estate', weekly: REAL_ESTATE_WEEKLY, monthly: REAL_ESTATE_MONTHLY },
+    ];
+
+    await this.model.insertMany(
+      seedSet.flatMap(({ industry, weekly, monthly }) => [
+        ...weekly.map((text) => ({ industry, period: 'week' as const, text })),
+        ...monthly.map((text) => ({ industry, period: 'month' as const, text })),
+      ]),
+    );
+    this.logger.log(`Seeded initial trending topics for ${seedSet.map((s) => s.industry).join(', ')} into MongoDB`);
   }
 
   list(industry?: string, period?: TrendingPeriod) {

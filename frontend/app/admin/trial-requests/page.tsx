@@ -10,8 +10,7 @@ type TrialRequest = {
   company: string;
   message: string;
   status: 'new' | 'contacted' | 'converted';
-  accountUsername: string;
-  welcomeEmailSent: boolean;
+  previewEmailSent: boolean;
   createdAt: string;
 };
 
@@ -73,7 +72,8 @@ export default function AdminTrialRequestsPage() {
           <p className="gb-eyebrow">System admin</p>
           <h1 className="gb-title-lg">Trial requests</h1>
           <p className="gb-subtitle">
-            Leads submitted from the marketing site&apos;s trial form. An account is created and emailed automatically on submission.
+            Leads submitted from the marketing site&apos;s trial form. They get an instant read-only preview link by email
+            (and directly in-browser) — no account is created.
           </p>
         </div>
       </div>
@@ -106,7 +106,7 @@ export default function AdminTrialRequestsPage() {
                   <th>Name</th>
                   <th>Email</th>
                   <th>Company</th>
-                  <th>Account</th>
+                  <th>Preview email</th>
                   <th>Status</th>
                   <th>Submitted</th>
                   <th></th>
@@ -122,10 +122,7 @@ export default function AdminTrialRequestsPage() {
                       {r.message ? <div style={{ fontSize: 11.5, color: 'var(--text-faint)', marginTop: 2 }}>{r.message}</div> : null}
                     </td>
                     <td>
-                      <div className="gb-mono">{r.accountUsername || '—'}</div>
-                      <span className={`gb-badge ${r.welcomeEmailSent ? 'ok' : 'bad'}`} style={{ marginTop: 4 }}>
-                        {r.welcomeEmailSent ? 'Email sent' : 'Email failed'}
-                      </span>
+                      <span className={`gb-badge ${r.previewEmailSent ? 'ok' : 'bad'}`}>{r.previewEmailSent ? 'Sent' : 'Failed'}</span>
                     </td>
                     <td>
                       <select

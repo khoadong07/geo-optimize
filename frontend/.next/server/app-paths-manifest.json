@@ -1,4 +1,21 @@
 {
+  "/_not-found/page": "app/_not-found/page.js",
+  "/checkout/[plan]/page": "app/checkout/[plan]/page.js",
+  "/login/page": "app/login/page.js",
+  "/checkout/report/[reportId]/page": "app/checkout/report/[reportId]/page.js",
   "/page": "app/page.js",
-  "/checkout/[plan]/page": "app/checkout/[plan]/page.js"
+  "/trial/page": "app/trial/page.js",
+  "/admin/report-orders/page": "app/admin/report-orders/page.js",
+  "/admin/trial-requests/page": "app/admin/trial-requests/page.js",
+  "/admin/trending-topics/page": "app/admin/trending-topics/page.js",
+  "/admin/page": "app/admin/page.js",
+  "/admin/users/page": "app/admin/users/page.js",
+  "/admin/reports/page": "app/admin/reports/page.js",
+  "/projects/[projectId]/ai-agent/page": "app/projects/[projectId]/ai-agent/page.js",
+  "/projects/[projectId]/amplify/page": "app/projects/[projectId]/amplify/page.js",
+  "/projects/[projectId]/gap-citation/page": "app/projects/[projectId]/gap-citation/page.js",
+  "/projects/[projectId]/page": "app/projects/[projectId]/page.js",
+  "/projects/[projectId]/prompts/page": "app/projects/[projectId]/prompts/page.js",
+  "/projects/[projectId]/sentiment/page": "app/projects/[projectId]/sentiment/page.js",
+  "/projects/[projectId]/target/page": "app/projects/[projectId]/target/page.js"
 }

@@ -2,7 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import * as nodemailer from 'nodemailer';
 import { reportOrderPaidEmailHtml } from './templates/report-order-paid.template';
 import { reportOrderReceivedEmailHtml } from './templates/report-order-received.template';
-import { trialWelcomeEmailHtml } from './templates/trial-welcome.template';
+import { trialPreviewEmailHtml } from './templates/trial-preview.template';
 
 @Injectable()
 export class MailService {
@@ -42,10 +42,9 @@ export class MailService {
     }
   }
 
-  async sendTrialWelcomeEmail(to: string, username: string, password: string) {
-    const appUrl = process.env.APP_URL || 'http://localhost:3002';
-    const html = trialWelcomeEmailHtml({ username, password, appUrl, year: new Date().getFullYear() });
-    return this.send(to, 'Your GeoBase trial account is ready', html, `username=${username} password=${password}`);
+  async sendTrialPreviewEmail(to: string, name: string, previewUrl: string) {
+    const html = trialPreviewEmailHtml({ name, previewUrl, year: new Date().getFullYear() });
+    return this.send(to, 'Your GeoBase trial preview is ready', html, `previewUrl=${previewUrl}`);
   }
 
   async sendReportOrderReceivedEmail(to: string, name: string, reportTitle: string, priceVnd: number) {

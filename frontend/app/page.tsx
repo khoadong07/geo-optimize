@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { FormEvent, useState } from 'react';
 import DemoAnimation from './DemoAnimation';
 import { useLanguage } from './i18n';
@@ -13,13 +14,13 @@ const FEATURE_ICONS = [IconVisibility, IconSentiment, IconPlatforms, IconPrompts
 const ROADMAP_ICONS = [IconAmplify, IconContentAgent];
 
 export default function MarketingLandingPage() {
+  const router = useRouter();
   const { lang, setLang, t } = useLanguage();
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [company, setCompany] = useState('');
   const [message, setMessage] = useState('');
   const [submitting, setSubmitting] = useState(false);
-  const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState('');
 
   async function handleSubmit(e: FormEvent) {
@@ -31,13 +32,14 @@ export default function MarketingLandingPage() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ name, email, company, message: message || undefined }),
     });
+    const data = await res.json().catch(() => ({}));
     setSubmitting(false);
     if (!res.ok) {
-      const data = await res.json().catch(() => ({}));
       setError(Array.isArray(data.message) ? data.message[0] : data.message || t.trial.genericError);
       return;
     }
-    setSubmitted(true);
+    window.localStorage.setItem('geo_token', data.token);
+    router.push('/trial');
   }
 
   return (
@@ -217,59 +219,39 @@ export default function MarketingLandingPage() {
       <section className="gb-mkt-section" id="trial">
         <div className="gb-mkt-wrap">
           <div className="gb-mkt-trial">
-            {submitted ? (
-              <div className="gb-mkt-success" style={{ gridColumn: '1 / -1' }}>
-                <div className="gb-mkt-success-icon">
-                  <svg width="20" height="20" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M3 8.5 6.2 12 13 4" />
-                  </svg>
-                </div>
-                <h2 style={{ margin: 0 }}>{t.trial.successTitle}</h2>
-                <p style={{ margin: 0 }}>
-                  {t.trial.successBody
-                    .split('{{name}}')
-                    .join(name.split(' ')[0])
-                    .split('{{email}}')
-                    .join(email)}
-                </p>
-              </div>
-            ) : (
-              <>
-                <div>
-                  <p className="gb-mkt-eyebrow">{t.trial.eyebrow}</p>
-                  <h2>{t.trial.h2}</h2>
-                  <p>{t.trial.lede}</p>
-                </div>
-                <form className="gb-mkt-trial-form" onSubmit={handleSubmit}>
-                  <label className="gb-label">
-                    {t.trial.name}
-                    <input className="gb-input" value={name} onChange={(e) => setName(e.target.value)} required />
-                  </label>
-                  <label className="gb-label">
-                    {t.trial.email}
-                    <input type="email" className="gb-input" value={email} onChange={(e) => setEmail(e.target.value)} required />
-                  </label>
-                  <label className="gb-label">
-                    {t.trial.company}
-                    <input className="gb-input" value={company} onChange={(e) => setCompany(e.target.value)} required />
-                  </label>
-                  <label className="gb-label">
-                    {t.trial.message}
-                    <textarea
-                      className="gb-input"
-                      rows={3}
-                      value={message}
-                      onChange={(e) => setMessage(e.target.value)}
-                      placeholder={t.trial.messagePlaceholder}
-                    />
-                  </label>
-                  {error ? <div className="gb-banner error">{error}</div> : null}
-                  <button className="gb-btn gb-btn-primary" type="submit" disabled={submitting}>
-                    {submitting ? t.trial.submitting : t.trial.submit}
-                  </button>
-                </form>
-              </>
-            )}
+            <div>
+              <p className="gb-mkt-eyebrow">{t.trial.eyebrow}</p>
+              <h2>{t.trial.h2}</h2>
+              <p>{t.trial.lede}</p>
+            </div>
+            <form className="gb-mkt-trial-form" onSubmit={handleSubmit}>
+              <label className="gb-label">
+                {t.trial.name}
+                <input className="gb-input" value={name} onChange={(e) => setName(e.target.value)} required />
+              </label>
+              <label className="gb-label">
+                {t.trial.email}
+                <input type="email" className="gb-input" value={email} onChange={(e) => setEmail(e.target.value)} required />
+              </label>
+              <label className="gb-label">
+                {t.trial.company}
+                <input className="gb-input" value={company} onChange={(e) => setCompany(e.target.value)} required />
+              </label>
+              <label className="gb-label">
+                {t.trial.message}
+                <textarea
+                  className="gb-input"
+                  rows={3}
+                  value={message}
+                  onChange={(e) => setMessage(e.target.value)}
+                  placeholder={t.trial.messagePlaceholder}
+                />
+              </label>
+              {error ? <div className="gb-banner error">{error}</div> : null}
+              <button className="gb-btn gb-btn-primary" type="submit" disabled={submitting}>
+                {submitting ? t.trial.submitting : t.trial.submit}
+              </button>
+            </form>
           </div>
         </div>
       </section>

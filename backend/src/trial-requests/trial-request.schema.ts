@@ -22,11 +22,8 @@ export class TrialRequest {
   @Prop({ required: true, enum: ['new', 'contacted', 'converted'], default: 'new' })
   status!: TrialRequestStatus;
 
-  @Prop({ default: '' })
-  accountUsername!: string;
-
   @Prop({ default: false })
-  welcomeEmailSent!: boolean;
+  previewEmailSent!: boolean;
 }
 
 export const TrialRequestSchema = SchemaFactory.createForClass(TrialRequest);

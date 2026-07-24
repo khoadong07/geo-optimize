@@ -45,6 +45,19 @@ export class AuthService implements OnModuleInit {
     return this.issueToken(user);
   }
 
+  // No User document is created for a trial — the token is a self-contained,
+  // read-only credential scoped to the lead's trial-request id. Expiry is long
+  // enough to cover both the instant in-browser redirect and someone opening
+  // the emailed preview link later the same day.
+  issueTrialToken(trialRequestId: string, name: string) {
+    const token = jwt.sign(
+      { sub: trialRequestId, username: name, role: 'trial', mustChangePassword: false },
+      getJwtSecret(),
+      { expiresIn: '24h' },
+    );
+    return { token };
+  }
+
   async changePassword(userId: string, currentPassword: string, newPassword: string) {
     const user = await this.usersService.changePassword(userId, currentPassword, newPassword);
     return this.issueToken(user);

@@ -1,43 +1,29 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
+import { AuthService } from '../auth/auth.service';
 import { MailService } from '../mail/mail.service';
-import { generateRandomPassword, UsersService } from '../users/users.service';
 import { TrialRequest, TrialRequestDocument, TrialRequestStatus } from './trial-request.schema';
 
 @Injectable()
 export class TrialRequestsService {
   constructor(
     @InjectModel(TrialRequest.name) private readonly trialRequestModel: Model<TrialRequestDocument>,
-    private readonly usersService: UsersService,
+    private readonly authService: AuthService,
     private readonly mailService: MailService,
   ) {}
 
-  private async generateUsername(email: string) {
-    const base = email.split('@')[0].toLowerCase().replace(/[^a-z0-9]/g, '') || 'user';
-    let candidate = base;
-    let suffix = 1;
-    while (await this.usersService.findByUsername(candidate)) {
-      candidate = `${base}${++suffix}`;
-    }
-    return candidate;
-  }
-
   async create(name: string, email: string, company: string, message?: string) {
-    const username = await this.generateUsername(email);
-    const password = generateRandomPassword();
-    await this.usersService.create(username, password, 'user', true);
-    const { sent } = await this.mailService.sendTrialWelcomeEmail(email, username, password);
+    const created = await new this.trialRequestModel({ name, email, company, message: message || '' }).save();
+    const { token } = this.authService.issueTrialToken(created._id.toString(), name);
 
-    const created = new this.trialRequestModel({
-      name,
-      email,
-      company,
-      message: message || '',
-      accountUsername: username,
-      welcomeEmailSent: sent,
-    });
-    return created.save();
+    const appUrl = process.env.APP_URL || 'http://localhost:3002';
+    const previewUrl = `${appUrl}/trial?token=${token}`;
+    const { sent } = await this.mailService.sendTrialPreviewEmail(email, name, previewUrl);
+    created.previewEmailSent = sent;
+    await created.save();
+
+    return { trialRequest: created, token };
   }
 
   list() {

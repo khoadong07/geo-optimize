@@ -15,6 +15,14 @@ export default function ProjectLayout({ children }: { children: React.ReactNode 
   const projectId = params.projectId as string;
   const { lang, setLang, t } = useLanguage();
 
+  const [project, setProject] = useState<Project | null>(null);
+  const [status, setStatus] = useState<'checking' | 'ready' | 'error'>('checking');
+  const [error, setError] = useState('');
+  const [username, setUsername] = useState('');
+  const [role, setRole] = useState<'admin' | 'user' | 'trial'>('user');
+  const isTrial = role === 'trial';
+  const homeHref = isTrial ? '/trial' : '/login';
+
   const NAV_ITEMS = [
     { href: '', label: t.app.layout.navOverview, icon: IconOverview, section: 'project' as const },
     { href: '/prompts', label: t.app.layout.navPrompts, icon: IconRanking, section: 'project' as const },
@@ -22,13 +30,8 @@ export default function ProjectLayout({ children }: { children: React.ReactNode 
     { href: '/gap-citation', label: t.app.layout.navGapCitation, icon: IconGap, section: 'project' as const },
     { href: '/amplify', label: t.app.layout.navAmplify, icon: IconAmplify, section: 'project' as const },
     { href: '/ai-agent', label: t.app.layout.navAiAgent, icon: IconAgent, section: 'project' as const },
-    { href: '/target', label: t.app.layout.navTarget, icon: IconTarget, section: 'configuration' as const },
+    ...(isTrial ? [] : [{ href: '/target', label: t.app.layout.navTarget, icon: IconTarget, section: 'configuration' as const }]),
   ];
-
-  const [project, setProject] = useState<Project | null>(null);
-  const [status, setStatus] = useState<'checking' | 'ready' | 'error'>('checking');
-  const [error, setError] = useState('');
-  const [username, setUsername] = useState('');
 
   const load = useCallback(() => {
     const token = window.localStorage.getItem('geo_token');
@@ -43,6 +46,7 @@ export default function ProjectLayout({ children }: { children: React.ReactNode 
       })
       .then((me) => {
         setUsername(me.username);
+        setRole(me.role);
         return fetch(`${API}/projects/${projectId}`, { headers: authHeader() });
       })
       .then(async (res) => {
@@ -108,8 +112,8 @@ export default function ProjectLayout({ children }: { children: React.ReactNode 
             GeoBase
           </div>
 
-          <button className="gb-btn gb-btn-ghost" style={{ width: '100%' }} onClick={() => router.push('/login')}>
-            {t.app.layout.allProjects}
+          <button className="gb-btn gb-btn-ghost" style={{ width: '100%' }} onClick={() => router.push(homeHref)}>
+            {isTrial ? 'Sample dashboards' : t.app.layout.allProjects}
           </button>
 
           <div>
@@ -153,11 +157,11 @@ export default function ProjectLayout({ children }: { children: React.ReactNode 
               className="gb-signout-btn"
               onClick={() => {
                 window.localStorage.removeItem('geo_token');
-                router.replace('/login');
+                router.replace(homeHref);
               }}
             >
               <IconSignOut />
-              {t.app.layout.signOut}
+              {isTrial ? 'Exit preview' : t.app.layout.signOut}
             </button>
           </div>
         </aside>
@@ -176,9 +180,11 @@ export default function ProjectLayout({ children }: { children: React.ReactNode 
                 {t.app.layout.competitors} {project.competitors.length ? `· ${project.competitors.join(' · ')}` : t.app.layout.competitorsNone}
               </span>
               <span className="gb-pill">{t.app.layout.windowLast14}</span>
-              <Link href={`${basePath}/prompts`} className="gb-btn gb-btn-primary">
-                {t.app.layout.newPrompt}
-              </Link>
+              {isTrial ? null : (
+                <Link href={`${basePath}/prompts`} className="gb-btn gb-btn-primary">
+                  {t.app.layout.newPrompt}
+                </Link>
+              )}
             </div>
           </header>
 

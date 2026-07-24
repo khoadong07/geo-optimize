@@ -20,6 +20,9 @@ export class Project {
   @Prop({ enum: ['vietnam', 'thailand', 'indonesia', 'international'], default: 'vietnam' })
   zone?: string;
 
+  @Prop({ enum: ['private', 'sample'], default: 'private' })
+  visibility!: 'private' | 'sample';
+
   @Prop()
   domain?: string;
 

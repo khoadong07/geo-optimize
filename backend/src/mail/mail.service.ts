@@ -1,5 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import * as nodemailer from 'nodemailer';
+import { customerLoginEmailHtml } from './templates/customer-login.template';
 import { reportOrderPaidEmailHtml } from './templates/report-order-paid.template';
 import { reportOrderReceivedEmailHtml } from './templates/report-order-received.template';
 import { trialPreviewEmailHtml } from './templates/trial-preview.template';
@@ -45,6 +46,11 @@ export class MailService {
   async sendTrialPreviewEmail(to: string, name: string, previewUrl: string) {
     const html = trialPreviewEmailHtml({ name, previewUrl, year: new Date().getFullYear() });
     return this.send(to, 'Your GeoBase trial preview is ready', html, `previewUrl=${previewUrl}`);
+  }
+
+  async sendCustomerLoginEmail(to: string, name: string, loginUrl: string) {
+    const html = customerLoginEmailHtml({ name, loginUrl, year: new Date().getFullYear() });
+    return this.send(to, 'Your GeoBase login link', html, `loginUrl=${loginUrl}`);
   }
 
   async sendReportOrderReceivedEmail(to: string, name: string, reportTitle: string, priceVnd: number) {

@@ -58,6 +58,33 @@ export class AuthService implements OnModuleInit {
     return { token };
   }
 
+  // No User document is created for a paying customer either — same
+  // self-contained-JWT approach as the trial token, but scoped to their
+  // email (stable across repeat logins/purchases) with full read+write
+  // access to their own projects, capped by whatever they bought. Expiry is
+  // long since this is meant to be their ongoing way in, not a one-off.
+  issueCustomerToken(
+    email: string,
+    name: string,
+    plan: { slug: string; maxProjects: number; allowedPlatforms: Array<'GEMINI' | 'OPENAI'>; maxRunsPerPrompt: number },
+  ) {
+    const token = jwt.sign(
+      {
+        sub: email,
+        username: name,
+        role: 'customer',
+        mustChangePassword: false,
+        planSlug: plan.slug,
+        maxProjects: plan.maxProjects,
+        allowedPlatforms: plan.allowedPlatforms,
+        maxRunsPerPrompt: plan.maxRunsPerPrompt,
+      },
+      getJwtSecret(),
+      { expiresIn: '30d' },
+    );
+    return { token };
+  }
+
   async changePassword(userId: string, currentPassword: string, newPassword: string) {
     const user = await this.usersService.changePassword(userId, currentPassword, newPassword);
     return this.issueToken(user);

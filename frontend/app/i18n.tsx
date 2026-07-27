@@ -113,6 +113,19 @@ export interface Translations {
     emptyTitle: string;
     emptyBody: string;
   };
+  customerLogin: {
+    invalidTitle: string;
+    invalidBody: string;
+    backToLogin: string;
+    signingIn: string;
+    promptLabel: string;
+    cta: string;
+    emailLabel: string;
+    submit: string;
+    submitting: string;
+    successMessage: string;
+    genericError: string;
+  };
   checkout: {
     backToPricing: string;
     eyebrow: string;
@@ -796,6 +809,19 @@ export const translations: Record<Lang, Translations> = {
         comingSoonBody: "Content and PR amplification suggestions haven't been built yet.",
       },
     },
+    customerLogin: {
+      invalidTitle: 'This login link is invalid',
+      invalidBody: 'The link may be missing its token. Request a new login link from the sign-in page.',
+      backToLogin: 'Back to sign in',
+      signingIn: 'Signing you in...',
+      promptLabel: 'Already bought a plan?',
+      cta: 'Sign in with email',
+      emailLabel: 'Work email',
+      submit: 'Send login link',
+      submitting: 'Sending...',
+      successMessage: "Check your email — we've sent you a login link.",
+      genericError: 'Could not send a login link for this email.',
+    },
     checkout: {
       backToPricing: '← Back to pricing',
       eyebrow: 'Checkout',
@@ -817,7 +843,7 @@ export const translations: Record<Lang, Translations> = {
       simulatePayCta: '— Simulate: paid →',
       payingCta: 'Confirming...',
       doneTitle: 'Payment successful',
-      doneBody: "We've received your payment — our team will activate your plan and follow up by email shortly.",
+      doneBody: "We've received your payment and emailed you a login link — open it to sign in and set up your brand. Lost the email? Request a new link anytime from the sign-in page.",
       notFoundTitle: 'Plan not found',
       notFoundBody: "We couldn't find that plan. Please pick a plan from the pricing page.",
       backHome: 'Back to pricing',
@@ -1255,6 +1281,19 @@ export const translations: Record<Lang, Translations> = {
         comingSoonBody: 'Các đề xuất khuếch đại nội dung và PR chưa được xây dựng.',
       },
     },
+    customerLogin: {
+      invalidTitle: 'Link đăng nhập không hợp lệ',
+      invalidBody: 'Link có thể bị thiếu token. Hãy yêu cầu link đăng nhập mới từ trang đăng nhập.',
+      backToLogin: 'Về trang đăng nhập',
+      signingIn: 'Đang đăng nhập...',
+      promptLabel: 'Đã mua gói rồi?',
+      cta: 'Đăng nhập bằng email',
+      emailLabel: 'Email công việc',
+      submit: 'Gửi link đăng nhập',
+      submitting: 'Đang gửi...',
+      successMessage: 'Kiểm tra email của bạn — chúng tôi đã gửi link đăng nhập.',
+      genericError: 'Không thể gửi link đăng nhập cho email này.',
+    },
     checkout: {
       backToPricing: '← Quay lại bảng giá',
       eyebrow: 'Thanh toán',
@@ -1276,7 +1315,7 @@ export const translations: Record<Lang, Translations> = {
       simulatePayCta: '— Mô phỏng: đã thanh toán →',
       payingCta: 'Đang xác nhận...',
       doneTitle: 'Thanh toán thành công',
-      doneBody: 'Chúng tôi đã nhận được thanh toán — đội ngũ sẽ kích hoạt gói của bạn và liên hệ qua email trong thời gian sớm nhất.',
+      doneBody: 'Chúng tôi đã nhận được thanh toán và gửi link đăng nhập vào email của bạn — mở link đó để đăng nhập và thiết lập thương hiệu. Mất email? Yêu cầu link mới bất cứ lúc nào từ trang đăng nhập.',
       notFoundTitle: 'Không tìm thấy gói',
       notFoundBody: 'Không tìm thấy gói này. Vui lòng chọn gói từ trang bảng giá.',
       backHome: 'Về trang bảng giá',

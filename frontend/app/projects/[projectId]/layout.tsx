@@ -19,7 +19,7 @@ export default function ProjectLayout({ children }: { children: React.ReactNode 
   const [status, setStatus] = useState<'checking' | 'ready' | 'error'>('checking');
   const [error, setError] = useState('');
   const [username, setUsername] = useState('');
-  const [role, setRole] = useState<'admin' | 'user' | 'trial'>('user');
+  const [role, setRole] = useState<'admin' | 'user' | 'trial' | 'customer'>('user');
   const isTrial = role === 'trial';
   const homeHref = isTrial ? '/' : '/login';
 

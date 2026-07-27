@@ -13,8 +13,17 @@ export class ProjectsService {
     return this.projectModel.find(filter).lean();
   }
 
-  create(data: Partial<Project>, ownerId: string) {
-    const created = new this.projectModel({ ...data, ownerId });
+  async create(data: Partial<Project>, user: AuthUser) {
+    await this.assertPlanLimits(user, data);
+
+    if (user.role === 'customer' && user.maxProjects !== undefined) {
+      const count = await this.projectModel.countDocuments({ ownerId: user.sub });
+      if (count >= user.maxProjects) {
+        throw new ForbiddenException(`Your plan allows up to ${user.maxProjects} project(s) — upgrade to add more.`);
+      }
+    }
+
+    const created = new this.projectModel({ ...data, ownerId: user.sub });
     return created.save();
   }
 
@@ -26,6 +35,7 @@ export class ProjectsService {
   }
 
   async update(id: string, data: Partial<Project>, user: AuthUser) {
+    await this.assertPlanLimits(user, data);
     const project = await this.getById(id, user);
     Object.assign(project, data);
     return project.save();
@@ -45,6 +55,24 @@ export class ProjectsService {
     }
     if (project.ownerId !== user.sub) {
       throw new ForbiddenException('You do not have access to this project');
+    }
+  }
+
+  // Only 'customer' identities (paid via the magic-link flow) carry plan
+  // caps baked into their token — admin/user/trial are unaffected.
+  private async assertPlanLimits(user: AuthUser, data: Partial<Project>) {
+    if (user.role !== 'customer') return;
+
+    if (data.enabledPlatforms?.length) {
+      const allowed = new Set(user.allowedPlatforms || []);
+      const disallowed = data.enabledPlatforms.filter((p) => !allowed.has(p));
+      if (disallowed.length) {
+        throw new ForbiddenException(`Your plan does not include: ${disallowed.join(', ')}`);
+      }
+    }
+
+    if (data.runsPerPrompt !== undefined && user.maxRunsPerPrompt !== undefined && data.runsPerPrompt > user.maxRunsPerPrompt) {
+      throw new ForbiddenException(`Your plan allows at most ${user.maxRunsPerPrompt} run(s) per prompt.`);
     }
   }
 }

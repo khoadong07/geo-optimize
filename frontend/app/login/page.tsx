@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import ChangePasswordForm from '../ChangePasswordForm';
 import { industryLabel, PROJECT_INDUSTRIES } from '../industry';
+import { useLanguage } from '../i18n';
 import { Zone, ZONE_OPTIONS } from '../zones';
 
 const API = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
@@ -20,6 +21,8 @@ const INDUSTRY_OPTIONS = PROJECT_INDUSTRIES;
 
 export default function LoginPage() {
   const router = useRouter();
+  const { t } = useLanguage();
+  const cl = t.customerLogin;
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -28,6 +31,12 @@ export default function LoginPage() {
   const [checkingSession, setCheckingSession] = useState(true);
   const [loading, setLoading] = useState(false);
   const [pendingPasswordChange, setPendingPasswordChange] = useState<string | null>(null);
+
+  const [showRequestLogin, setShowRequestLogin] = useState(false);
+  const [requestEmail, setRequestEmail] = useState('');
+  const [requestingLogin, setRequestingLogin] = useState(false);
+  const [requestSent, setRequestSent] = useState(false);
+  const [requestError, setRequestError] = useState('');
 
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [createStep, setCreateStep] = useState<1 | 2 | 3>(1);
@@ -113,6 +122,24 @@ export default function LoginPage() {
     await loadProjects(data.token);
   }
 
+  async function handleRequestLogin(e: React.FormEvent) {
+    e.preventDefault();
+    setRequestingLogin(true);
+    setRequestError('');
+    const res = await fetch(`${API}/plan-orders/request-login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: requestEmail }),
+    });
+    const data = await res.json().catch(() => ({}));
+    setRequestingLogin(false);
+    if (!res.ok) {
+      setRequestError(data.message || cl.genericError);
+      return;
+    }
+    setRequestSent(true);
+  }
+
   function handleLogout() {
     window.localStorage.removeItem('geo_token');
     setIsAuthenticated(false);
@@ -193,6 +220,37 @@ export default function LoginPage() {
               {loading ? 'Signing in...' : 'Sign in'}
             </button>
           </form>
+
+          {showRequestLogin ? (
+            requestSent ? (
+              <p style={{ fontSize: 13, color: 'var(--green)', marginTop: 18 }}>{cl.successMessage}</p>
+            ) : (
+              <form onSubmit={handleRequestLogin} className="gb-form-row" style={{ marginTop: 18 }}>
+                <label className="gb-label">
+                  {cl.emailLabel}
+                  <input
+                    type="email"
+                    className="gb-input"
+                    value={requestEmail}
+                    onChange={(e) => setRequestEmail(e.target.value)}
+                    required
+                  />
+                </label>
+                {requestError ? <div className="gb-banner error">{requestError}</div> : null}
+                <button className="gb-btn gb-btn-ghost" type="submit" disabled={requestingLogin}>
+                  {requestingLogin ? cl.submitting : cl.submit}
+                </button>
+              </form>
+            )
+          ) : (
+            <button
+              className="gb-link"
+              style={{ marginTop: 18, display: 'block' }}
+              onClick={() => setShowRequestLogin(true)}
+            >
+              {cl.promptLabel} {cl.cta}
+            </button>
+          )}
         </div>
       </div>
     );

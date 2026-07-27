@@ -2,7 +2,7 @@ import { Body, Controller, Delete, Get, Param, Patch, Post, UseGuards } from '@n
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { Roles } from '../auth/roles.decorator';
 import { RolesGuard } from '../auth/roles.guard';
-import { CreatePlanOrderDto, SetPlanOrderStatusDto } from './dto';
+import { CreatePlanOrderDto, RequestLoginDto, SetPlanOrderStatusDto } from './dto';
 import { PlanOrdersService } from './plan-orders.service';
 
 @Controller('plan-orders')
@@ -13,6 +13,12 @@ export class PlanOrdersController {
   @Post()
   create(@Body() body: CreatePlanOrderDto) {
     return this.planOrdersService.create(body);
+  }
+
+  // Public — a paid buyer (re)requesting their magic-link login by email.
+  @Post('request-login')
+  requestLogin(@Body() body: RequestLoginDto) {
+    return this.planOrdersService.requestLogin(body.email);
   }
 
   @Get(':id')

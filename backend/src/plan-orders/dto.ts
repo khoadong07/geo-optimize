@@ -26,3 +26,8 @@ export class SetPlanOrderStatusDto {
   @IsIn(['new', 'paid', 'contacted', 'fulfilled'])
   status!: PlanOrderStatus;
 }
+
+export class RequestLoginDto {
+  @IsEmail()
+  email!: string;
+}

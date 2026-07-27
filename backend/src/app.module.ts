@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { AuthModule } from './auth/auth.module';
+import { PlanOrdersModule } from './plan-orders/plan-orders.module';
 import { ProjectsModule } from './projects/projects.module';
 import { PromptSetsModule } from './prompt-sets/prompt-sets.module';
 import { ReportOrdersModule } from './report-orders/report-orders.module';
@@ -24,6 +25,7 @@ import { TrialModule } from './trial/trial.module';
     TrialModule,
     ReportsModule,
     ReportOrdersModule,
+    PlanOrdersModule,
   ],
 })
 export class AppModule {}

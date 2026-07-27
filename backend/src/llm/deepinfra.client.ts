@@ -20,7 +20,7 @@ function getClient(): OpenAI {
   return client;
 }
 
-function createDeepInfraClient(model: string): LlmClient {
+function createDeepInfraClient(model: string, reasoningEffort?: 'low' | 'medium' | 'high'): LlmClient {
   return {
     async generateText(prompt: string, systemInstruction?: string): Promise<LlmTextResult> {
       const response = await getClient().chat.completions.create({
@@ -29,7 +29,11 @@ function createDeepInfraClient(model: string): LlmClient {
           ...(systemInstruction ? [{ role: 'system' as const, content: systemInstruction }] : []),
           { role: 'user' as const, content: prompt },
         ],
-      });
+        // gpt-oss models default to spending extra tokens "thinking" before
+        // answering; our prompts are simple generation/classification tasks
+        // that don't need it, so pin the minimum effort to cut latency.
+        ...(reasoningEffort ? { reasoning_effort: reasoningEffort } : {}),
+      } as any);
 
       const text = response.choices[0]?.message?.content ?? '';
       return { text, modelName: response.model };
@@ -37,9 +41,12 @@ function createDeepInfraClient(model: string): LlmClient {
   };
 }
 
-// Fallback for the OPENAI platform slot.
+// Fallback for the OPENAI platform slot — backs both real tracking runs (when
+// OPENAI_API_KEY isn't set) and prompt generation, so this is on the hot path
+// for trial speed.
 export const deepInfraOpenaiFallbackClient: LlmClient = createDeepInfraClient(
   process.env.DEEPINFRA_OPENAI_MODEL || 'openai/gpt-oss-120b',
+  'low',
 );
 
 // Fallback for the GEMINI platform slot (proxied by DeepInfra).

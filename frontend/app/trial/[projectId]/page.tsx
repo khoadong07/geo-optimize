@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import { FormEvent, useEffect, useRef, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { industryLabel, PROJECT_INDUSTRIES } from '../../industry';
@@ -572,6 +573,43 @@ export default function TrialFlowPage() {
           </button>
         </form>
       )}
+
+      <div className="gb-section" style={{ marginTop: 40 }}>
+        <span>{tf.reportPricingEyebrow}</span>
+      </div>
+      <h2 className="gb-title" style={{ marginBottom: 4 }}>
+        {tf.reportPricingTitle}
+      </h2>
+      <p className="gb-subtitle" style={{ marginBottom: 20 }}>
+        {tf.reportPricingBody}
+      </p>
+      <div className="gb-mkt-pricing">
+        {t.pricing.plans.map((plan, i) => (
+          <div className={`gb-mkt-price${i === 1 ? ' featured' : ''}`} key={plan.name}>
+            {i === 1 ? <span className="gb-mkt-price-badge">{t.pricing.mostPopular}</span> : null}
+            <div className="gb-mkt-price-name">{plan.name}</div>
+            {plan.desc ? <div className="gb-mkt-price-desc">{plan.desc}</div> : null}
+            <div className="gb-mkt-price-amount">
+              {plan.price}
+              {plan.period ? <span>{plan.period}</span> : null}
+            </div>
+            <ul className="gb-mkt-price-list">
+              {plan.features.map((f) => (
+                <li key={f}>{f}</li>
+              ))}
+            </ul>
+            {plan.slug === 'enterprise' ? (
+              <Link href="/" className="gb-btn gb-btn-ghost" style={{ textAlign: 'center' }}>
+                {plan.cta}
+              </Link>
+            ) : (
+              <Link href={`/checkout/${plan.slug}`} className={`gb-btn ${i === 1 ? 'gb-btn-primary' : 'gb-btn-ghost'}`} style={{ textAlign: 'center' }}>
+                {plan.cta}
+              </Link>
+            )}
+          </div>
+        ))}
+      </div>
     </main>
   );
 }

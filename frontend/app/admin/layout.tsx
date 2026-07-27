@@ -13,6 +13,7 @@ const NAV_ITEMS = [
   { href: '/admin/trending-topics', label: 'Trending topics' },
   { href: '/admin/reports', label: 'Reports' },
   { href: '/admin/report-orders', label: 'Report orders' },
+  { href: '/admin/plan-orders', label: 'Plan orders' },
 ];
 
 function IconSignOut() {

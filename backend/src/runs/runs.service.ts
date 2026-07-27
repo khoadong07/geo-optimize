@@ -129,7 +129,9 @@ export class RunsService {
   }
 
   private async runJobsInBackground(jobId: string, projectId: string, project: ProjectDocument, jobs: Job[]) {
-    const concurrency = Number(process.env.RUN_CONCURRENCY) || 8;
+    // 10 by default so a trial's 10 prompts (1 run each, OPENAI only) all
+    // fire in a single wave instead of spilling into a second batch.
+    const concurrency = Number(process.env.RUN_CONCURRENCY) || 10;
     try {
       const created = await this.mapWithConcurrency(jobs, concurrency, async (job) => {
         try {

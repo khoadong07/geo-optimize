@@ -10,6 +10,7 @@ import { ProjectsService } from '../projects/projects.service';
 import { generatePromptCandidates } from '../prompt-sets/generate.util';
 import { PromptIntent } from '../prompt-sets/prompt-set.schema';
 import { PromptSetsService } from '../prompt-sets/prompt-sets.service';
+import { RunJob, RunJobDocument } from '../runs/run-job.schema';
 import { RunsService } from '../runs/runs.service';
 import { SiteAuditService } from '../site-audit/site-audit.service';
 import { detectIndustryAndCompetitors } from './industry-detect.util';
@@ -36,6 +37,7 @@ export class TrialService {
   constructor(
     @InjectModel(Project.name) private readonly projectModel: Model<ProjectDocument>,
     @InjectModel(TrialLead.name) private readonly trialLeadModel: Model<TrialLeadDocument>,
+    @InjectModel(RunJob.name) private readonly runJobModel: Model<RunJobDocument>,
     private readonly authService: AuthService,
     private readonly mailService: MailService,
     private readonly llmService: LlmService,
@@ -47,6 +49,26 @@ export class TrialService {
 
   async analyze(domainInput: string, zone: string) {
     const domain = normalizeDomain(domainInput);
+
+    // Reuse an existing trial for this exact domain if one has already been
+    // set up (has a run job, whether still running or completed) — skips
+    // the website fetch, LLM classification, and question generation
+    // entirely, and lets the visitor land straight on the live/finished
+    // report via the same job-polling the trial page already does.
+    const existing = await this.projectModel.findOne({ domain, visibility: 'trial' }).sort({ createdAt: -1 });
+    if (existing) {
+      const hasJob = await this.runJobModel.exists({ projectId: existing._id.toString() });
+      if (hasJob) {
+        const { token } = this.authService.issueTrialToken(existing._id.toString(), existing.name);
+        return {
+          token,
+          project: { id: existing._id, name: existing.name, domain: existing.domain, zone: existing.zone, industry: existing.industry },
+          suggestedCompetitors: existing.competitors,
+          cached: true,
+        };
+      }
+    }
+
     const websiteText = await fetchWebsiteText(domain);
     const { brandName, industry, suggestedCompetitors } = await detectIndustryAndCompetitors(this.llmService, {
       domain,

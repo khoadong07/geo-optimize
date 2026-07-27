@@ -88,6 +88,12 @@ export interface Translations {
     leadSuccessTitle: string;
     leadSuccessBody: string;
     viewDashboardCta: string;
+    promptsGateEyebrow: string;
+    promptsGateTitle: string;
+    promptsGateBody: string;
+    reportPricingEyebrow: string;
+    reportPricingTitle: string;
+    reportPricingBody: string;
   };
   footer: { product: string; pricing: string; signIn: string; copyright: string };
   reports: {
@@ -110,12 +116,25 @@ export interface Translations {
   checkout: {
     backToPricing: string;
     eyebrow: string;
+    steps: string[];
+    orderLabel: string;
     planLabel: string;
-    priceLabel: string;
-    qrTitle: string;
-    qrPlaceholder: string;
-    instructions: string;
-    contactCta: string;
+    vatLabel: string;
+    totalLabel: string;
+    emailLabel: string;
+    emailPlaceholder: string;
+    companyLabel: string;
+    discountLabel: string;
+    continueCta: string;
+    submitting: string;
+    genericError: string;
+    paymentMethods: string[];
+    qrScanHint: string;
+    qrWebhookHint: string;
+    simulatePayCta: string;
+    payingCta: string;
+    doneTitle: string;
+    doneBody: string;
     notFoundTitle: string;
     notFoundBody: string;
     backHome: string;
@@ -514,6 +533,12 @@ export const translations: Record<Lang, Translations> = {
       leadSuccessTitle: 'Your full report is ready',
       leadSuccessBody: "We've also emailed you the link so you can come back to it anytime.",
       viewDashboardCta: 'View full dashboard',
+      promptsGateEyebrow: 'Upgrade to unlock',
+      promptsGateTitle: 'Ranking & Prompts needs a paid plan',
+      promptsGateBody: 'Trial reports show a fixed set of questions. Pick a plan below to generate and track your own prompts, add competitors, and re-run tracking anytime.',
+      reportPricingEyebrow: 'Like what you see?',
+      reportPricingTitle: 'Go further with a full plan',
+      reportPricingBody: 'Keep tracking this brand with more prompts, more AI platforms, and weekly re-runs.',
     },
     footer: {
       product: 'Product',
@@ -774,12 +799,25 @@ export const translations: Record<Lang, Translations> = {
     checkout: {
       backToPricing: '← Back to pricing',
       eyebrow: 'Checkout',
-      planLabel: 'Selected plan',
-      priceLabel: 'Amount',
-      qrTitle: 'Payment QR',
-      qrPlaceholder: "We're finalizing the payment QR for this plan.",
-      instructions: 'Our team will send you the payment QR and bank transfer details directly, then activate your plan as soon as payment is confirmed.',
-      contactCta: 'Contact us to complete payment',
+      steps: ['Info', 'Payment', 'Done'],
+      orderLabel: 'Order',
+      planLabel: 'Plan',
+      vatLabel: 'VAT (10%)',
+      totalLabel: 'Total',
+      emailLabel: 'Work email *',
+      emailPlaceholder: 'a.nguyen@brand.com',
+      companyLabel: 'Company name + Tax ID (for invoice — optional)',
+      discountLabel: 'Discount code',
+      continueCta: 'Continue',
+      submitting: 'Submitting...',
+      genericError: 'Could not create the order. Please try again.',
+      paymentMethods: ['VietQR', 'MoMo', 'International card'],
+      qrScanHint: 'Scan with any banking app',
+      qrWebhookHint: 'Auto-confirms via webhook — no need to click anything else',
+      simulatePayCta: '— Simulate: paid →',
+      payingCta: 'Confirming...',
+      doneTitle: 'Payment successful',
+      doneBody: "We've received your payment — our team will activate your plan and follow up by email shortly.",
       notFoundTitle: 'Plan not found',
       notFoundBody: "We couldn't find that plan. Please pick a plan from the pricing page.",
       backHome: 'Back to pricing',
@@ -954,6 +992,12 @@ export const translations: Record<Lang, Translations> = {
       leadSuccessTitle: 'Báo cáo đầy đủ đã sẵn sàng',
       leadSuccessBody: 'Chúng tôi cũng đã gửi link vào email của bạn để quay lại xem bất cứ lúc nào.',
       viewDashboardCta: 'Xem dashboard đầy đủ',
+      promptsGateEyebrow: 'Nâng cấp để mở khoá',
+      promptsGateTitle: 'Xếp hạng & Câu hỏi cần gói trả phí',
+      promptsGateBody: 'Bản dùng thử chỉ hiển thị bộ câu hỏi cố định. Chọn một gói bên dưới để tự tạo và theo dõi câu hỏi riêng, thêm đối thủ cạnh tranh, và chạy lại theo dõi bất cứ lúc nào.',
+      reportPricingEyebrow: 'Thích những gì bạn thấy?',
+      reportPricingTitle: 'Nâng cấp lên gói đầy đủ',
+      reportPricingBody: 'Tiếp tục theo dõi thương hiệu này với nhiều câu hỏi hơn, nhiều nền tảng AI hơn, và chạy lại hàng tuần.',
     },
     footer: {
       product: 'Sản phẩm',
@@ -1214,12 +1258,25 @@ export const translations: Record<Lang, Translations> = {
     checkout: {
       backToPricing: '← Quay lại bảng giá',
       eyebrow: 'Thanh toán',
-      planLabel: 'Gói đã chọn',
-      priceLabel: 'Số tiền',
-      qrTitle: 'Mã QR thanh toán',
-      qrPlaceholder: 'Chúng tôi đang hoàn tất mã QR thanh toán cho gói này.',
-      instructions: 'Đội ngũ Kompa sẽ gửi trực tiếp mã QR và thông tin chuyển khoản cho bạn, sau đó kích hoạt gói ngay khi xác nhận đã thanh toán.',
-      contactCta: 'Liên hệ để hoàn tất thanh toán',
+      steps: ['Thông tin', 'Thanh toán', 'Hoàn tất'],
+      orderLabel: 'Đơn hàng',
+      planLabel: 'Gói',
+      vatLabel: 'VAT (10%)',
+      totalLabel: 'Tổng',
+      emailLabel: 'Email công việc *',
+      emailPlaceholder: 'a.nguyen@brand.vn',
+      companyLabel: 'Tên công ty + MST (để xuất hoá đơn — không bắt buộc)',
+      discountLabel: 'Mã giảm giá',
+      continueCta: 'Tiếp tục',
+      submitting: 'Đang gửi...',
+      genericError: 'Không thể tạo đơn hàng. Vui lòng thử lại.',
+      paymentMethods: ['VietQR', 'MoMo', 'Thẻ quốc tế'],
+      qrScanHint: 'Quét bằng app ngân hàng bất kỳ',
+      qrWebhookHint: 'Tự xác nhận qua webhook — không cần bấm gì thêm',
+      simulatePayCta: '— Mô phỏng: đã thanh toán →',
+      payingCta: 'Đang xác nhận...',
+      doneTitle: 'Thanh toán thành công',
+      doneBody: 'Chúng tôi đã nhận được thanh toán — đội ngũ sẽ kích hoạt gói của bạn và liên hệ qua email trong thời gian sớm nhất.',
       notFoundTitle: 'Không tìm thấy gói',
       notFoundBody: 'Không tìm thấy gói này. Vui lòng chọn gói từ trang bảng giá.',
       backHome: 'Về trang bảng giá',

@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import { FormEvent, useEffect, useState } from 'react';
 import { industryLabel } from '../../../industry';
 import { interpolate, translations, useLanguage } from '../../../i18n';
@@ -27,7 +28,7 @@ const STATUS_PRIORITY: Record<string, number> = {
 };
 
 export default function PromptsPage() {
-  const { project } = useProjectContext();
+  const { project, role } = useProjectContext();
   const { lang, t } = useLanguage();
   const c = t.app.common;
   const p_ = t.app.prompts;
@@ -271,6 +272,51 @@ export default function PromptsPage() {
       if (allVisibleChecked) return new Set();
       return new Set(visiblePrompts.map(promptKey));
     });
+  }
+
+  if (role === 'trial') {
+    const tf = t.trialFlow;
+    return (
+      <>
+        <p className="gb-eyebrow">{tf.promptsGateEyebrow}</p>
+        <h2 className="gb-title">{tf.promptsGateTitle}</h2>
+        <p className="gb-subtitle" style={{ marginBottom: 24, maxWidth: 620 }}>
+          {tf.promptsGateBody}
+        </p>
+
+        <div className="gb-mkt-pricing">
+          {t.pricing.plans.map((plan, i) => (
+            <div className={`gb-mkt-price${i === 1 ? ' featured' : ''}`} key={plan.name}>
+              {i === 1 ? <span className="gb-mkt-price-badge">{t.pricing.mostPopular}</span> : null}
+              <div className="gb-mkt-price-name">{plan.name}</div>
+              {plan.desc ? <div className="gb-mkt-price-desc">{plan.desc}</div> : null}
+              <div className="gb-mkt-price-amount">
+                {plan.price}
+                {plan.period ? <span>{plan.period}</span> : null}
+              </div>
+              <ul className="gb-mkt-price-list">
+                {plan.features.map((f) => (
+                  <li key={f}>{f}</li>
+                ))}
+              </ul>
+              {plan.slug === 'enterprise' ? (
+                <Link href="/" className="gb-btn gb-btn-ghost" style={{ textAlign: 'center' }}>
+                  {plan.cta}
+                </Link>
+              ) : (
+                <Link
+                  href={`/checkout/${plan.slug}`}
+                  className={`gb-btn ${i === 1 ? 'gb-btn-primary' : 'gb-btn-ghost'}`}
+                  style={{ textAlign: 'center' }}
+                >
+                  {plan.cta}
+                </Link>
+              )}
+            </div>
+          ))}
+        </div>
+      </>
+    );
   }
 
   return (

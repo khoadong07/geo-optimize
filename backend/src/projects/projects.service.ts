@@ -9,7 +9,7 @@ export class ProjectsService {
   constructor(@InjectModel(Project.name) private readonly projectModel: Model<ProjectDocument>) {}
 
   list(user: AuthUser) {
-    const filter = user.role === 'admin' ? {} : user.role === 'trial' ? { visibility: 'sample' } : { ownerId: user.sub };
+    const filter = user.role === 'admin' ? {} : user.role === 'trial' ? { _id: user.sub } : { ownerId: user.sub };
     return this.projectModel.find(filter).lean();
   }
 
@@ -40,7 +40,7 @@ export class ProjectsService {
   private assertAccess(project: ProjectDocument, user: AuthUser) {
     if (user.role === 'admin') return;
     if (user.role === 'trial') {
-      if (project.visibility === 'sample') return;
+      if ((project._id as any).toString() === user.sub) return;
       throw new ForbiddenException('You do not have access to this project');
     }
     if (project.ownerId !== user.sub) {

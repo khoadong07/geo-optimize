@@ -106,7 +106,7 @@ function TrendLine({ trend, notEnoughDataText, todayText }: { trend: { date: str
 }
 
 export default function OverviewPage() {
-  const { project } = useProjectContext();
+  const { project, role } = useProjectContext();
   const { t } = useLanguage();
   const c = t.app.common;
   const o = t.app.overview;
@@ -240,11 +240,13 @@ export default function OverviewPage() {
         <div className="gb-card gb-empty">
           <strong>{o.noDataYetTitle}</strong>
           {interpolate(o.readyWithPrompts, { prompts: overview.prompts.length, platforms: project.enabledPlatforms.length })}
-          <div style={{ marginTop: 16 }}>
-            <button className="gb-btn gb-btn-primary" onClick={handleRunNow} disabled={triggering || isRunning || !overview.prompts.length}>
-              {isRunning ? interpolate(o.runningProgress, { done: progressDone, total: job!.totalJobs }) + '...' : triggering ? c.sendingRequest : o.runTrackingNow}
-            </button>
-          </div>
+          {role === 'trial' ? null : (
+            <div style={{ marginTop: 16 }}>
+              <button className="gb-btn gb-btn-primary" onClick={handleRunNow} disabled={triggering || isRunning || !overview.prompts.length}>
+                {isRunning ? interpolate(o.runningProgress, { done: progressDone, total: job!.totalJobs }) + '...' : triggering ? c.sendingRequest : o.runTrackingNow}
+              </button>
+            </div>
+          )}
           {!overview.prompts.length ? (
             <p style={{ marginTop: 12 }}>
               {o.noPromptsYetInline}{' '}
@@ -351,15 +353,17 @@ export default function OverviewPage() {
 
       <div className="gb-section">
         {o.promptsTracked} <span className="count">{overview.prompts.length}</span>
-        <button
-          className="gb-btn gb-btn-ghost"
-          style={{ marginLeft: 'auto' }}
-          onClick={handleRunNow}
-          disabled={triggering || isRunning || !pendingCount}
-          title={!pendingCount ? o.everyPromptMetTooltip : interpolate(o.onlyRerunTooltip, { n: pendingCount })}
-        >
-          {isRunning ? interpolate(o.runningProgress, { done: progressDone, total: job!.totalJobs }) : triggering ? c.sending : interpolate(o.reRunTracking, { n: pendingCount })}
-        </button>
+        {role === 'trial' ? null : (
+          <button
+            className="gb-btn gb-btn-ghost"
+            style={{ marginLeft: 'auto' }}
+            onClick={handleRunNow}
+            disabled={triggering || isRunning || !pendingCount}
+            title={!pendingCount ? o.everyPromptMetTooltip : interpolate(o.onlyRerunTooltip, { n: pendingCount })}
+          >
+            {isRunning ? interpolate(o.runningProgress, { done: progressDone, total: job!.totalJobs }) : triggering ? c.sending : interpolate(o.reRunTracking, { n: pendingCount })}
+          </button>
+        )}
       </div>
 
       <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap', marginBottom: 14 }}>

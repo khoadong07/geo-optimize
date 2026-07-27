@@ -25,7 +25,7 @@ type AuditJob = { _id: string; status: 'running' | 'completed' | 'failed'; error
 const CHECK_ORDER = ['robots_txt', 'llms_txt', 'schema_jsonld', 'meta_tags', 'content', 'signals', 'ai_discovery', 'brand_entity'];
 
 export default function GapCitationPage() {
-  const { project } = useProjectContext();
+  const { project, role } = useProjectContext();
   const { t } = useLanguage();
   const c = t.app.common;
   const g_ = t.app.gapCitation;
@@ -144,11 +144,13 @@ export default function GapCitationPage() {
         <div className="gb-card gb-empty">
           <strong>{g_.noAuditYetTitle}</strong>
           {interpolate(g_.runFirstAudit, { domain: project.domain })}
-          <div style={{ marginTop: 16 }}>
-            <button className="gb-btn gb-btn-primary" onClick={handleRunAudit} disabled={triggering || isRunning}>
-              {isRunning ? c.running : triggering ? c.sendingRequest : g_.runAuditNow}
-            </button>
-          </div>
+          {role === 'trial' ? null : (
+            <div style={{ marginTop: 16 }}>
+              <button className="gb-btn gb-btn-primary" onClick={handleRunAudit} disabled={triggering || isRunning}>
+                {isRunning ? c.running : triggering ? c.sendingRequest : g_.runAuditNow}
+              </button>
+            </div>
+          )}
         </div>
       ) : (
         <>
@@ -169,9 +171,11 @@ export default function GapCitationPage() {
                 {interpolate(g_.auditedAt, { date: new Date(audit.createdAt).toLocaleString() })}
                 {audit.auditDurationMs ? ` · ${(audit.auditDurationMs / 1000).toFixed(1)}s` : ''}
               </p>
-              <button className="gb-btn gb-btn-ghost" style={{ width: '100%' }} onClick={handleRunAudit} disabled={triggering || isRunning}>
-                {isRunning ? c.running : triggering ? c.sending : g_.runAuditAgain}
-              </button>
+              {role === 'trial' ? null : (
+                <button className="gb-btn gb-btn-ghost" style={{ width: '100%' }} onClick={handleRunAudit} disabled={triggering || isRunning}>
+                  {isRunning ? c.running : triggering ? c.sending : g_.runAuditAgain}
+                </button>
+              )}
             </div>
 
             <div className="gb-card">

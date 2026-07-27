@@ -17,7 +17,9 @@ export type Project = {
   runsPerPrompt: number;
 };
 
-export const ProjectContext = createContext<{ project: Project; refresh: () => void } | null>(null);
+export type Role = 'admin' | 'user' | 'trial';
+
+export const ProjectContext = createContext<{ project: Project; refresh: () => void; role: Role } | null>(null);
 
 export function useProjectContext() {
   const ctx = useContext(ProjectContext);

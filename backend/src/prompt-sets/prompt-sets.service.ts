@@ -78,7 +78,13 @@ export class PromptSetsService {
     return { deleted: true };
   }
 
-  async generateCandidates(projectId: string, intent: PromptIntent, user: AuthUser, trendingTopics?: string[]) {
+  async generateCandidates(
+    projectId: string,
+    intent: PromptIntent,
+    user: AuthUser,
+    trendingTopics?: string[],
+    lang: 'en' | 'vi' = 'vi',
+  ) {
     const project = await this.projectsService.getById(projectId, user);
 
     try {
@@ -89,6 +95,7 @@ export class PromptSetsService {
         intent,
         count: 7,
         trendingTopics,
+        lang,
       });
       return { intent, candidates };
     } catch {

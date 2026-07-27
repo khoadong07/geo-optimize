@@ -16,5 +16,6 @@ import { SiteAuditService } from './site-audit.service';
   ],
   controllers: [SiteAuditController],
   providers: [SiteAuditService],
+  exports: [SiteAuditService],
 })
 export class SiteAuditModule {}

@@ -27,7 +27,7 @@ export class JwtAuthGuard implements CanActivate {
       throw new ForbiddenException('You must change your password before continuing');
     }
 
-    if (decoded.role === 'trial' && request.method !== 'GET') {
+    if (decoded.role === 'trial' && request.method !== 'GET' && !request.path.startsWith('/trial/')) {
       throw new ForbiddenException('Trial access is read-only');
     }
 

@@ -103,7 +103,7 @@ export default function PromptsPage() {
     const res = await fetch(`${API}/projects/${project._id}/prompt-sets/generate`, {
       method: 'POST',
       headers: { ...authHeader(), 'Content-Type': 'application/json' },
-      body: JSON.stringify({ intent: genIntent, trendingTopics: Array.from(selectedTrending) }),
+      body: JSON.stringify({ intent: genIntent, trendingTopics: Array.from(selectedTrending), lang }),
     });
     const data = await res.json();
     setGenLoading(false);

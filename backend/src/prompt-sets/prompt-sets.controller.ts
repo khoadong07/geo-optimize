@@ -26,10 +26,10 @@ export class PromptSetsController {
   @Post('generate')
   generate(
     @Param('projectId') projectId: string,
-    @Body() body: { intent: PromptIntent; trendingTopics?: string[] },
+    @Body() body: { intent: PromptIntent; trendingTopics?: string[]; lang?: 'en' | 'vi' },
     @CurrentUser() user: AuthUser,
   ) {
-    return this.promptSetsService.generateCandidates(projectId, body.intent, user, body.trendingTopics);
+    return this.promptSetsService.generateCandidates(projectId, body.intent, user, body.trendingTopics, body.lang);
   }
 
   @Get(':id')

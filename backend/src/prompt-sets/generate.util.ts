@@ -12,6 +12,11 @@ const INTENT_GUIDANCE: Record<PromptIntent, string> = {
     'Long, specific, detailed questions about a niche situation or need related to the industry (not necessarily mentioning the brand or competitors).',
 };
 
+const LANGUAGE_NAME: Record<'en' | 'vi', string> = {
+  en: 'English',
+  vi: 'Vietnamese',
+};
+
 function buildGenerationPrompt(params: {
   brandName: string;
   industry: string;
@@ -19,10 +24,12 @@ function buildGenerationPrompt(params: {
   intent: PromptIntent;
   count: number;
   trendingTopics?: string[];
+  lang: 'en' | 'vi';
 }): string {
   const trendingBlock = params.trendingTopics?.length
     ? `\nCurrently trending topics in this industry (lean into these where they fit the intent, to make the questions timelier and more effective):\n${params.trendingTopics.map((t) => `- ${t}`).join('\n')}\n`
     : '';
+  const languageName = LANGUAGE_NAME[params.lang];
 
   return `You are a market research expert. Task: generate questions that a real user might type into an AI assistant (like ChatGPT, Gemini) when searching for information related to the "${params.industry}" industry.
 
@@ -33,7 +40,7 @@ ${trendingBlock}
 Intent type to generate: ${params.intent}
 ${INTENT_GUIDANCE[params.intent]}
 
-Generate exactly ${params.count} questions in English, written naturally as a real user would type them, with varied phrasing and no duplicate meanings.
+Generate exactly ${params.count} questions in ${languageName}, written naturally as a real native ${languageName}-speaking user would type them into an AI assistant — with varied phrasing and no duplicate meanings.
 
 Return ONLY a plain JSON array of strings, with no explanation or markdown code fence, in exactly this shape:
 ["question 1", "question 2", "question 3"]`;
@@ -46,6 +53,7 @@ export async function generatePromptCandidates(params: {
   intent: PromptIntent;
   count: number;
   trendingTopics?: string[];
+  lang: 'en' | 'vi';
 }): Promise<string[]> {
   const prompt = buildGenerationPrompt(params);
   const { text } = await deepInfraOpenaiFallbackClient.generateText(prompt, 'You only respond with plain JSON, no explanation.');

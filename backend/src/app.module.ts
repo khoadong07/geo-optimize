@@ -9,7 +9,7 @@ import { RunsModule } from './runs/runs.module';
 import { SiteAuditModule } from './site-audit/site-audit.module';
 import { TrendingModule } from './trending/trending.module';
 import { TrendingTopicsModule } from './trending-topics/trending-topics.module';
-import { TrialRequestsModule } from './trial-requests/trial-requests.module';
+import { TrialModule } from './trial/trial.module';
 
 @Module({
   imports: [
@@ -21,7 +21,7 @@ import { TrialRequestsModule } from './trial-requests/trial-requests.module';
     SiteAuditModule,
     TrendingModule,
     TrendingTopicsModule,
-    TrialRequestsModule,
+    TrialModule,
     ReportsModule,
     ReportOrdersModule,
   ],

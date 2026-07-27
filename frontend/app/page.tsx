@@ -7,6 +7,7 @@ import DemoAnimation from './DemoAnimation';
 import { useLanguage } from './i18n';
 import ReportsSection from './ReportsSection';
 import { IconAmplify, IconAudit, IconContentAgent, IconPlatforms, IconPrompts, IconSentiment, IconTrending, IconVisibility } from './icons';
+import { Zone, ZONE_OPTIONS } from './zones';
 
 const API = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
 
@@ -16,10 +17,8 @@ const ROADMAP_ICONS = [IconAmplify, IconContentAgent];
 export default function MarketingLandingPage() {
   const router = useRouter();
   const { lang, setLang, t } = useLanguage();
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [company, setCompany] = useState('');
-  const [message, setMessage] = useState('');
+  const [domain, setDomain] = useState('');
+  const [zone, setZone] = useState<Zone>('vietnam');
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
 
@@ -27,10 +26,10 @@ export default function MarketingLandingPage() {
     e.preventDefault();
     setSubmitting(true);
     setError('');
-    const res = await fetch(`${API}/trial-requests`, {
+    const res = await fetch(`${API}/trial/analyze`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name, email, company, message: message || undefined }),
+      body: JSON.stringify({ domain, zone }),
     });
     const data = await res.json().catch(() => ({}));
     setSubmitting(false);
@@ -39,7 +38,8 @@ export default function MarketingLandingPage() {
       return;
     }
     window.localStorage.setItem('geo_token', data.token);
-    router.push('/trial');
+    window.sessionStorage.setItem('geo_trial_suggestions', JSON.stringify(data.suggestedCompetitors || []));
+    router.push(`/trial/${data.project.id}`);
   }
 
   return (
@@ -226,30 +226,28 @@ export default function MarketingLandingPage() {
             </div>
             <form className="gb-mkt-trial-form" onSubmit={handleSubmit}>
               <label className="gb-label">
-                {t.trial.name}
-                <input className="gb-input" value={name} onChange={(e) => setName(e.target.value)} required />
-              </label>
-              <label className="gb-label">
-                {t.trial.email}
-                <input type="email" className="gb-input" value={email} onChange={(e) => setEmail(e.target.value)} required />
-              </label>
-              <label className="gb-label">
-                {t.trial.company}
-                <input className="gb-input" value={company} onChange={(e) => setCompany(e.target.value)} required />
-              </label>
-              <label className="gb-label">
-                {t.trial.message}
-                <textarea
+                {t.trial.domainLabel}
+                <input
                   className="gb-input"
-                  rows={3}
-                  value={message}
-                  onChange={(e) => setMessage(e.target.value)}
-                  placeholder={t.trial.messagePlaceholder}
+                  value={domain}
+                  onChange={(e) => setDomain(e.target.value)}
+                  placeholder={t.trial.domainPlaceholder}
+                  required
                 />
+              </label>
+              <label className="gb-label">
+                {t.trial.zoneLabel}
+                <select className="gb-input" value={zone} onChange={(e) => setZone(e.target.value as Zone)}>
+                  {ZONE_OPTIONS.map((z) => (
+                    <option key={z.value} value={z.value}>
+                      {z.flag} {z.label}
+                    </option>
+                  ))}
+                </select>
               </label>
               {error ? <div className="gb-banner error">{error}</div> : null}
               <button className="gb-btn gb-btn-primary" type="submit" disabled={submitting}>
-                {submitting ? t.trial.submitting : t.trial.submit}
+                {submitting ? t.trial.analyzing : t.trial.submit}
               </button>
             </form>
           </div>

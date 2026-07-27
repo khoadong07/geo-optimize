@@ -20,5 +20,6 @@ import { RunsService } from './runs.service';
   ],
   controllers: [RunsController],
   providers: [RunsService],
+  exports: [RunsService],
 })
 export class RunsModule {}

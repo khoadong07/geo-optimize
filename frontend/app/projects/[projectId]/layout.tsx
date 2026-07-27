@@ -21,7 +21,7 @@ export default function ProjectLayout({ children }: { children: React.ReactNode 
   const [username, setUsername] = useState('');
   const [role, setRole] = useState<'admin' | 'user' | 'trial'>('user');
   const isTrial = role === 'trial';
-  const homeHref = isTrial ? '/trial' : '/login';
+  const homeHref = isTrial ? '/' : '/login';
 
   const NAV_ITEMS = [
     { href: '', label: t.app.layout.navOverview, icon: IconOverview, section: 'project' as const },
@@ -104,7 +104,7 @@ export default function ProjectLayout({ children }: { children: React.ReactNode 
   }
 
   return (
-    <ProjectContext.Provider value={{ project, refresh: load }}>
+    <ProjectContext.Provider value={{ project, refresh: load, role }}>
       <div className="gb-shell">
         <aside className="gb-sidebar">
           <div className="gb-brand">
@@ -113,7 +113,7 @@ export default function ProjectLayout({ children }: { children: React.ReactNode 
           </div>
 
           <button className="gb-btn gb-btn-ghost" style={{ width: '100%' }} onClick={() => router.push(homeHref)}>
-            {isTrial ? 'Sample dashboards' : t.app.layout.allProjects}
+            {isTrial ? 'Back to home' : t.app.layout.allProjects}
           </button>
 
           <div>

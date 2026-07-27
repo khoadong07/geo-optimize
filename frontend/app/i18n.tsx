@@ -41,16 +41,53 @@ export interface Translations {
     eyebrow: string;
     h2: string;
     lede: string;
-    name: string;
-    email: string;
-    company: string;
-    message: string;
-    messagePlaceholder: string;
+    domainLabel: string;
+    domainPlaceholder: string;
+    zoneLabel: string;
     submit: string;
-    submitting: string;
+    analyzing: string;
     genericError: string;
-    successTitle: string;
-    successBody: string;
+  };
+  trialFlow: {
+    invalidTitle: string;
+    invalidBody: string;
+    backHome: string;
+    setupEyebrow: string;
+    setupTitle: string;
+    setupSubtitle: string;
+    brandNameLabel: string;
+    industryLabel: string;
+    competitorsLabel: string;
+    competitorsHint: string;
+    addCompetitorPlaceholder: string;
+    addButton: string;
+    confirmButton: string;
+    settingUp: string;
+    setupError: string;
+    runningTitle: string;
+    runningQuestionsHeading: string;
+    runningAuditHeading: string;
+    reportEyebrow: string;
+    reportTitle: string;
+    reportSubtitle: string;
+    visibilityScoreLabel: string;
+    visibilityScoreHint: string;
+    sentimentLabel: string;
+    sentimentHint: string;
+    geoScoreLabel: string;
+    topRecommendationLabel: string;
+    singleRunCaveat: string;
+    leadTitle: string;
+    leadSubtitle: string;
+    leadNameLabel: string;
+    leadEmailLabel: string;
+    leadCompanyLabel: string;
+    leadSubmit: string;
+    leadSubmitting: string;
+    leadError: string;
+    leadSuccessTitle: string;
+    leadSuccessBody: string;
+    viewDashboardCta: string;
   };
   footer: { product: string; pricing: string; signIn: string; copyright: string };
   reports: {
@@ -428,18 +465,55 @@ export const translations: Record<Lang, Translations> = {
     },
     trial: {
       eyebrow: 'Free trial',
-      h2: "Start tracking your brand's AI visibility",
-      lede: "Tell us about your brand — we'll create your account instantly and email you sign-in access. No credit card required, cancel anytime.",
-      name: 'Full name',
-      email: 'Work email',
-      company: 'Company',
-      message: 'Message (optional)',
-      messagePlaceholder: 'Which brand and industry would you like to track?',
-      submit: 'Request access',
-      submitting: 'Submitting...',
-      genericError: 'Could not submit your request. Please try again.',
-      successTitle: 'Your account is on its way',
-      successBody: "Thanks, {{name}} — we've created your trial account and sent sign-in details to {{email}}. Check your inbox in the next few minutes.",
+      h2: 'See your brand analyzed by AI in minutes',
+      lede: "Give us your website and region — we'll detect your industry, generate 10 tracking questions, and run them against ChatGPT to show you a real report. No account, no credit card.",
+      domainLabel: 'Website',
+      domainPlaceholder: 'acme.com',
+      zoneLabel: 'Region',
+      submit: 'Analyze my brand',
+      analyzing: 'Analyzing your website...',
+      genericError: 'Could not analyze this website. Please try again.',
+    },
+    trialFlow: {
+      invalidTitle: 'This preview is unavailable',
+      invalidBody: 'The link may have expired. Start a new analysis from the home page.',
+      backHome: 'Back to home',
+      setupEyebrow: 'Step 1 of 2',
+      setupTitle: 'Confirm your brand',
+      setupSubtitle: "We detected the following from your website — adjust anything that's off, then pick your competitors.",
+      brandNameLabel: 'Brand name',
+      industryLabel: 'Industry',
+      competitorsLabel: 'Competitors to track',
+      competitorsHint: 'Suggested based on your industry — uncheck any that are wrong, or add your own.',
+      addCompetitorPlaceholder: 'Add a competitor name',
+      addButton: 'Add',
+      confirmButton: 'Run my analysis',
+      settingUp: 'Starting...',
+      setupError: 'Could not start the analysis. Please try again.',
+      runningTitle: 'Analyzing your brand',
+      runningQuestionsHeading: 'Asking ChatGPT',
+      runningAuditHeading: 'Auditing your website',
+      reportEyebrow: 'Your report',
+      reportTitle: 'Here’s what AI says about your brand',
+      reportSubtitle: 'A quick preview based on your trial run.',
+      visibilityScoreLabel: 'Visibility score',
+      visibilityScoreHint: 'How often ChatGPT ranks your brand first (0-100)',
+      sentimentLabel: 'Sentiment',
+      sentimentHint: 'Tone of ChatGPT’s answers about your brand',
+      geoScoreLabel: 'GEO readiness score',
+      topRecommendationLabel: 'Top recommendation',
+      singleRunCaveat: 'This trial used a single ChatGPT pass — full accounts run multiple platforms and passes for more stable scores.',
+      leadTitle: 'Unlock your full dashboard',
+      leadSubtitle: 'Leave your details to view the full ranking, sentiment, and GEO breakdown — we’ll also email you the link.',
+      leadNameLabel: 'Full name',
+      leadEmailLabel: 'Work email',
+      leadCompanyLabel: 'Company (optional)',
+      leadSubmit: 'View my full report',
+      leadSubmitting: 'Submitting...',
+      leadError: 'Could not submit your details. Please try again.',
+      leadSuccessTitle: 'Your full report is ready',
+      leadSuccessBody: "We've also emailed you the link so you can come back to it anytime.",
+      viewDashboardCta: 'View full dashboard',
     },
     footer: {
       product: 'Product',
@@ -831,18 +905,55 @@ export const translations: Record<Lang, Translations> = {
     },
     trial: {
       eyebrow: 'Dùng thử miễn phí',
-      h2: 'Bắt đầu theo dõi độ hiển thị AI của thương hiệu bạn',
-      lede: 'Cho chúng tôi biết về thương hiệu của bạn — chúng tôi sẽ tạo tài khoản ngay lập tức và gửi thông tin đăng nhập qua email. Không cần thẻ tín dụng, hủy bất cứ lúc nào.',
-      name: 'Họ và tên',
-      email: 'Email công việc',
-      company: 'Công ty',
-      message: 'Lời nhắn (không bắt buộc)',
-      messagePlaceholder: 'Bạn muốn theo dõi thương hiệu và ngành nào?',
-      submit: 'Yêu cầu truy cập',
-      submitting: 'Đang gửi...',
-      genericError: 'Không thể gửi yêu cầu của bạn. Vui lòng thử lại.',
-      successTitle: 'Tài khoản của bạn đang được tạo',
-      successBody: 'Cảm ơn {{name}} — chúng tôi đã tạo tài khoản dùng thử và gửi thông tin đăng nhập tới {{email}}. Hãy kiểm tra hộp thư trong vài phút tới.',
+      h2: 'Xem AI phân tích thương hiệu của bạn chỉ trong vài phút',
+      lede: 'Cho chúng tôi website và khu vực của bạn — hệ thống sẽ tự nhận diện ngành, tạo 10 câu hỏi theo dõi và chạy qua ChatGPT để hiện báo cáo thật. Không cần tài khoản, không cần thẻ tín dụng.',
+      domainLabel: 'Website',
+      domainPlaceholder: 'acme.com',
+      zoneLabel: 'Khu vực',
+      submit: 'Phân tích thương hiệu',
+      analyzing: 'Đang phân tích website của bạn...',
+      genericError: 'Không thể phân tích website này. Vui lòng thử lại.',
+    },
+    trialFlow: {
+      invalidTitle: 'Bản xem trước không khả dụng',
+      invalidBody: 'Link có thể đã hết hạn. Hãy bắt đầu phân tích mới từ trang chủ.',
+      backHome: 'Về trang chủ',
+      setupEyebrow: 'Bước 1/2',
+      setupTitle: 'Xác nhận thương hiệu của bạn',
+      setupSubtitle: 'Chúng tôi đã nhận diện các thông tin sau từ website của bạn — chỉnh lại nếu chưa đúng, sau đó chọn đối thủ cạnh tranh.',
+      brandNameLabel: 'Tên thương hiệu',
+      industryLabel: 'Ngành',
+      competitorsLabel: 'Đối thủ cần theo dõi',
+      competitorsHint: 'Gợi ý dựa trên ngành của bạn — bỏ chọn nếu chưa đúng, hoặc tự thêm.',
+      addCompetitorPlaceholder: 'Thêm tên đối thủ',
+      addButton: 'Thêm',
+      confirmButton: 'Chạy phân tích của tôi',
+      settingUp: 'Đang bắt đầu...',
+      setupError: 'Không thể bắt đầu phân tích. Vui lòng thử lại.',
+      runningTitle: 'Đang phân tích thương hiệu của bạn',
+      runningQuestionsHeading: 'Đang hỏi ChatGPT',
+      runningAuditHeading: 'Đang kiểm tra website',
+      reportEyebrow: 'Báo cáo của bạn',
+      reportTitle: 'AI đang nói gì về thương hiệu của bạn',
+      reportSubtitle: 'Bản xem trước nhanh dựa trên lượt chạy dùng thử.',
+      visibilityScoreLabel: 'Điểm hiển thị',
+      visibilityScoreHint: 'Tần suất ChatGPT xếp thương hiệu bạn ở vị trí đầu (0-100)',
+      sentimentLabel: 'Cảm xúc',
+      sentimentHint: 'Sắc thái câu trả lời của ChatGPT về thương hiệu bạn',
+      geoScoreLabel: 'Điểm sẵn sàng GEO',
+      topRecommendationLabel: 'Đề xuất hàng đầu',
+      singleRunCaveat: 'Bản dùng thử này chạy 1 lượt qua ChatGPT — tài khoản đầy đủ chạy nhiều nền tảng và nhiều lượt hơn để có điểm số ổn định hơn.',
+      leadTitle: 'Mở khoá dashboard đầy đủ',
+      leadSubtitle: 'Để lại thông tin để xem đầy đủ xếp hạng, cảm xúc và chi tiết GEO — chúng tôi cũng sẽ gửi link qua email.',
+      leadNameLabel: 'Họ và tên',
+      leadEmailLabel: 'Email công việc',
+      leadCompanyLabel: 'Công ty (không bắt buộc)',
+      leadSubmit: 'Xem báo cáo đầy đủ',
+      leadSubmitting: 'Đang gửi...',
+      leadError: 'Không thể gửi thông tin của bạn. Vui lòng thử lại.',
+      leadSuccessTitle: 'Báo cáo đầy đủ đã sẵn sàng',
+      leadSuccessBody: 'Chúng tôi cũng đã gửi link vào email của bạn để quay lại xem bất cứ lúc nào.',
+      viewDashboardCta: 'Xem dashboard đầy đủ',
     },
     footer: {
       product: 'Sản phẩm',

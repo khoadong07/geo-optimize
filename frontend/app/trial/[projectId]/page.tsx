@@ -413,15 +413,34 @@ export default function TrialFlowPage() {
               </span>
             </div>
             {promptList.length ? (
-              promptList.map((p, i) => (
-                <div key={i} className={`gb-trial-qrow ${i < questionsDone ? 'done' : 'pending'}`}>
-                  <span className="gb-trial-check">{i < questionsDone ? <CheckIcon /> : null}</span>
-                  <span className="gb-trial-qtext">{p.text}</span>
-                </div>
-              ))
+              promptList.map((p, i) => {
+                const state = i < questionsDone ? 'done' : i === questionsDone ? 'active' : 'pending';
+                return (
+                  <div key={i} className={`gb-trial-qrow ${state}`}>
+                    <span className="gb-trial-check">
+                      {state === 'done' ? (
+                        <CheckIcon />
+                      ) : state === 'active' ? (
+                        <span className="gb-trial-typing" aria-hidden="true">
+                          <i />
+                          <i />
+                          <i />
+                        </span>
+                      ) : null}
+                    </span>
+                    <span className="gb-trial-qtext">{p.text}</span>
+                  </div>
+                );
+              })
             ) : (
-              <div className="gb-trial-qrow pending">
-                <span className="gb-trial-check" />
+              <div className="gb-trial-qrow active">
+                <span className="gb-trial-check">
+                  <span className="gb-trial-typing" aria-hidden="true">
+                    <i />
+                    <i />
+                    <i />
+                  </span>
+                </span>
                 <span className="gb-trial-qtext">{tf.runningQuestionsHeading}</span>
               </div>
             )}

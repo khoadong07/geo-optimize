@@ -78,10 +78,18 @@ export class TrendingTopicsService implements OnModuleInit {
 
   constructor(@InjectModel(TrendingTopic.name) private readonly model: Model<TrendingTopicDocument>) {}
 
-  // First boot only: seeds the built-in questions (both languages) for every
-  // pre-curated industry so admins have something to edit right away instead
-  // of an empty table. No-ops once any trending topic already exists in Mongo.
   async onModuleInit() {
+    // Backfill: topics created before `lang` existed on the schema have no
+    // `lang` stored at all, not just a falsy one — `.lean()` reads skip
+    // Mongoose's schema default, and a missing field also fails to match an
+    // equality filter like `{ lang: 'vi' }` in getEffective(), so without
+    // this those old topics both crash lang-aware UI and silently stop
+    // showing up. Runs every boot; a no-op once nothing is missing `lang`.
+    await this.model.updateMany({ lang: { $exists: false } }, { $set: { lang: 'vi' } });
+
+    // First boot only: seeds the built-in questions (both languages) for every
+    // pre-curated industry so admins have something to edit right away instead
+    // of an empty table. No-ops once any trending topic already exists in Mongo.
     const existingCount = await this.model.estimatedDocumentCount();
     if (existingCount > 0) return;
 

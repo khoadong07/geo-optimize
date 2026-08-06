@@ -80,13 +80,13 @@ export default function AdminTrendingTopicsPage() {
     (t) =>
       (industryFilter === 'all' || t.industry === industryFilter) &&
       (periodFilter === 'all' || t.period === periodFilter) &&
-      (langFilter === 'all' || t.lang === langFilter),
+      (langFilter === 'all' || (t.lang || 'vi') === langFilter),
   );
 
   const weekCount = (topics || []).filter((t) => t.period === 'week').length;
   const monthCount = (topics || []).filter((t) => t.period === 'month').length;
   const enCount = (topics || []).filter((t) => t.lang === 'en').length;
-  const viCount = (topics || []).filter((t) => t.lang === 'vi').length;
+  const viCount = (topics || []).filter((t) => (t.lang || 'vi') === 'vi').length;
 
   const allVisibleChecked = visibleTopics.length > 0 && visibleTopics.every((t) => checkedIds.has(t._id));
 
@@ -175,7 +175,7 @@ export default function AdminTrendingTopicsPage() {
     setEditingId(t._id);
     setEditIndustry(t.industry);
     setEditPeriod(t.period);
-    setEditLang(t.lang);
+    setEditLang(t.lang || 'vi');
     setEditText(t.text);
     setError('');
     setSuccess('');
@@ -472,7 +472,7 @@ export default function AdminTrendingTopicsPage() {
                             <span className="gb-badge neutral">{t.period === 'week' ? 'Weekly' : 'Monthly'}</span>
                           </td>
                           <td>
-                            <span className="gb-badge info">{t.lang.toUpperCase()}</span>
+                            <span className="gb-badge info">{(t.lang || 'vi').toUpperCase()}</span>
                           </td>
                           <td>{t.text}</td>
                           <td>

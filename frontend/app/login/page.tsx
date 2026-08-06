@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import ChangePasswordForm from '../ChangePasswordForm';
-import { industryLabel, PROJECT_INDUSTRIES } from '../industry';
+import { industryLabel } from '../industry';
 import { useLanguage } from '../i18n';
 import { Zone, ZONE_OPTIONS } from '../zones';
 
@@ -17,7 +17,7 @@ type Project = {
   domain?: string;
 };
 
-const INDUSTRY_OPTIONS = PROJECT_INDUSTRIES;
+type Industry = { name: string; labelVi: string };
 
 export default function LoginPage() {
   const router = useRouter();
@@ -38,11 +38,12 @@ export default function LoginPage() {
   const [requestSent, setRequestSent] = useState(false);
   const [requestError, setRequestError] = useState('');
 
+  const [industries, setIndustries] = useState<Industry[]>([]);
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [createStep, setCreateStep] = useState<1 | 2 | 3>(1);
   const [newName, setNewName] = useState('');
   const [newZone, setNewZone] = useState<Zone>('vietnam');
-  const [newIndustry, setNewIndustry] = useState(INDUSTRY_OPTIONS[0]);
+  const [newIndustry, setNewIndustry] = useState('');
   const [newCompetitors, setNewCompetitors] = useState('');
   const [creating, setCreating] = useState(false);
   const [createError, setCreateError] = useState('');
@@ -52,18 +53,22 @@ export default function LoginPage() {
     setCreateStep(1);
     setNewName('');
     setNewZone('vietnam');
-    setNewIndustry(INDUSTRY_OPTIONS[0]);
+    setNewIndustry(industries[0]?.name || '');
     setNewCompetitors('');
     setCreateError('');
   }
 
   function loadProjects(token: string) {
-    return fetch(`${API}/projects`, { headers: { Authorization: `Bearer ${token}` } })
-      .then((res) => res.json())
-      .then((data) => {
-        setProjects(data);
-        setIsAuthenticated(true);
-      });
+    return Promise.all([
+      fetch(`${API}/projects`, { headers: { Authorization: `Bearer ${token}` } }).then((res) => res.json()),
+      fetch(`${API}/industries`, { headers: { Authorization: `Bearer ${token}` } })
+        .then((res) => res.json())
+        .catch(() => []),
+    ]).then(([projectsData, industriesData]) => {
+      setProjects(projectsData);
+      setIndustries(Array.isArray(industriesData) ? industriesData : []);
+      setIsAuthenticated(true);
+    });
   }
 
   useEffect(() => {
@@ -344,9 +349,9 @@ export default function LoginPage() {
               <>
                 <div className="gb-field">Industry</div>
                 <select className="gb-input" value={newIndustry} onChange={(e) => setNewIndustry(e.target.value)}>
-                  {INDUSTRY_OPTIONS.map((industry) => (
-                    <option key={industry} value={industry}>
-                      {industryLabel(industry, 'vi')}
+                  {industries.map((industry) => (
+                    <option key={industry.name} value={industry.name}>
+                      {industry.labelVi}
                     </option>
                   ))}
                 </select>

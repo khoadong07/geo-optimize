@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { AuthModule } from './auth/auth.module';
+import { IndustriesModule } from './industries/industries.module';
 import { PlanOrdersModule } from './plan-orders/plan-orders.module';
 import { ProjectsModule } from './projects/projects.module';
 import { PromptSetsModule } from './prompt-sets/prompt-sets.module';
@@ -16,6 +17,7 @@ import { TrialModule } from './trial/trial.module';
   imports: [
     MongooseModule.forRoot(process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/geo-optimize'),
     AuthModule,
+    IndustriesModule,
     ProjectsModule,
     PromptSetsModule,
     RunsModule,

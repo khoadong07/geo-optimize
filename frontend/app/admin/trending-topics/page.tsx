@@ -18,8 +18,11 @@ type TrendingTopic = {
 type PeriodFilter = 'all' | Period;
 type LangFilter = 'all' | Lang;
 
+type CatalogIndustry = { name: string };
+
 export default function AdminTrendingTopicsPage() {
   const [topics, setTopics] = useState<TrendingTopic[] | null>(null);
+  const [catalogIndustries, setCatalogIndustries] = useState<CatalogIndustry[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
@@ -63,9 +66,21 @@ export default function AdminTrendingTopicsPage() {
     load()
       .catch(() => setError('Could not load trending topics.'))
       .finally(() => setLoading(false));
+    fetch(`${API}/industries`, { headers: authHeader() })
+      .then((res) => res.json())
+      .then((data) => setCatalogIndustries(Array.isArray(data) ? data : []))
+      .catch(() => {});
   }, []);
 
-  const industries = useMemo(() => Array.from(new Set((topics || []).map((t) => t.industry))).sort(), [topics]);
+  // Union of the full industry catalog (so admins can add topics for an
+  // industry that doesn't have any yet) and whatever industry names already
+  // exist on trending-topic docs (covers ad-hoc names created before the
+  // catalog existed, or typed via "Create new industry" below).
+  const industries = useMemo(() => {
+    const names = new Set(catalogIndustries.map((i) => i.name));
+    (topics || []).forEach((t) => names.add(t.industry));
+    return Array.from(names).sort();
+  }, [catalogIndustries, topics]);
 
   useEffect(() => {
     if (!industries.length) {

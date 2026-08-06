@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { AuthModule } from '../auth/auth.module';
+import { IndustriesModule } from '../industries/industries.module';
 import { LlmModule } from '../llm/llm.module';
 import { MailModule } from '../mail/mail.module';
 import { Project, ProjectSchema } from '../projects/project.schema';
@@ -21,6 +22,7 @@ import { TrialService } from './trial.service';
       { name: RunJob.name, schema: RunJobSchema },
     ]),
     AuthModule,
+    IndustriesModule,
     MailModule,
     LlmModule,
     ProjectsModule,

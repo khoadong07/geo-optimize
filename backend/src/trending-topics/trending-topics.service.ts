@@ -87,12 +87,6 @@ export class TrendingTopicsService implements OnModuleInit {
     // showing up. Runs every boot; a no-op once nothing is missing `lang`.
     await this.model.updateMany({ lang: { $exists: false } }, { $set: { lang: 'vi' } });
 
-    // First boot only: seeds the built-in questions (both languages) for every
-    // pre-curated industry so admins have something to edit right away instead
-    // of an empty table. No-ops once any trending topic already exists in Mongo.
-    const existingCount = await this.model.estimatedDocumentCount();
-    if (existingCount > 0) return;
-
     const seedSet: Array<{ industry: string; lang: TrendingLang; weekly: string[]; monthly: string[] }> = [
       { industry: 'Banking', lang: 'vi', weekly: BANKING_WEEKLY, monthly: BANKING_MONTHLY },
       { industry: 'Banking', lang: 'en', weekly: BANKING_WEEKLY_EN, monthly: BANKING_MONTHLY_EN },
@@ -126,13 +120,31 @@ export class TrendingTopicsService implements OnModuleInit {
       { industry: 'Fashion & Retail', lang: 'en', weekly: FASHION_WEEKLY_EN, monthly: FASHION_MONTHLY_EN },
     ];
 
-    await this.model.insertMany(
-      seedSet.flatMap(({ industry, lang, weekly, monthly }) => [
-        ...weekly.map((text) => ({ industry, period: 'week' as const, lang, text })),
-        ...monthly.map((text) => ({ industry, period: 'month' as const, lang, text })),
-      ]),
-    );
-    this.logger.log(`Seeded initial trending topics (EN+VI) for ${seedSet.length / 2} industries into MongoDB`);
+    // Per-(industry, period, lang) backfill rather than "seed only if the
+    // whole collection is empty" — a DB that already had the original
+    // single-language 5-industry data (from before this bilingual/15-industry
+    // set existed) would otherwise never receive the missing combinations
+    // (the 10 new industries, and the EN half of the original 5). Runs every
+    // boot; only inserts whatever combination has zero docs, so it's a
+    // no-op once everything below has been backfilled once.
+    let insertedCount = 0;
+    for (const { industry, lang, weekly, monthly } of seedSet) {
+      const [weekExists, monthExists] = await Promise.all([
+        this.model.exists({ industry, period: 'week', lang }),
+        this.model.exists({ industry, period: 'month', lang }),
+      ]);
+      const docs = [
+        ...(!weekExists ? weekly.map((text) => ({ industry, period: 'week' as const, lang, text })) : []),
+        ...(!monthExists ? monthly.map((text) => ({ industry, period: 'month' as const, lang, text })) : []),
+      ];
+      if (docs.length) {
+        await this.model.insertMany(docs);
+        insertedCount += docs.length;
+      }
+    }
+    if (insertedCount) {
+      this.logger.log(`Backfilled ${insertedCount} trending topics into MongoDB`);
+    }
   }
 
   list(industry?: string, period?: TrendingPeriod, lang?: TrendingLang) {

@@ -1,27 +1,6 @@
 import { LlmService } from '../llm/llm.service';
 import { WebsiteText } from './website-fetch.util';
 
-// Mirrors frontend/app/industry.ts's PROJECT_INDUSTRIES — kept in sync
-// manually since the two apps don't share a package.
-export const TRIAL_INDUSTRIES = [
-  'Banking',
-  'FMCG',
-  'Insurance',
-  'Telecom',
-  'Real Estate',
-  'E-commerce',
-  'Education',
-  'Healthcare',
-  'Automotive',
-  'Travel & Hospitality',
-  'F&B',
-  'Technology',
-  'Logistics',
-  'Beauty & Cosmetics',
-  'Fashion & Retail',
-  'Other',
-];
-
 export interface IndustryDetectionResult {
   brandName: string;
   industry: string;
@@ -43,7 +22,7 @@ const ZONE_CONTEXT: Record<string, string> = {
     'International/global — this brand competes globally, not in one specific country. Suggest well-known international/global competitor brands rather than brands tied to a single local market.',
 };
 
-function buildPrompt(params: { domain: string; zone: string; websiteText: WebsiteText | null }): string {
+function buildPrompt(params: { domain: string; zone: string; websiteText: WebsiteText | null; industries: string[] }): string {
   const siteBlock = params.websiteText
     ? `Homepage title: ${params.websiteText.title || '(none)'}
 Meta description: ${params.websiteText.description || '(none)'}
@@ -59,7 +38,7 @@ ${siteBlock}
 
 Task:
 1. Guess the brand/company name (short, as it would appear in marketing copy).
-2. Classify the industry into exactly one of: ${TRIAL_INDUSTRIES.join(', ')}. Use "Other" only if truly none fit.
+2. Classify the industry into exactly one of: ${params.industries.join(', ')}. Use "Other" only if truly none fit.
 3. Suggest 4 to 6 real, well-known competitor brand names — follow the region guidance above precisely, since a competitor irrelevant to that market is worse than no suggestion at all.
 
 Return ONLY plain JSON, no explanation or markdown fence, in exactly this shape:
@@ -72,7 +51,7 @@ function fallback(domain: string): IndustryDetectionResult {
 
 export async function detectIndustryAndCompetitors(
   llmService: LlmService,
-  params: { domain: string; zone: string; websiteText: WebsiteText | null },
+  params: { domain: string; zone: string; websiteText: WebsiteText | null; industries: string[] },
 ): Promise<IndustryDetectionResult> {
   try {
     const prompt = buildPrompt(params);
@@ -84,7 +63,7 @@ export async function detectIndustryAndCompetitors(
     const parsed = JSON.parse(jsonSlice.length > 0 ? jsonSlice : text);
 
     const brandName = typeof parsed.brandName === 'string' && parsed.brandName.trim() ? parsed.brandName.trim() : params.domain;
-    const industry = TRIAL_INDUSTRIES.includes(parsed.industry) ? parsed.industry : 'Other';
+    const industry = params.industries.includes(parsed.industry) ? parsed.industry : 'Other';
     const suggestedCompetitors = Array.isArray(parsed.suggestedCompetitors)
       ? parsed.suggestedCompetitors.filter((c: unknown): c is string => typeof c === 'string' && c.trim().length > 0).slice(0, 6)
       : [];

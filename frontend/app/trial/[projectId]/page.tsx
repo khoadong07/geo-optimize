@@ -3,7 +3,6 @@
 import Link from 'next/link';
 import { FormEvent, useEffect, useRef, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { industryLabel, PROJECT_INDUSTRIES } from '../../industry';
 import { interpolate, useLanguage } from '../../i18n';
 
 const API = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
@@ -26,6 +25,7 @@ type Overview = { visibilityScore: number | null; sentimentBreakdown: SentimentB
 type Audit = { score: number; band: string; recommendations: string[] } | null;
 
 type Phase = 'loading' | 'invalid' | 'setup' | 'running' | 'report';
+type Industry = { name: string; labelVi: string; labelEn: string };
 
 function authHeader(token: string) {
   return { Authorization: `Bearer ${token}` };
@@ -124,7 +124,8 @@ export default function TrialFlowPage() {
 
   // setup step
   const [brandName, setBrandName] = useState('');
-  const [industry, setIndustry] = useState(PROJECT_INDUSTRIES[0]);
+  const [industry, setIndustry] = useState('');
+  const [industries, setIndustries] = useState<Industry[]>([]);
   const [competitors, setCompetitors] = useState<Set<string>>(new Set());
   const [newCompetitor, setNewCompetitor] = useState('');
   const [settingUp, setSettingUp] = useState(false);
@@ -174,8 +175,15 @@ export default function TrialFlowPage() {
       .then(async (proj: Project) => {
         setProject(proj);
         setBrandName(proj.name);
-        setIndustry(proj.industry || PROJECT_INDUSTRIES[0]);
         setLeadCaptured(!!proj.leadCaptured);
+
+        fetch(`${API}/industries`, { headers: authHeader(storedToken) })
+          .then((res) => res.json())
+          .then((data: Industry[]) => {
+            setIndustries(Array.isArray(data) ? data : []);
+            setIndustry(proj.industry || data?.[0]?.name || '');
+          })
+          .catch(() => setIndustry(proj.industry || ''));
 
         const suggestionsRaw = window.sessionStorage.getItem('geo_trial_suggestions');
         if (suggestionsRaw) {
@@ -342,9 +350,9 @@ export default function TrialFlowPage() {
             {tf.industryLabel}
           </div>
           <select className="gb-input" value={industry} onChange={(e) => setIndustry(e.target.value)}>
-            {PROJECT_INDUSTRIES.map((ind) => (
-              <option key={ind} value={ind}>
-                {industryLabel(ind, lang)}
+            {industries.map((ind) => (
+              <option key={ind.name} value={ind.name}>
+                {lang === 'vi' ? ind.labelVi : ind.labelEn}
               </option>
             ))}
           </select>

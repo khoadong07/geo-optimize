@@ -3,6 +3,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { AuthService } from '../auth/auth.service';
 import { AuthUser } from '../auth/current-user.decorator';
+import { IndustriesService } from '../industries/industries.service';
 import { LlmService } from '../llm/llm.service';
 import { MailService } from '../mail/mail.service';
 import { Project, ProjectDocument } from '../projects/project.schema';
@@ -43,6 +44,7 @@ export class TrialService {
     private readonly authService: AuthService,
     private readonly mailService: MailService,
     private readonly llmService: LlmService,
+    private readonly industriesService: IndustriesService,
     private readonly projectsService: ProjectsService,
     private readonly promptSetsService: PromptSetsService,
     private readonly runsService: RunsService,
@@ -71,11 +73,12 @@ export class TrialService {
       }
     }
 
-    const websiteText = await fetchWebsiteText(domain);
+    const [websiteText, industries] = await Promise.all([fetchWebsiteText(domain), this.industriesService.listNames()]);
     const { brandName, industry, suggestedCompetitors } = await detectIndustryAndCompetitors(this.llmService, {
       domain,
       zone,
       websiteText,
+      industries,
     });
 
     const project = await new this.projectModel({

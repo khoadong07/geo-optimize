@@ -8,6 +8,7 @@ import { AdminSession, AdminSessionContext, API, authHeader } from './admin-cont
 
 const NAV_ITEMS = [
   { href: '/admin', label: 'Projects' },
+  { href: '/admin/industries', label: 'Industries' },
   { href: '/admin/users', label: 'Users' },
   { href: '/admin/trial-leads', label: 'Trial leads' },
   { href: '/admin/trending-topics', label: 'Trending topics' },

@@ -2,7 +2,7 @@ import { Body, Controller, Delete, Get, Param, Patch, Post, Query, UseGuards } f
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { Roles } from '../auth/roles.decorator';
 import { RolesGuard } from '../auth/roles.guard';
-import { TrendingPeriod } from '../trending/trending-data';
+import { TrendingLang, TrendingPeriod } from '../trending/trending-data';
 import { CreateTrendingTopicDto, CreateTrendingTopicsBulkDto, UpdateTrendingTopicDto } from './dto';
 import { TrendingTopicsService } from './trending-topics.service';
 
@@ -13,8 +13,8 @@ export class TrendingTopicsController {
   constructor(private readonly trendingTopicsService: TrendingTopicsService) {}
 
   @Get()
-  list(@Query('industry') industry?: string, @Query('period') period?: TrendingPeriod) {
-    return this.trendingTopicsService.list(industry, period);
+  list(@Query('industry') industry?: string, @Query('period') period?: TrendingPeriod, @Query('lang') lang?: TrendingLang) {
+    return this.trendingTopicsService.list(industry, period, lang);
   }
 
   @Get('industries')

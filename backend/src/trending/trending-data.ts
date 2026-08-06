@@ -1,11 +1,13 @@
 export type TrendingPeriod = 'week' | 'month';
+export type TrendingLang = 'en' | 'vi';
 
-// Simulated trending topics — no live data source wired up yet. Banking,
-// FMCG, Insurance, Telecom, and Real Estate are pre-seeded with realistic
-// content; any other industry falls back to a generic templated list so the
-// endpoint always returns something usable.
-// Trending is a Vietnam-market-only feature (see zones.ts on the frontend),
-// so every topic here is written in Vietnamese.
+// Simulated trending topics — no live data source wired up yet. All 15
+// industries in frontend/app/industry.ts's PROJECT_INDUSTRIES are pre-seeded
+// with realistic content in both Vietnamese and English; any other industry
+// falls back to a generic templated list so the endpoint always returns
+// something usable. Trending is a Vietnam-market feature (see zones.ts on
+// the frontend), but content is authored in both languages so it follows the
+// app's EN/VI toggle like everything else.
 
 export const BANKING_WEEKLY: string[] = [
   'Ngân hàng nào có lãi suất tiết kiệm cao nhất tuần này?',
@@ -44,6 +46,45 @@ export const BANKING_MONTHLY: string[] = [
   'Ngân hàng nào bị phàn nàn về dịch vụ khách hàng nhiều nhất?',
   'So sánh hạn mức chuyển khoản miễn phí hàng tháng giữa các ứng dụng',
   'Ngân hàng nào dẫn đầu về xác thực định danh điện tử (eKYC)?',
+];
+
+export const BANKING_WEEKLY_EN: string[] = [
+  'Which bank has the highest savings interest rate this week?',
+  'Which bank is offering free 24/7 interbank transfers right now?',
+  'How to open a credit card online and get approved the same day',
+  'Which bank has the best credit card cashback offer this month?',
+  'How does biometric verification for money transfers work under the latest regulations?',
+  'Which digital banking app is the most stable, with the fewest bugs, right now?',
+  'Which bank disburses consumer loans the same day?',
+  'Which bank charges the lowest SMS banking fee?',
+  'How to check your credit score (CIC) for free online',
+  'Which bank currently has a new-card sign-up promotion?',
+  'Comparing out-of-network ATM withdrawal fees across banks',
+  'Which digital bank lets you open an account 100% online, no branch visit needed?',
+  'How to safely link an e-wallet to a bank account',
+  'Which bank just raised its deposit interest rate this week?',
+  'Which app has the lowest international money transfer fee?',
+  'How to safely unlink an e-wallet from a bank account',
+  'Which bank has been mentioned most for transaction errors this past week?',
+];
+
+export const BANKING_MONTHLY_EN: string[] = [
+  'Which digital bank is best for beginners in 2026?',
+  'Comparing term deposit interest rates across major banks',
+  'Digital transformation trends in the banking industry',
+  'New regulations on biometric verification',
+  'Which bank has the best home loan interest rate this month?',
+  'Comparing account maintenance fees across digital banks',
+  'Which bank is safest for long-term savings deposits?',
+  'Which credit card suits fresh graduates just starting to work?',
+  'AI adoption trends in bank customer service',
+  'Which banking app is rated highest on the App Store/Google Play?',
+  'Comparing unsecured consumer loan interest rates across banks',
+  'Which bank is expanding its branch/ATM network the fastest?',
+  "This month's cashless payment trends",
+  'Which bank gets the most customer service complaints?',
+  'Comparing monthly free transfer limits across apps',
+  'Which bank leads in electronic identity verification (eKYC)?',
 ];
 
 export const FMCG_WEEKLY: string[] = [
@@ -85,6 +126,45 @@ export const FMCG_MONTHLY: string[] = [
   'Dự báo xu hướng tiêu dùng FMCG cho quý tới là gì?',
 ];
 
+export const FMCG_WEEKLY_EN: string[] = [
+  'Which milk brand is most popular this week?',
+  'Are there any standout FMCG brand promotions this week?',
+  'Which skincare product is going viral on social media this week?',
+  'Which laundry detergent brand has the best deal right now?',
+  'Which detergent cleans well without irritating hands?',
+  'Which instant noodle brand launched a new flavor this week?',
+  'Which product has drawn the most consumer complaints this past week?',
+  'Which beverage is trending among young people right now?',
+  'Which diaper brand is rated best for absorbency?',
+  'Any notable FMCG product recalls this week?',
+  'Which hair care product suits damaged hair?',
+  'Which cosmetics brand is expanding its distribution in Vietnam?',
+  'Comparing prices of popular cooking oils this week',
+  'Which snack/candy brand do kids love most right now?',
+  'Which cleaning product is safest for households with young kids?',
+  'Which brand leads in eco-friendly packaging?',
+  'Any FMCG product getting negative buzz on social media this week?',
+];
+
+export const FMCG_MONTHLY_EN: string[] = [
+  "What's the biggest FMCG consumption trend this month?",
+  'Which brand leads market share in fast-moving consumer goods right now?',
+  'Comparing quality across popular personal care product lines this month',
+  'Which brand should consumers pick for family care needs?',
+  'Any new labeling/ingredient regulations affecting FMCG this month?',
+  "Overall review of FMCG brands' after-sales service quality this past month",
+  'What sustainable packaging trends are affecting FMCG?',
+  'Which FMCG brand is growing sales fastest this month?',
+  'Comparing prices across popular consumer brands this month',
+  'What should consumers watch for when choosing family health-care products?',
+  'How is the FMCG industry changing amid green consumption trends?',
+  'Which FMCG brand got the most negative buzz this past month?',
+  'What e-commerce trends are affecting FMCG distribution channels?',
+  'Are domestic or imported products more popular this month?',
+  'Which brand has the best loyalty program in FMCG?',
+  "What's the FMCG consumption forecast for next quarter?",
+];
+
 export const INSURANCE_WEEKLY: string[] = [
   'Công ty bảo hiểm nào có gói bảo hiểm sức khỏe tốt nhất hiện nay?',
   'Bảo hiểm nhân thọ nào đang có ưu đãi phí tuần này?',
@@ -122,6 +202,45 @@ export const INSURANCE_MONTHLY: string[] = [
   'Công ty nào có tỷ lệ chi trả bồi thường minh bạch nhất?',
   'So sánh bảo hiểm nội địa và bảo hiểm quốc tế tại Việt Nam',
   'Dự báo xu hướng ngành bảo hiểm cho quý tới là gì?',
+];
+
+export const INSURANCE_WEEKLY_EN: string[] = [
+  'Which insurer has the best health insurance package right now?',
+  'Which life insurer has a premium discount this week?',
+  "What's the fastest way to file an insurance claim?",
+  'Which insurer processes claims the fastest right now?',
+  'Which motorbike/car insurance has the most reasonable premium?',
+  'Any changes to mandatory insurance regulations this week?',
+  'Which insurer gets the most complaints about claims procedures this past week?',
+  'Which travel insurance package suits short trips?',
+  'How to buy health insurance online quickly without a medical exam?',
+  'Which insurer has the best app for tracking policies?',
+  'Which insurance covers chronic illnesses?',
+  'Comparing maternity insurance benefits across insurers this week',
+  'Which insurer is expanding its network of partner hospitals?',
+  'How to cancel an insurance policy without excessive fees?',
+  'Which insurance suits people who just started working?',
+  'Which insurer has been mentioned most for incidents this past week?',
+  'Any notable insurance promotions this week?',
+];
+
+export const INSURANCE_MONTHLY_EN: string[] = [
+  "What's the biggest trend in the insurance industry this month?",
+  'Which insurer leads life insurance market share right now?',
+  'Comparing benefits across top health insurance packages this month',
+  'Which type of insurance should a beginner start with?',
+  'Any new regulations/policies affecting insurance this month?',
+  'Review of customer service quality across the insurance industry this past month',
+  'What insurtech trends are affecting the industry?',
+  'Which insurer is growing revenue fastest this month?',
+  'Comparing costs across popular insurance packages this month',
+  'What risks should users watch for when buying insurance through an agent?',
+  'How is the insurance industry changing amid digitization?',
+  'Which insurer got the most negative buzz this past month?',
+  "What's the health insurance trend for elderly customers this month?",
+  'Which insurer has the most transparent claims payout rate?',
+  'Comparing domestic and international insurance in Vietnam',
+  "What's the insurance industry forecast for next quarter?",
 ];
 
 export const TELECOM_WEEKLY: string[] = [
@@ -163,6 +282,45 @@ export const TELECOM_MONTHLY: string[] = [
   'Dự báo xu hướng ngành viễn thông cho quý tới là gì?',
 ];
 
+export const TELECOM_WEEKLY_EN: string[] = [
+  'Which carrier has the cheapest 4G/5G data plan this week?',
+  'Which carrier has a huge data promotion this week?',
+  "What's the fastest way to switch carriers while keeping your number?",
+  'Which carrier has the most stable signal in urban areas?',
+  'Which plan suits heavy data users best?',
+  'Which carrier is rolling out 5G in the most areas?',
+  'Which carrier gets the most complaints about network congestion this past week?',
+  'How to register for a cheap student data plan?',
+  'Which carrier has the best customer service right now?',
+  'Comparing fiber internet speeds across carriers this week',
+  'Which carrier best supports eSIM users?',
+  'Any notable signal/network outages this week?',
+  'Which international plan is cheapest for frequent business travelers?',
+  'Which carrier has the best offers for long-time customers?',
+  'How to check for and cancel unwanted value-added services?',
+  'Which carrier is expanding coverage the fastest?',
+  'Which carrier has been mentioned most for billing/payment errors this past week?',
+];
+
+export const TELECOM_MONTHLY_EN: string[] = [
+  "What's the biggest trend in telecom this month?",
+  'Which carrier leads mobile subscriber market share right now?',
+  'Comparing 5G coverage quality across carriers this month',
+  'Which carrier should new users pick to save money?',
+  'Any new Ministry of Information and Communications regulations affecting telecom this month?',
+  'Review of customer service quality across the telecom industry this past month',
+  'What tech trends (AI, IoT, 5G) are affecting telecom?',
+  'Which carrier is growing subscribers fastest this month?',
+  'Comparing plan costs across popular carriers this month',
+  'What should users watch for when signing up for a postpaid plan?',
+  'How is telecom changing amid digital transformation?',
+  'Which carrier got the most negative buzz this past month?',
+  "What's the trend for eSIM and virtual phone numbers this month?",
+  'Which carrier is investing most heavily in 5G infrastructure?',
+  'Comparing home fiber internet quality across carriers',
+  "What's the telecom industry forecast for next quarter?",
+];
+
 export const REAL_ESTATE_WEEKLY: string[] = [
   'Khu vực nào đang có giá bất động sản tăng mạnh nhất tuần này?',
   'Dự án chung cư nào đang mở bán với ưu đãi tốt nhất?',
@@ -202,7 +360,842 @@ export const REAL_ESTATE_MONTHLY: string[] = [
   'Dự báo xu hướng thị trường bất động sản cho quý tới là gì?',
 ];
 
-function genericWeekly(industry: string): string[] {
+export const REAL_ESTATE_WEEKLY_EN: string[] = [
+  'Which area has seen the sharpest property price rise this week?',
+  'Which apartment project is launching sales with the best incentives?',
+  "What's the best home loan interest rate available right now?",
+  'Which developer has the most flexible payment policy?',
+  'Which area is attracting the most real estate investors this week?',
+  'Any new real estate legal regulations this week?',
+  'Which property type is most searched for (apartments, land, townhouses)?',
+  'Which developer has drawn the most complaints about handover delays this past week?',
+  "How to verify a project's legal status before buying?",
+  'Which area has the best rental yield potential right now?',
+  'Which project just got licensed for sales this week?',
+  'Comparing apartment rental prices across city areas this week',
+  'Which developer has the best reputation for handover quality?',
+  'How to accurately value land before a transaction?',
+  'Which area is seeing a localized land price spike this week?',
+  'Which real estate project got the most negative buzz this past week?',
+  'Which bank has the best home loan package paired with which developer?',
+];
+
+export const REAL_ESTATE_MONTHLY_EN: string[] = [
+  "What's the biggest trend in the real estate market this month?",
+  'Which area leads property price growth right now?',
+  'Comparing the most investable property segments this month',
+  'What should first-time homebuyers consider this month?',
+  'Any new regulations/policies affecting the real estate market this month?',
+  "Overall review of major projects' handover progress this past month",
+  'What proptech trends are affecting real estate?',
+  'Which developer is growing sales fastest this month?',
+  'Comparing home loan costs across banks this month',
+  'What legal risks should buyers watch for with off-plan properties?',
+  'How is the real estate market changing amid urbanization?',
+  'Which developer got the most negative buzz this past month?',
+  "What's the resort/vacation real estate trend this month?",
+  'Which area is getting major infrastructure planning that affects land prices?',
+  'Comparing rental yields across property types',
+  "What's the real estate market forecast for next quarter?",
+];
+
+export const ECOMMERCE_WEEKLY: string[] = [
+  'Sàn thương mại điện tử nào đang có mã giảm giá tốt nhất tuần này?',
+  'Sàn nào giao hàng nhanh nhất trong nội thành hiện nay?',
+  'Cách kiểm tra shop uy tín trên các sàn thương mại điện tử',
+  'Sàn nào đang miễn phí vận chuyển cho đơn từ 0đ tuần này?',
+  'Sản phẩm nào đang là xu hướng mua sắm online tuần này?',
+  'Sàn nào có chính sách đổi trả dễ nhất hiện nay?',
+  'Sàn nào bị phàn nàn nhiều nhất về giao hàng chậm tuần qua?',
+  'Cách săn flash sale hiệu quả trên các sàn thương mại điện tử',
+  'Sàn nào có chương trình hoàn tiền (cashback) tốt nhất tuần này?',
+  'Ứng dụng mua sắm nào đang có ưu đãi thành viên mới?',
+  'Sàn nào hỗ trợ tốt nhất khi khiếu nại hàng giả, hàng lỗi?',
+  'Có sự kiện sale lớn nào diễn ra trên các sàn tuần này không?',
+  'Sàn nào có nhiều voucher freeship nhất hiện tại?',
+  'Cách phân biệt hàng chính hãng và hàng giả khi mua online',
+  'Sàn nào thanh toán qua ví điện tử được hoàn tiền cao nhất?',
+  'Sàn nào bị nhắc đến nhiều nhất vì lỗi hệ thống/app tuần qua?',
+  'Ngành hàng nào đang bán chạy nhất trên các sàn tuần này?',
+];
+
+export const ECOMMERCE_MONTHLY: string[] = [
+  'Xu hướng mua sắm trực tuyến nổi bật nhất tháng này là gì?',
+  'Sàn thương mại điện tử nào dẫn đầu thị phần hiện nay?',
+  'So sánh chính sách đổi trả giữa các sàn lớn tháng này',
+  'Người mới nên chọn sàn nào để mua sắm an toàn?',
+  'Có quy định mới nào về thương mại điện tử ảnh hưởng tháng này không?',
+  'Đánh giá chất lượng dịch vụ giao hàng của các sàn trong tháng qua',
+  'Xu hướng livestream bán hàng nào đang ảnh hưởng ngành thương mại điện tử?',
+  'Sàn nào tăng trưởng doanh số nhanh nhất tháng này?',
+  'So sánh chi phí vận chuyển giữa các sàn phổ biến tháng này',
+  'Người mua cần lưu ý rủi ro gì khi mua hàng từ shop nước ngoài?',
+  'Ngành thương mại điện tử đang thay đổi thế nào trước làn sóng AI cá nhân hoá?',
+  'Sàn nào bị nhắc đến tiêu cực nhiều nhất về hàng giả tháng qua?',
+  'Xu hướng mua sắm qua mạng xã hội (social commerce) tháng này thế nào?',
+  'Sàn nào có chương trình khách hàng thân thiết tốt nhất?',
+  'So sánh tốc độ giao hàng liên tỉnh giữa các sàn lớn',
+  'Dự báo xu hướng thương mại điện tử cho quý tới là gì?',
+];
+
+export const ECOMMERCE_WEEKLY_EN: string[] = [
+  'Which e-commerce platform has the best discount codes this week?',
+  'Which platform delivers fastest within the city right now?',
+  'How to check if a shop is trustworthy on e-commerce platforms',
+  'Which platform is offering free shipping on any order this week?',
+  'Which product is trending in online shopping this week?',
+  'Which platform has the easiest return policy right now?',
+  'Which platform gets the most complaints about slow delivery this past week?',
+  'How to hunt flash sales effectively on e-commerce platforms',
+  'Which platform has the best cashback program this week?',
+  'Which shopping app currently has a new-member promotion?',
+  'Which platform handles counterfeit/defective item complaints best?',
+  'Any major sale events happening on the platforms this week?',
+  'Which platform has the most free-shipping vouchers right now?',
+  'How to tell genuine products from counterfeits when buying online',
+  'Which platform gives the highest cashback for e-wallet payments?',
+  'Which platform has been mentioned most for system/app glitches this past week?',
+  "Which product category is selling best on the platforms this week?",
+];
+
+export const ECOMMERCE_MONTHLY_EN: string[] = [
+  "What's the biggest online shopping trend this month?",
+  'Which e-commerce platform leads market share right now?',
+  'Comparing return policies across major platforms this month',
+  'Which platform should a beginner choose for safe shopping?',
+  'Any new e-commerce regulations affecting this month?',
+  'Review of delivery service quality across platforms this past month',
+  'What livestream-selling trends are affecting e-commerce?',
+  'Which platform is growing sales fastest this month?',
+  'Comparing shipping costs across popular platforms this month',
+  'What risks should buyers watch for when buying from overseas shops?',
+  'How is e-commerce changing amid AI personalization trends?',
+  'Which platform got the most negative buzz over counterfeits this past month?',
+  "What's the social commerce trend this month?",
+  'Which platform has the best loyalty program?',
+  'Comparing inter-provincial delivery speed across major platforms',
+  "What's the e-commerce forecast for next quarter?",
+];
+
+export const EDUCATION_WEEKLY: string[] = [
+  'Trung tâm tiếng Anh nào đang có ưu đãi học phí tốt nhất tuần này?',
+  'Trường nào đang tuyển sinh với chính sách học bổng hấp dẫn?',
+  'Cách chọn khóa học online phù hợp với người mới bắt đầu',
+  'Ứng dụng học tiếng Anh nào hiệu quả nhất hiện nay?',
+  'Trung tâm nào bị phàn nàn nhiều nhất về chất lượng giảng viên tuần qua?',
+  'Trường quốc tế nào đang có sự kiện tuyển sinh tuần này?',
+  'Khóa học kỹ năng nào đang được tìm kiếm nhiều nhất hiện nay?',
+  'Cách đăng ký thi các chứng chỉ quốc tế (IELTS, TOEFL) nhanh nhất',
+  'Trung tâm nào có học phí luyện thi IELTS hợp lý nhất?',
+  'Trường nào vừa công bố thay đổi học phí tuần này?',
+  'Nền tảng học online nào có nhiều khóa học miễn phí nhất?',
+  'Có thay đổi quy định tuyển sinh nào đáng chú ý tuần này không?',
+  'Trung tâm nào có cam kết đầu ra tốt nhất cho khóa luyện thi?',
+  'Trường nào tổ chức ngày hội tư vấn hướng nghiệp tuần này?',
+  'Cách chọn gia sư online uy tín, chất lượng',
+  'Trung tâm ngoại ngữ nào bị nhắc đến tiêu cực nhiều nhất tuần qua?',
+  'Có học bổng du học nào mới mở đơn tuần này không?',
+];
+
+export const EDUCATION_MONTHLY: string[] = [
+  'Xu hướng giáo dục nổi bật nhất tháng này là gì?',
+  'Trung tâm/trường nào dẫn đầu về chất lượng đào tạo hiện nay?',
+  'So sánh học phí các khóa luyện thi phổ biến tháng này',
+  'Người mới nên chọn hình thức học nào — online hay offline?',
+  'Có quy định mới nào của Bộ Giáo dục ảnh hưởng tháng này không?',
+  'Đánh giá chất lượng giảng viên tại các trung tâm lớn trong tháng qua',
+  'Xu hướng ứng dụng AI trong giáo dục đang phát triển thế nào?',
+  'Trung tâm nào tăng trưởng học viên nhanh nhất tháng này?',
+  'So sánh chi phí du học giữa các quốc gia phổ biến',
+  'Học sinh/sinh viên cần lưu ý gì khi chọn khóa học online?',
+  'Ngành giáo dục đang thay đổi thế nào trước làn sóng chuyển đổi số?',
+  'Trung tâm nào bị nhắc đến tiêu cực nhiều nhất về chất lượng tháng qua?',
+  'Xu hướng học kỹ năng số (digital skills) tháng này thế nào?',
+  'Trường nào có chương trình học bổng hấp dẫn nhất hiện tại?',
+  'So sánh tỷ lệ có việc làm sau tốt nghiệp giữa các trường',
+  'Dự báo xu hướng ngành giáo dục cho quý tới là gì?',
+];
+
+export const EDUCATION_WEEKLY_EN: string[] = [
+  'Which English center has the best tuition deal this week?',
+  'Which school is enrolling with attractive scholarship policies?',
+  'How to choose an online course suited for beginners',
+  'Which English-learning app is most effective right now?',
+  'Which center gets the most complaints about teacher quality this past week?',
+  'Which international school has an enrollment event this week?',
+  'Which skill course is most searched for right now?',
+  "What's the fastest way to register for international certificate exams (IELTS, TOEFL)?",
+  'Which center has the most reasonable IELTS prep tuition?',
+  'Which school just announced a tuition change this week?',
+  'Which online learning platform has the most free courses?',
+  'Any notable admissions regulation changes this week?',
+  'Which center offers the best outcome guarantee for prep courses?',
+  'Which school is hosting a career-counseling fair this week?',
+  'How to choose a reliable, quality online tutor',
+  'Which language center got the most negative buzz this past week?',
+  'Any new study-abroad scholarships opening applications this week?',
+];
+
+export const EDUCATION_MONTHLY_EN: string[] = [
+  "What's the biggest education trend this month?",
+  'Which center/school leads in training quality right now?',
+  'Comparing tuition fees across popular prep courses this month',
+  'Should a beginner choose online or offline learning?',
+  'Any new Ministry of Education regulations affecting this month?',
+  'Review of teacher quality at major centers this past month',
+  'What AI-in-education trends are developing?',
+  'Which center is growing enrollment fastest this month?',
+  'Comparing study-abroad costs across popular countries',
+  'What should students watch for when choosing an online course?',
+  'How is education changing amid digital transformation?',
+  'Which center got the most negative buzz over quality this past month?',
+  "What's the digital-skills learning trend this month?",
+  'Which school has the most attractive scholarships right now?',
+  'Comparing post-graduation employment rates across schools',
+  "What's the education industry forecast for next quarter?",
+];
+
+export const HEALTHCARE_WEEKLY: string[] = [
+  'Bệnh viện nào đang có gói khám sức khỏe tổng quát tốt nhất tuần này?',
+  'Phòng khám nào đặt lịch khám online nhanh nhất hiện nay?',
+  'Cách đặt lịch khám bệnh không cần chờ đợi lâu',
+  'Bệnh viện nào có dịch vụ khám tại nhà uy tín?',
+  'Có dịch bệnh nào đang được cảnh báo tuần này không?',
+  'Phòng khám nào bị phàn nàn nhiều nhất về thời gian chờ tuần qua?',
+  'Bệnh viện nào có bác sĩ chuyên khoa giỏi nhất về tim mạch hiện nay?',
+  'Cách chọn gói bảo hiểm y tế đi kèm khám sức khỏe định kỳ',
+  'Phòng khám nha khoa nào có ưu đãi tốt nhất tuần này?',
+  'Bệnh viện nào đang triển khai khám chữa bệnh từ xa (telemedicine)?',
+  'Có loại thuốc/thực phẩm chức năng nào đang bị cảnh báo tuần này?',
+  'Phòng khám nào có giá khám hợp lý nhất cho gói tầm soát ung thư?',
+  'Bệnh viện nào vừa mở thêm chuyên khoa mới tuần này?',
+  'Cách kiểm tra giấy phép hoạt động của phòng khám trước khi khám',
+  'Bệnh viện nào có dịch vụ chăm sóc sau sinh tốt nhất?',
+  'Phòng khám nào bị nhắc đến nhiều nhất về sự cố y khoa tuần qua?',
+  'Có chương trình khám sức khỏe miễn phí nào đang diễn ra tuần này không?',
+];
+
+export const HEALTHCARE_MONTHLY: string[] = [
+  'Xu hướng y tế nổi bật nhất tháng này là gì?',
+  'Bệnh viện nào dẫn đầu về chất lượng dịch vụ khám chữa bệnh hiện nay?',
+  'So sánh chi phí khám tổng quát giữa các bệnh viện lớn tháng này',
+  'Người mới nên chọn bệnh viện công hay tư để khám định kỳ?',
+  'Có chính sách bảo hiểm y tế mới nào ảnh hưởng tháng này không?',
+  'Đánh giá chất lượng chăm sóc khách hàng của các bệnh viện trong tháng qua',
+  'Xu hướng ứng dụng AI trong chẩn đoán y tế đang phát triển thế nào?',
+  'Bệnh viện nào tăng trưởng lượng bệnh nhân nhanh nhất tháng này?',
+  'So sánh chi phí điều trị các bệnh mãn tính giữa các cơ sở y tế',
+  'Người bệnh cần lưu ý gì khi chọn khám chữa bệnh từ xa?',
+  'Ngành y tế đang thay đổi thế nào trước làn sóng chuyển đổi số?',
+  'Bệnh viện nào bị nhắc đến tiêu cực nhiều nhất về sự cố y khoa tháng qua?',
+  'Xu hướng chăm sóc sức khỏe tinh thần tháng này thế nào?',
+  'Bệnh viện nào có dịch vụ tầm soát ung thư sớm tốt nhất?',
+  'So sánh chất lượng dịch vụ nha khoa giữa các phòng khám lớn',
+  'Dự báo xu hướng ngành y tế cho quý tới là gì?',
+];
+
+export const HEALTHCARE_WEEKLY_EN: string[] = [
+  'Which hospital has the best general health check-up package this week?',
+  'Which clinic offers the fastest online appointment booking right now?',
+  'How to book a medical appointment without long waits',
+  'Which hospital has a trusted at-home check-up service?',
+  'Any disease outbreak warnings this week?',
+  'Which clinic gets the most complaints about wait times this past week?',
+  'Which hospital has the best cardiology specialists right now?',
+  'How to choose health insurance bundled with regular check-ups',
+  'Which dental clinic has the best deal this week?',
+  'Which hospital is rolling out telemedicine services?',
+  'Any medicine/supplement warnings this week?',
+  'Which clinic has the most reasonable price for cancer screening packages?',
+  'Which hospital just opened a new specialty department this week?',
+  "How to verify a clinic's operating license before a visit",
+  'Which hospital has the best postnatal care service?',
+  'Which clinic has been mentioned most for medical incidents this past week?',
+  'Any free health check-up programs running this week?',
+];
+
+export const HEALTHCARE_MONTHLY_EN: string[] = [
+  "What's the biggest healthcare trend this month?",
+  'Which hospital leads in care quality right now?',
+  'Comparing general check-up costs across major hospitals this month',
+  'Should patients choose public or private hospitals for regular check-ups?',
+  'Any new health insurance policies affecting this month?',
+  'Review of customer care quality across hospitals this past month',
+  'What AI-in-diagnostics trends are developing?',
+  'Which hospital is growing patient volume fastest this month?',
+  'Comparing chronic-disease treatment costs across facilities',
+  'What should patients watch for when choosing telemedicine?',
+  'How is healthcare changing amid digital transformation?',
+  'Which hospital got the most negative buzz over medical incidents this past month?',
+  "What's the mental health care trend this month?",
+  'Which hospital has the best early cancer screening service?',
+  'Comparing dental service quality across major clinics',
+  "What's the healthcare industry forecast for next quarter?",
+];
+
+export const AUTOMOTIVE_WEEKLY: string[] = [
+  'Hãng xe nào đang có ưu đãi giảm giá tốt nhất tuần này?',
+  'Mẫu xe nào bán chạy nhất trong tuần này?',
+  'Cách kiểm tra xe cũ trước khi mua để tránh rủi ro',
+  'Hãng xe điện nào đang mở rộng trạm sạc nhanh nhất hiện nay?',
+  'Đại lý nào có chính sách trả góp lãi suất thấp nhất tuần này?',
+  'Hãng xe nào vừa ra mắt mẫu mới tuần này?',
+  'Hãng xe nào bị phàn nàn nhiều nhất về lỗi kỹ thuật tuần qua?',
+  'Cách bảo dưỡng xe máy định kỳ để tiết kiệm chi phí',
+  'Hãng xe nào có chương trình thu cũ đổi mới tốt nhất?',
+  'Có đợt triệu hồi (recall) xe nào đáng chú ý tuần này không?',
+  'Mẫu xe điện nào có quãng đường di chuyển xa nhất hiện nay?',
+  'Đại lý nào bị nhắc đến nhiều nhất về dịch vụ hậu mãi kém tuần qua?',
+  'Cách đăng ký lái thử xe mới nhanh nhất',
+  'Hãng xe nào có chế độ bảo hành dài nhất hiện nay?',
+  'Mẫu xe máy nào tiết kiệm xăng nhất trong phân khúc phổ thông?',
+  'Hãng xe nào đang có sự kiện triển lãm tuần này?',
+  'Giá xe cũ phân khúc nào đang biến động mạnh tuần này?',
+];
+
+export const AUTOMOTIVE_MONTHLY: string[] = [
+  'Xu hướng thị trường ô tô - xe máy nổi bật nhất tháng này là gì?',
+  'Hãng xe nào dẫn đầu doanh số bán hàng hiện nay?',
+  'So sánh các mẫu xe điện đáng mua nhất tháng này',
+  'Người mua xe lần đầu nên cân nhắc điều gì trong tháng này?',
+  'Có chính sách thuế/phí mới nào ảnh hưởng ngành ô tô tháng này không?',
+  'Đánh giá chất lượng dịch vụ hậu mãi của các hãng xe trong tháng qua',
+  'Xu hướng xe điện, xe hybrid đang phát triển thế nào tại Việt Nam?',
+  'Hãng xe nào tăng trưởng doanh số nhanh nhất tháng này?',
+  'So sánh chi phí vận hành giữa xe điện và xe xăng tháng này',
+  'Người mua cần lưu ý rủi ro gì khi mua xe trả góp?',
+  'Ngành ô tô đang thay đổi thế nào trước làn sóng xe tự lái?',
+  'Hãng xe nào bị nhắc đến tiêu cực nhiều nhất về lỗi kỹ thuật tháng qua?',
+  'Xu hướng trạm sạc xe điện công cộng tháng này thế nào?',
+  'Hãng xe nào có chương trình bảo hành/bảo dưỡng tốt nhất?',
+  'So sánh giá bán lại giữa các mẫu xe phổ biến sau vài năm sử dụng',
+  'Dự báo xu hướng thị trường ô tô - xe máy cho quý tới là gì?',
+];
+
+export const AUTOMOTIVE_WEEKLY_EN: string[] = [
+  'Which car brand has the best discount this week?',
+  'Which model is the best seller this week?',
+  'How to inspect a used car before buying to avoid risk',
+  'Which EV brand is expanding fast-charging stations fastest right now?',
+  'Which dealer has the lowest installment interest rate this week?',
+  'Which brand just launched a new model this week?',
+  'Which brand gets the most complaints about technical defects this past week?',
+  'How to service a motorbike regularly to save on costs',
+  'Which brand has the best trade-in program?',
+  'Any notable vehicle recalls this week?',
+  'Which EV model has the longest range right now?',
+  'Which dealer got the most complaints about poor after-sales service this past week?',
+  "What's the fastest way to book a new-car test drive?",
+  'Which brand offers the longest warranty right now?',
+  'Which motorbike model is most fuel-efficient in the mainstream segment?',
+  'Which brand is holding an exhibition event this week?',
+  'Which used-car segment is seeing the sharpest price swings this week?',
+];
+
+export const AUTOMOTIVE_MONTHLY_EN: string[] = [
+  "What's the biggest trend in the car/motorbike market this month?",
+  'Which brand leads sales right now?',
+  'Comparing the most worth-buying EV models this month',
+  'What should first-time car buyers consider this month?',
+  'Any new tax/fee policies affecting the auto industry this month?',
+  'Review of after-sales service quality across brands this past month',
+  'How are EVs and hybrids developing in Vietnam?',
+  'Which brand is growing sales fastest this month?',
+  'Comparing operating costs between EVs and gas cars this month',
+  'What risks should buyers watch for with installment financing?',
+  'How is the auto industry changing amid self-driving trends?',
+  'Which brand got the most negative buzz over technical defects this past month?',
+  "What's the public EV charging station trend this month?",
+  'Which brand has the best warranty/maintenance program?',
+  'Comparing resale value across popular models after a few years of use',
+  "What's the auto market forecast for next quarter?",
+];
+
+export const TRAVEL_WEEKLY: string[] = [
+  'Khách sạn nào đang có ưu đãi phòng tốt nhất tuần này?',
+  'Hãng hàng không nào có giá vé rẻ nhất cho các chặng nội địa tuần này?',
+  'Cách săn voucher du lịch giá rẻ hiệu quả nhất',
+  'Địa điểm du lịch nào đang là xu hướng check-in tuần này?',
+  'Ứng dụng đặt phòng nào có chính sách hủy linh hoạt nhất?',
+  'Khách sạn nào bị phàn nàn nhiều nhất về chất lượng dịch vụ tuần qua?',
+  'Hãng hàng không nào bị nhắc đến nhiều nhất về hoãn/hủy chuyến tuần này?',
+  'Cách đặt tour du lịch trọn gói tiết kiệm nhất',
+  'Resort nào đang có chương trình khuyến mãi hè/tết hấp dẫn?',
+  'Nền tảng đặt phòng nào có nhiều đánh giá tốt nhất hiện nay?',
+  'Có sự kiện/lễ hội du lịch nào đáng chú ý tuần này không?',
+  'Khách sạn nào có dịch vụ đưa đón sân bay miễn phí?',
+  'Cách chọn tour du lịch nước ngoài an toàn, uy tín',
+  'Hãng hàng không nào có chính sách hành lý tốt nhất hiện nay?',
+  'Địa điểm nào đang bị quá tải khách du lịch tuần này?',
+  'Khách sạn nào có hồ bơi/spa được đánh giá cao nhất?',
+  'Có ưu đãi visa du lịch nào mới áp dụng tuần này không?',
+];
+
+export const TRAVEL_MONTHLY: string[] = [
+  'Xu hướng du lịch nổi bật nhất tháng này là gì?',
+  'Khách sạn/resort nào dẫn đầu về mức độ hài lòng của khách hiện nay?',
+  'So sánh chi phí tour du lịch trong nước và nước ngoài tháng này',
+  'Người đi du lịch lần đầu nên chuẩn bị gì trong tháng này?',
+  'Có chính sách visa/nhập cảnh mới nào ảnh hưởng ngành du lịch tháng này?',
+  'Đánh giá chất lượng dịch vụ của các chuỗi khách sạn lớn trong tháng qua',
+  'Xu hướng du lịch bền vững (sustainable travel) đang phát triển thế nào?',
+  'Điểm đến nào tăng trưởng lượng khách nhanh nhất tháng này?',
+  'So sánh giá vé máy bay giữa các hãng hàng không phổ biến tháng này',
+  'Người đi du lịch cần lưu ý rủi ro gì khi đặt tour giá rẻ?',
+  'Ngành du lịch đang thay đổi thế nào trước làn sóng du lịch tự túc?',
+  'Khách sạn nào bị nhắc đến tiêu cực nhiều nhất về dịch vụ tháng qua?',
+  'Xu hướng du lịch trải nghiệm (experience travel) tháng này thế nào?',
+  'Resort nào có chương trình khách hàng thân thiết tốt nhất?',
+  'So sánh mức độ hài lòng giữa các nền tảng đặt phòng trực tuyến',
+  'Dự báo xu hướng ngành du lịch cho quý tới là gì?',
+];
+
+export const TRAVEL_WEEKLY_EN: string[] = [
+  'Which hotel has the best room deal this week?',
+  'Which airline has the cheapest domestic fares this week?',
+  'How to hunt cheap travel vouchers effectively',
+  'Which destination is trending for check-in photos this week?',
+  'Which booking app has the most flexible cancellation policy?',
+  'Which hotel gets the most complaints about service quality this past week?',
+  'Which airline has been mentioned most for delays/cancellations this week?',
+  'How to book the most affordable all-inclusive tour',
+  'Which resort has an attractive summer/holiday promotion?',
+  'Which booking platform has the most positive reviews right now?',
+  'Any notable travel events/festivals this week?',
+  'Which hotel offers free airport transfers?',
+  'How to choose a safe, reputable overseas tour',
+  'Which airline has the best baggage policy right now?',
+  'Which destination is overcrowded with tourists this week?',
+  'Which hotel has the best-rated pool/spa?',
+  'Any new travel visa incentives just applied this week?',
+];
+
+export const TRAVEL_MONTHLY_EN: string[] = [
+  "What's the biggest travel trend this month?",
+  'Which hotel/resort leads guest satisfaction right now?',
+  'Comparing domestic and international tour costs this month',
+  'What should first-time travelers prepare this month?',
+  'Any new visa/entry policies affecting travel this month?',
+  'Review of service quality across major hotel chains this past month',
+  'What sustainable travel trends are developing?',
+  'Which destination is growing visitor numbers fastest this month?',
+  'Comparing flight prices across popular airlines this month',
+  'What risks should travelers watch for with cheap tour deals?',
+  'How is travel changing amid the self-guided-trip trend?',
+  'Which hotel got the most negative buzz over service this past month?',
+  "What's the experience-travel trend this month?",
+  'Which resort has the best loyalty program?',
+  'Comparing satisfaction across online booking platforms',
+  "What's the travel industry forecast for next quarter?",
+];
+
+export const FNB_WEEKLY: string[] = [
+  'Chuỗi nhà hàng nào đang có ưu đãi giảm giá tốt nhất tuần này?',
+  'Quán cà phê nào đang là xu hướng check-in tuần này?',
+  'Ứng dụng đặt món nào có nhiều voucher freeship nhất hiện nay?',
+  'Món ăn nào đang gây sốt trên mạng xã hội tuần này?',
+  'Nhà hàng nào bị phàn nàn nhiều nhất về chất lượng phục vụ tuần qua?',
+  'Chuỗi trà sữa nào vừa ra mắt hương vị mới tuần này?',
+  'Cách đặt bàn nhà hàng vào giờ cao điểm không cần chờ',
+  'Có đợt kiểm tra an toàn thực phẩm nào đáng chú ý tuần này không?',
+  'Quán ăn nào có ưu đãi combo tiết kiệm nhất hiện nay?',
+  'Ứng dụng giao đồ ăn nào giao nhanh nhất trong nội thành?',
+  'Nhà hàng nào bị nhắc đến nhiều nhất về sự cố vệ sinh thực phẩm tuần qua?',
+  'Chuỗi F&B nào đang mở rộng chi nhánh nhanh nhất tuần này?',
+  'Cách chọn nhà hàng buffet chất lượng, giá hợp lý',
+  'Có sự kiện ẩm thực/lễ hội đồ ăn nào diễn ra tuần này không?',
+  'Quán cà phê nào có không gian làm việc tốt nhất hiện nay?',
+  'Chuỗi nhà hàng nào có chương trình tích điểm hấp dẫn nhất?',
+  'Món ăn nào đang bị người tiêu dùng phản ánh về chất lượng tuần này?',
+];
+
+export const FNB_MONTHLY: string[] = [
+  'Xu hướng ẩm thực nổi bật nhất tháng này là gì?',
+  'Chuỗi nhà hàng/quán cà phê nào dẫn đầu thị phần hiện nay?',
+  'So sánh giá cả giữa các chuỗi đồ ăn nhanh phổ biến tháng này',
+  'Người mới kinh doanh F&B nên học hỏi mô hình nào?',
+  'Có quy định mới nào về an toàn thực phẩm ảnh hưởng tháng này không?',
+  'Đánh giá chất lượng dịch vụ của các chuỗi nhà hàng lớn trong tháng qua',
+  'Xu hướng ẩm thực healthy/thuần chay đang phát triển thế nào?',
+  'Chuỗi F&B nào tăng trưởng chi nhánh nhanh nhất tháng này?',
+  'So sánh chi phí đặt đồ ăn qua app giữa các nền tảng tháng này',
+  'Người tiêu dùng cần lưu ý gì khi chọn quán ăn qua đánh giá online?',
+  'Ngành F&B đang thay đổi thế nào trước làn sóng bếp trên mây (cloud kitchen)?',
+  'Nhà hàng nào bị nhắc đến tiêu cực nhiều nhất về vệ sinh thực phẩm tháng qua?',
+  'Xu hướng đồ uống mới (trà sữa, cà phê đặc sản) tháng này thế nào?',
+  'Chuỗi nhà hàng nào có chương trình khách hàng thân thiết tốt nhất?',
+  'So sánh mức độ hài lòng giữa các ứng dụng giao đồ ăn phổ biến',
+  'Dự báo xu hướng ngành ẩm thực cho quý tới là gì?',
+];
+
+export const FNB_WEEKLY_EN: string[] = [
+  'Which restaurant chain has the best discount this week?',
+  'Which café is trending for check-in photos this week?',
+  'Which food-delivery app has the most free-shipping vouchers right now?',
+  'Which dish is going viral on social media this week?',
+  'Which restaurant gets the most complaints about service quality this past week?',
+  'Which bubble tea chain launched a new flavor this week?',
+  'How to book a table at peak hours without waiting',
+  'Any notable food safety inspections this week?',
+  'Which eatery has the best value combo deal right now?',
+  'Which delivery app delivers fastest within the city?',
+  'Which restaurant has been mentioned most for food hygiene incidents this past week?',
+  'Which F&B chain is expanding branches fastest this week?',
+  'How to choose a quality, reasonably priced buffet restaurant',
+  'Any food festivals/culinary events happening this week?',
+  'Which café has the best workspace right now?',
+  'Which restaurant chain has the most attractive rewards program?',
+  'Which dish is drawing quality complaints from consumers this week?',
+];
+
+export const FNB_MONTHLY_EN: string[] = [
+  "What's the biggest food trend this month?",
+  'Which restaurant/café chain leads market share right now?',
+  'Comparing prices across popular fast-food chains this month',
+  'Which business model should new F&B entrepreneurs study?',
+  'Any new food safety regulations affecting this month?',
+  'Review of service quality across major restaurant chains this past month',
+  'What healthy/plant-based food trends are developing?',
+  'Which F&B chain is growing branches fastest this month?',
+  'Comparing food-delivery app costs this month',
+  'What should consumers watch for when choosing a restaurant via online reviews?',
+  'How is F&B changing amid the cloud-kitchen trend?',
+  'Which restaurant got the most negative buzz over food hygiene this past month?',
+  "What's the new-beverage trend (bubble tea, specialty coffee) this month?",
+  'Which restaurant chain has the best loyalty program?',
+  'Comparing satisfaction across popular food-delivery apps',
+  "What's the food industry forecast for next quarter?",
+];
+
+export const TECHNOLOGY_WEEKLY: string[] = [
+  'Hãng điện thoại nào đang có ưu đãi giảm giá tốt nhất tuần này?',
+  'Sản phẩm công nghệ nào đang gây sốt trên mạng xã hội tuần này?',
+  'Ứng dụng AI nào đang được người dùng đánh giá cao nhất hiện nay?',
+  'Hãng nào vừa ra mắt sản phẩm mới tuần này?',
+  'Laptop nào phù hợp nhất cho sinh viên với mức giá tầm trung?',
+  'Hãng công nghệ nào bị phàn nàn nhiều nhất về lỗi phần mềm tuần qua?',
+  'Cách chọn mua điện thoại cũ không bị lỗi ẩn',
+  'Có sự kiện ra mắt sản phẩm công nghệ nào đáng chú ý tuần này không?',
+  'Phần mềm/app nào đang bị người dùng phản ánh về bảo mật tuần này?',
+  'Hãng nào có chính sách bảo hành thiết bị điện tử tốt nhất?',
+  'Tai nghe không dây nào đang bán chạy nhất tuần này?',
+  'Có bản cập nhật phần mềm nào gây lỗi cho người dùng tuần này không?',
+  'Cách bảo vệ tài khoản khỏi lừa đảo công nghệ cao',
+  'Hãng nào đang có chương trình thu cũ đổi mới hấp dẫn nhất?',
+  'Thiết bị nhà thông minh nào được ưa chuộng nhất hiện nay?',
+  'Hãng công nghệ nào bị nhắc đến nhiều nhất về sự cố bảo mật tuần qua?',
+  'Nền tảng đám mây (cloud) nào có ưu đãi tốt nhất cho doanh nghiệp nhỏ tuần này?',
+];
+
+export const TECHNOLOGY_MONTHLY: string[] = [
+  'Xu hướng công nghệ nổi bật nhất tháng này là gì?',
+  'Hãng công nghệ nào dẫn đầu thị phần thiết bị di động hiện nay?',
+  'So sánh các mẫu điện thoại/laptop đáng mua nhất tháng này',
+  'Người mới nên chọn hệ sinh thái công nghệ nào (Android, iOS, Windows)?',
+  'Có quy định mới nào về bảo mật dữ liệu ảnh hưởng ngành công nghệ tháng này không?',
+  'Đánh giá chất lượng dịch vụ hậu mãi của các hãng công nghệ trong tháng qua',
+  'Xu hướng ứng dụng AI tạo sinh đang ảnh hưởng ngành công nghệ thế nào?',
+  'Hãng công nghệ nào tăng trưởng doanh số nhanh nhất tháng này?',
+  'So sánh chi phí sử dụng dịch vụ đám mây giữa các nhà cung cấp tháng này',
+  'Người dùng cần lưu ý rủi ro bảo mật gì khi dùng ứng dụng AI?',
+  'Ngành công nghệ đang thay đổi thế nào trước làn sóng AI tạo sinh?',
+  'Hãng công nghệ nào bị nhắc đến tiêu cực nhiều nhất về bảo mật tháng qua?',
+  'Xu hướng thiết bị đeo thông minh (wearable) tháng này thế nào?',
+  'Hãng nào có chương trình hỗ trợ khách hàng doanh nghiệp tốt nhất?',
+  'So sánh hiệu năng giữa các chip xử lý mới ra mắt gần đây',
+  'Dự báo xu hướng ngành công nghệ cho quý tới là gì?',
+];
+
+export const TECHNOLOGY_WEEKLY_EN: string[] = [
+  'Which phone brand has the best discount this week?',
+  'Which tech product is going viral on social media this week?',
+  'Which AI app is rated highest by users right now?',
+  'Which brand just launched a new product this week?',
+  'Which laptop suits students best at a mid-range price?',
+  'Which tech brand gets the most complaints about software bugs this past week?',
+  'How to buy a used phone without hidden defects',
+  'Any notable tech product launch events this week?',
+  'Which app/software is drawing security complaints this week?',
+  'Which brand has the best electronics warranty policy?',
+  'Which wireless earbuds are best-selling this week?',
+  'Any software update causing issues for users this week?',
+  'How to protect your account from high-tech scams',
+  'Which brand has the most attractive trade-in program right now?',
+  'Which smart home device is most popular right now?',
+  'Which tech brand has been mentioned most for security incidents this past week?',
+  'Which cloud platform has the best deal for small businesses this week?',
+];
+
+export const TECHNOLOGY_MONTHLY_EN: string[] = [
+  "What's the biggest tech trend this month?",
+  'Which tech brand leads the mobile device market right now?',
+  'Comparing the most worth-buying phones/laptops this month',
+  'Which tech ecosystem should a newcomer pick (Android, iOS, Windows)?',
+  'Any new data-security regulations affecting tech this month?',
+  'Review of after-sales service quality across tech brands this past month',
+  'How is generative AI affecting the tech industry?',
+  'Which tech brand is growing sales fastest this month?',
+  'Comparing cloud service costs across providers this month',
+  'What security risks should users watch for when using AI apps?',
+  'How is tech changing amid the generative AI wave?',
+  'Which tech brand got the most negative buzz over security this past month?',
+  "What's the wearable device trend this month?",
+  'Which brand has the best enterprise customer support?',
+  'Comparing performance across newly launched chips',
+  "What's the tech industry forecast for next quarter?",
+];
+
+export const LOGISTICS_WEEKLY: string[] = [
+  'Đơn vị vận chuyển nào đang có phí giao hàng rẻ nhất tuần này?',
+  'Đơn vị nào giao hàng nhanh nhất trong nội thành hiện nay?',
+  'Cách theo dõi đơn hàng vận chuyển chính xác nhất',
+  'Đơn vị logistics nào đang có ưu đãi cho doanh nghiệp vừa và nhỏ tuần này?',
+  'Đơn vị vận chuyển nào bị phàn nàn nhiều nhất về giao hàng chậm tuần qua?',
+  'Cách khiếu nại khi hàng bị thất lạc hoặc hư hỏng trong vận chuyển',
+  'Đơn vị nào có dịch vụ giao hàng hỏa tốc tốt nhất hiện nay?',
+  'Có thay đổi quy định vận tải hàng hóa nào đáng chú ý tuần này không?',
+  'Đơn vị logistics nào đang mở rộng kho bãi nhanh nhất tuần này?',
+  'Cách chọn đơn vị vận chuyển quốc tế uy tín, chi phí hợp lý',
+  'Đơn vị nào có chính sách bồi thường hàng hư hỏng tốt nhất?',
+  'Đơn vị vận chuyển nào bị nhắc đến nhiều nhất về sự cố thất lạc hàng tuần qua?',
+  'Có ứng dụng theo dõi vận chuyển nào mới ra mắt tuần này không?',
+  'Đơn vị nào có mạng lưới giao hàng liên tỉnh rộng nhất?',
+  'Cách tối ưu chi phí vận chuyển cho đơn hàng số lượng lớn',
+  'Đơn vị logistics nào đang ứng dụng công nghệ tự động hóa kho vận?',
+  'Giá cước vận chuyển đường biển/hàng không đang biến động thế nào tuần này?',
+];
+
+export const LOGISTICS_MONTHLY: string[] = [
+  'Xu hướng ngành vận chuyển & logistics nổi bật nhất tháng này là gì?',
+  'Đơn vị vận chuyển nào dẫn đầu thị phần giao hàng hiện nay?',
+  'So sánh chi phí vận chuyển giữa các đơn vị lớn tháng này',
+  'Doanh nghiệp mới nên chọn đối tác logistics nào?',
+  'Có chính sách/quy định mới nào ảnh hưởng ngành logistics tháng này không?',
+  'Đánh giá chất lượng dịch vụ giao hàng của các đơn vị lớn trong tháng qua',
+  'Xu hướng ứng dụng công nghệ (AI, robot) trong kho vận đang phát triển thế nào?',
+  'Đơn vị logistics nào tăng trưởng nhanh nhất tháng này?',
+  'So sánh thời gian giao hàng liên tỉnh giữa các đơn vị phổ biến',
+  'Doanh nghiệp cần lưu ý rủi ro gì khi chọn đối tác vận chuyển quốc tế?',
+  'Ngành logistics đang thay đổi thế nào trước làn sóng thương mại điện tử?',
+  'Đơn vị nào bị nhắc đến tiêu cực nhiều nhất về thất lạc/hư hỏng hàng tháng qua?',
+  'Xu hướng giao hàng xanh (green logistics) tháng này thế nào?',
+  'Đơn vị nào có chương trình hỗ trợ doanh nghiệp nhỏ tốt nhất?',
+  'So sánh năng lực kho bãi giữa các đơn vị logistics lớn',
+  'Dự báo xu hướng ngành vận chuyển & logistics cho quý tới là gì?',
+];
+
+export const LOGISTICS_WEEKLY_EN: string[] = [
+  'Which carrier has the cheapest delivery fee this week?',
+  'Which carrier delivers fastest within the city right now?',
+  "What's the most accurate way to track a shipment?",
+  'Which logistics provider has promotions for small/medium businesses this week?',
+  'Which carrier gets the most complaints about slow delivery this past week?',
+  'How to file a claim when a shipment is lost or damaged',
+  'Which provider has the best express delivery service right now?',
+  'Any notable freight transport regulation changes this week?',
+  'Which logistics provider is expanding warehouse space fastest this week?',
+  'How to choose a reputable, cost-effective international shipping provider',
+  'Which provider has the best compensation policy for damaged goods?',
+  'Which carrier has been mentioned most for lost-shipment incidents this past week?',
+  'Any new shipment-tracking app launched this week?',
+  'Which provider has the widest inter-provincial delivery network?',
+  'How to optimize shipping costs for bulk orders',
+  'Which logistics provider is applying warehouse automation technology?',
+  'How are sea/air freight rates fluctuating this week?',
+];
+
+export const LOGISTICS_MONTHLY_EN: string[] = [
+  "What's the biggest trend in logistics this month?",
+  'Which carrier leads delivery market share right now?',
+  'Comparing shipping costs across major providers this month',
+  'Which logistics partner should a new business choose?',
+  'Any new policies/regulations affecting logistics this month?',
+  'Review of delivery service quality across major providers this past month',
+  'How are AI/robotics trends developing in warehousing?',
+  'Which logistics provider is growing fastest this month?',
+  'Comparing inter-provincial delivery times across popular providers',
+  'What risks should businesses watch for when choosing an international shipping partner?',
+  'How is logistics changing amid the e-commerce boom?',
+  'Which provider got the most negative buzz over lost/damaged goods this past month?',
+  "What's the green logistics trend this month?",
+  'Which provider has the best small-business support program?',
+  'Comparing warehouse capacity across major logistics providers',
+  "What's the logistics industry forecast for next quarter?",
+];
+
+export const BEAUTY_WEEKLY: string[] = [
+  'Thương hiệu mỹ phẩm nào đang có ưu đãi giảm giá tốt nhất tuần này?',
+  'Sản phẩm skincare nào đang gây sốt trên mạng xã hội tuần này?',
+  'Spa/salon nào có dịch vụ chăm sóc da được đánh giá cao nhất hiện nay?',
+  'Thương hiệu nào vừa ra mắt sản phẩm mới tuần này?',
+  'Cách chọn kem chống nắng phù hợp với từng loại da',
+  'Thương hiệu mỹ phẩm nào bị phàn nàn nhiều nhất về chất lượng tuần qua?',
+  'Sản phẩm trang điểm nào đang được ưa chuộng nhất hiện nay?',
+  'Có cảnh báo mỹ phẩm giả/kém chất lượng nào tuần này không?',
+  'Salon làm tóc nào có ưu đãi tốt nhất cho khách hàng mới?',
+  'Cách phân biệt mỹ phẩm chính hãng và hàng giả',
+  'Thương hiệu nào đang có chương trình dùng thử sản phẩm miễn phí?',
+  'Spa nào bị nhắc đến nhiều nhất về sự cố dịch vụ tuần qua?',
+  'Sản phẩm chăm sóc tóc nào phù hợp cho tóc hư tổn nặng?',
+  'Có xu hướng làm đẹp nào đang viral trên mạng xã hội tuần này?',
+  'Thương hiệu mỹ phẩm nào đang mở rộng cửa hàng nhanh nhất?',
+  'Cách chọn liệu trình chăm sóc da an toàn, hiệu quả',
+  'Sản phẩm nào bị người tiêu dùng phản ánh gây kích ứng da tuần này?',
+];
+
+export const BEAUTY_MONTHLY: string[] = [
+  'Xu hướng làm đẹp nổi bật nhất tháng này là gì?',
+  'Thương hiệu mỹ phẩm nào dẫn đầu thị phần hiện nay?',
+  'So sánh chất lượng các dòng skincare phổ biến tháng này',
+  'Người mới nên bắt đầu chu trình chăm sóc da như thế nào?',
+  'Có quy định mới nào về quản lý mỹ phẩm ảnh hưởng tháng này không?',
+  'Đánh giá chất lượng dịch vụ của các chuỗi spa/salon trong tháng qua',
+  'Xu hướng mỹ phẩm thiên nhiên/thuần chay đang phát triển thế nào?',
+  'Thương hiệu nào tăng trưởng doanh số nhanh nhất tháng này?',
+  'So sánh giá cả giữa các dòng mỹ phẩm cao cấp và bình dân',
+  'Người tiêu dùng cần lưu ý gì khi mua mỹ phẩm qua livestream?',
+  'Ngành làm đẹp đang thay đổi thế nào trước làn sóng công nghệ AI tư vấn da?',
+  'Thương hiệu nào bị nhắc đến tiêu cực nhiều nhất về chất lượng tháng qua?',
+  'Xu hướng làm đẹp không xâm lấn (thẩm mỹ nhẹ) tháng này thế nào?',
+  'Thương hiệu nào có chương trình khách hàng thân thiết tốt nhất?',
+  'So sánh mức độ hài lòng giữa các chuỗi spa lớn',
+  'Dự báo xu hướng ngành làm đẹp cho quý tới là gì?',
+];
+
+export const BEAUTY_WEEKLY_EN: string[] = [
+  'Which cosmetics brand has the best discount this week?',
+  'Which skincare product is going viral on social media this week?',
+  'Which spa/salon has the best-rated skincare service right now?',
+  'Which brand just launched a new product this week?',
+  'How to choose sunscreen suited to your skin type',
+  'Which cosmetics brand gets the most complaints about quality this past week?',
+  'Which makeup product is most popular right now?',
+  'Any counterfeit/low-quality cosmetics warnings this week?',
+  'Which hair salon has the best deal for new customers?',
+  'How to tell genuine cosmetics from counterfeits',
+  'Which brand currently has a free product trial program?',
+  'Which spa has been mentioned most for service incidents this past week?',
+  'Which hair care product suits severely damaged hair?',
+  'Any beauty trend going viral on social media this week?',
+  'Which cosmetics brand is expanding stores fastest right now?',
+  'How to choose a safe, effective skincare treatment plan',
+  'Which product is drawing complaints about causing skin irritation this week?',
+];
+
+export const BEAUTY_MONTHLY_EN: string[] = [
+  "What's the biggest beauty trend this month?",
+  'Which cosmetics brand leads market share right now?',
+  'Comparing quality across popular skincare lines this month',
+  'How should a beginner start a skincare routine?',
+  'Any new cosmetics regulations affecting this month?',
+  'Review of service quality across major spa/salon chains this past month',
+  'What natural/vegan cosmetics trends are developing?',
+  'Which brand is growing sales fastest this month?',
+  'Comparing prices between premium and mass-market cosmetics lines',
+  'What should consumers watch for when buying cosmetics via livestream?',
+  'How is the beauty industry changing amid AI skin-analysis technology?',
+  'Which brand got the most negative buzz over quality this past month?',
+  "What's the non-invasive beauty (light aesthetics) trend this month?",
+  'Which brand has the best loyalty program?',
+  'Comparing satisfaction across major spa chains',
+  "What's the beauty industry forecast for next quarter?",
+];
+
+export const FASHION_WEEKLY: string[] = [
+  'Thương hiệu thời trang nào đang có ưu đãi giảm giá tốt nhất tuần này?',
+  'Xu hướng thời trang nào đang được ưa chuộng nhất tuần này?',
+  'Cửa hàng nào có chương trình khuyến mãi cuối tuần hấp dẫn nhất?',
+  'Thương hiệu nào vừa ra mắt bộ sưu tập mới tuần này?',
+  'Cách chọn size quần áo online chuẩn, tránh phải đổi trả',
+  'Thương hiệu thời trang nào bị phàn nàn nhiều nhất về chất lượng vải tuần qua?',
+  'Cửa hàng nào có chính sách đổi trả dễ nhất hiện nay?',
+  'Có sản phẩm thời trang nào đang gây sốt trên mạng xã hội tuần này?',
+  'Thương hiệu giày nào đang có ưu đãi tốt nhất tuần này?',
+  'Cách phân biệt hàng thời trang chính hãng và hàng nhái',
+  'Chuỗi bán lẻ nào đang mở rộng cửa hàng nhanh nhất tuần này?',
+  'Thương hiệu nào bị nhắc đến nhiều nhất về sự cố dịch vụ khách hàng tuần qua?',
+  'Có sự kiện sale thời trang lớn nào diễn ra tuần này không?',
+  'Cửa hàng nào có ưu đãi tốt nhất cho khách hàng thành viên?',
+  'Thương hiệu thời trang nào đang hợp tác với nhà thiết kế nổi tiếng?',
+  'Xu hướng phối đồ nào đang được giới trẻ yêu thích tuần này?',
+  'Thương hiệu nào bị người tiêu dùng phản ánh về chất lượng sản phẩm tuần này?',
+];
+
+export const FASHION_MONTHLY: string[] = [
+  'Xu hướng thời trang nổi bật nhất tháng này là gì?',
+  'Thương hiệu thời trang nào dẫn đầu thị phần bán lẻ hiện nay?',
+  'So sánh giá cả giữa các thương hiệu thời trang phổ biến tháng này',
+  'Người mới nên chọn thương hiệu nào để xây dựng tủ đồ cơ bản?',
+  'Có quy định mới nào về nhãn mác, xuất xứ ảnh hưởng ngành thời trang tháng này không?',
+  'Đánh giá chất lượng dịch vụ của các chuỗi bán lẻ lớn trong tháng qua',
+  'Xu hướng thời trang bền vững (sustainable fashion) đang phát triển thế nào?',
+  'Thương hiệu nào tăng trưởng doanh số nhanh nhất tháng này?',
+  'So sánh chất lượng vải giữa các thương hiệu thời trang nhanh (fast fashion)',
+  'Người tiêu dùng cần lưu ý gì khi mua hàng thời trang online?',
+  'Ngành thời trang & bán lẻ đang thay đổi thế nào trước làn sóng mua sắm trực tuyến?',
+  'Thương hiệu nào bị nhắc đến tiêu cực nhiều nhất về chất lượng tháng qua?',
+  'Xu hướng thời trang secondhand/đồ cũ tháng này thế nào?',
+  'Thương hiệu nào có chương trình khách hàng thân thiết tốt nhất?',
+  'So sánh mức độ hài lòng giữa mua sắm tại cửa hàng và online',
+  'Dự báo xu hướng ngành thời trang & bán lẻ cho quý tới là gì?',
+];
+
+export const FASHION_WEEKLY_EN: string[] = [
+  'Which fashion brand has the best discount this week?',
+  'Which fashion trend is most popular this week?',
+  'Which store has the most attractive weekend promotion?',
+  'Which brand just launched a new collection this week?',
+  'How to pick the right clothing size online and avoid returns',
+  'Which fashion brand gets the most complaints about fabric quality this past week?',
+  'Which store has the easiest return policy right now?',
+  'Any fashion item going viral on social media this week?',
+  'Which shoe brand has the best deal this week?',
+  'How to tell genuine fashion items from knockoffs',
+  'Which retail chain is expanding stores fastest this week?',
+  'Which brand has been mentioned most for customer-service incidents this past week?',
+  'Any major fashion sale event happening this week?',
+  'Which store has the best member-only deals?',
+  'Which fashion brand is collaborating with a famous designer?',
+  'Which styling trend is popular with young people this week?',
+  'Which brand is drawing complaints about product quality this week?',
+];
+
+export const FASHION_MONTHLY_EN: string[] = [
+  "What's the biggest fashion trend this month?",
+  'Which fashion brand leads retail market share right now?',
+  'Comparing prices across popular fashion brands this month',
+  'Which brand should a newcomer pick to build a capsule wardrobe?',
+  'Any new labeling/origin regulations affecting fashion this month?',
+  'Review of service quality across major retail chains this past month',
+  'What sustainable fashion trends are developing?',
+  'Which brand is growing sales fastest this month?',
+  'Comparing fabric quality across fast-fashion brands',
+  'What should consumers watch for when buying fashion online?',
+  'How is fashion & retail changing amid the online shopping wave?',
+  'Which brand got the most negative buzz over quality this past month?',
+  "What's the secondhand fashion trend this month?",
+  'Which brand has the best loyalty program?',
+  'Comparing satisfaction between in-store and online shopping',
+  "What's the fashion & retail industry forecast for next quarter?",
+];
+
+function genericWeekly(industry: string, lang: TrendingLang): string[] {
+  if (lang === 'en') {
+    return [
+      `Which brand in the ${industry} industry is getting the most attention this week?`,
+      `What's the standout trend in ${industry} this past week?`,
+      `Which product/service in ${industry} is most in demand right now?`,
+      `Any standout promotions in ${industry} this week?`,
+      `What are users complaining about most in ${industry} this week?`,
+      `Which competitor in ${industry} just launched a new feature or product?`,
+      `What's the most-searched question about ${industry} this week?`,
+      `Any regulation/policy changes affecting ${industry} this week?`,
+      `What review about ${industry} is spreading on social media?`,
+      `How are prices in ${industry} moving this week?`,
+      `Which brand in ${industry} is rated worst this week?`,
+      `Any notable event or launch in ${industry} this week?`,
+    ];
+  }
   return [
     `Thương hiệu nào trong ngành ${industry} đang được chú ý nhiều nhất tuần này?`,
     `Xu hướng nổi bật nào trong ngành ${industry} tuần qua?`,
@@ -219,7 +1212,23 @@ function genericWeekly(industry: string): string[] {
   ];
 }
 
-function genericMonthly(industry: string): string[] {
+function genericMonthly(industry: string, lang: TrendingLang): string[] {
+  if (lang === 'en') {
+    return [
+      `What's the biggest trend in the ${industry} industry this month?`,
+      `Which brand leads market share in ${industry} right now?`,
+      `Comparing the top options in ${industry} this month`,
+      `What should a newcomer choose in ${industry}?`,
+      `Any new regulations/policies affecting ${industry} this month?`,
+      `Review of overall service quality in ${industry} this past month`,
+      `What new tech trends are affecting ${industry}?`,
+      `Which brand in ${industry} is growing fastest this month?`,
+      `Comparing costs/prices among popular options in ${industry}`,
+      `What risks should users watch for when choosing a ${industry} service?`,
+      `How is ${industry} changing amid digital transformation?`,
+      `Which brand in ${industry} got the most negative buzz this past month?`,
+    ];
+  }
   return [
     `Xu hướng lớn nhất trong ngành ${industry} tháng này là gì?`,
     `Thương hiệu nào đang dẫn đầu thị phần trong ngành ${industry} hiện nay?`,
@@ -236,33 +1245,84 @@ function genericMonthly(industry: string): string[] {
   ];
 }
 
-type IndustryMatch = { aliases: string[]; weekly: string[]; monthly: string[] };
+type LangSet = { weekly: string[]; monthly: string[] };
+type IndustryMatch = { aliases: string[]; vi: LangSet; en: LangSet };
 
 const INDUSTRY_MATCHERS: IndustryMatch[] = [
   {
     aliases: ['ngân hàng', 'banking', 'tài chính', 'fintech', 'ví điện tử', 'e-wallet', 'bank', 'financial services'],
-    weekly: BANKING_WEEKLY,
-    monthly: BANKING_MONTHLY,
+    vi: { weekly: BANKING_WEEKLY, monthly: BANKING_MONTHLY },
+    en: { weekly: BANKING_WEEKLY_EN, monthly: BANKING_MONTHLY_EN },
   },
   {
     aliases: ['fmcg', 'hàng tiêu dùng', 'tiêu dùng nhanh', 'consumer goods'],
-    weekly: FMCG_WEEKLY,
-    monthly: FMCG_MONTHLY,
+    vi: { weekly: FMCG_WEEKLY, monthly: FMCG_MONTHLY },
+    en: { weekly: FMCG_WEEKLY_EN, monthly: FMCG_MONTHLY_EN },
   },
   {
     aliases: ['bảo hiểm', 'insurance'],
-    weekly: INSURANCE_WEEKLY,
-    monthly: INSURANCE_MONTHLY,
+    vi: { weekly: INSURANCE_WEEKLY, monthly: INSURANCE_MONTHLY },
+    en: { weekly: INSURANCE_WEEKLY_EN, monthly: INSURANCE_MONTHLY_EN },
   },
   {
     aliases: ['viễn thông', 'telecom', 'nhà mạng'],
-    weekly: TELECOM_WEEKLY,
-    monthly: TELECOM_MONTHLY,
+    vi: { weekly: TELECOM_WEEKLY, monthly: TELECOM_MONTHLY },
+    en: { weekly: TELECOM_WEEKLY_EN, monthly: TELECOM_MONTHLY_EN },
   },
   {
     aliases: ['bất động sản', 'real estate', 'bđs'],
-    weekly: REAL_ESTATE_WEEKLY,
-    monthly: REAL_ESTATE_MONTHLY,
+    vi: { weekly: REAL_ESTATE_WEEKLY, monthly: REAL_ESTATE_MONTHLY },
+    en: { weekly: REAL_ESTATE_WEEKLY_EN, monthly: REAL_ESTATE_MONTHLY_EN },
+  },
+  {
+    aliases: ['thương mại điện tử', 'e-commerce', 'ecommerce', 'sàn tmđt'],
+    vi: { weekly: ECOMMERCE_WEEKLY, monthly: ECOMMERCE_MONTHLY },
+    en: { weekly: ECOMMERCE_WEEKLY_EN, monthly: ECOMMERCE_MONTHLY_EN },
+  },
+  {
+    aliases: ['giáo dục', 'education'],
+    vi: { weekly: EDUCATION_WEEKLY, monthly: EDUCATION_MONTHLY },
+    en: { weekly: EDUCATION_WEEKLY_EN, monthly: EDUCATION_MONTHLY_EN },
+  },
+  {
+    aliases: ['y tế', 'healthcare', 'sức khỏe', 'health care'],
+    vi: { weekly: HEALTHCARE_WEEKLY, monthly: HEALTHCARE_MONTHLY },
+    en: { weekly: HEALTHCARE_WEEKLY_EN, monthly: HEALTHCARE_MONTHLY_EN },
+  },
+  {
+    aliases: ['ô tô', 'xe máy', 'automotive', 'ô tô - xe máy'],
+    vi: { weekly: AUTOMOTIVE_WEEKLY, monthly: AUTOMOTIVE_MONTHLY },
+    en: { weekly: AUTOMOTIVE_WEEKLY_EN, monthly: AUTOMOTIVE_MONTHLY_EN },
+  },
+  {
+    aliases: ['du lịch', 'khách sạn', 'travel', 'hospitality'],
+    vi: { weekly: TRAVEL_WEEKLY, monthly: TRAVEL_MONTHLY },
+    en: { weekly: TRAVEL_WEEKLY_EN, monthly: TRAVEL_MONTHLY_EN },
+  },
+  {
+    aliases: ['ẩm thực', 'nhà hàng', 'f&b', 'food and beverage', 'food & beverage'],
+    vi: { weekly: FNB_WEEKLY, monthly: FNB_MONTHLY },
+    en: { weekly: FNB_WEEKLY_EN, monthly: FNB_MONTHLY_EN },
+  },
+  {
+    aliases: ['công nghệ', 'technology', 'tech'],
+    vi: { weekly: TECHNOLOGY_WEEKLY, monthly: TECHNOLOGY_MONTHLY },
+    en: { weekly: TECHNOLOGY_WEEKLY_EN, monthly: TECHNOLOGY_MONTHLY_EN },
+  },
+  {
+    aliases: ['vận chuyển', 'logistics'],
+    vi: { weekly: LOGISTICS_WEEKLY, monthly: LOGISTICS_MONTHLY },
+    en: { weekly: LOGISTICS_WEEKLY_EN, monthly: LOGISTICS_MONTHLY_EN },
+  },
+  {
+    aliases: ['làm đẹp', 'mỹ phẩm', 'beauty', 'cosmetics'],
+    vi: { weekly: BEAUTY_WEEKLY, monthly: BEAUTY_MONTHLY },
+    en: { weekly: BEAUTY_WEEKLY_EN, monthly: BEAUTY_MONTHLY_EN },
+  },
+  {
+    aliases: ['thời trang', 'bán lẻ', 'fashion', 'retail'],
+    vi: { weekly: FASHION_WEEKLY, monthly: FASHION_MONTHLY },
+    en: { weekly: FASHION_WEEKLY_EN, monthly: FASHION_MONTHLY_EN },
   },
 ];
 
@@ -271,10 +1331,11 @@ function findMatcher(industry: string): IndustryMatch | undefined {
   return INDUSTRY_MATCHERS.find((m) => m.aliases.some((alias) => key.includes(alias)));
 }
 
-export function getTrending(industry: string, period: TrendingPeriod): string[] {
+export function getTrending(industry: string, period: TrendingPeriod, lang: TrendingLang = 'vi'): string[] {
   const matcher = findMatcher(industry);
   if (matcher) {
-    return period === 'week' ? matcher.weekly : matcher.monthly;
+    const set = matcher[lang];
+    return period === 'week' ? set.weekly : set.monthly;
   }
-  return period === 'week' ? genericWeekly(industry) : genericMonthly(industry);
+  return period === 'week' ? genericWeekly(industry, lang) : genericMonthly(industry, lang);
 }

@@ -3,7 +3,24 @@ import { WebsiteText } from './website-fetch.util';
 
 // Mirrors frontend/app/industry.ts's PROJECT_INDUSTRIES — kept in sync
 // manually since the two apps don't share a package.
-export const TRIAL_INDUSTRIES = ['Banking', 'FMCG', 'Insurance', 'Telecom', 'Real Estate', 'Other'];
+export const TRIAL_INDUSTRIES = [
+  'Banking',
+  'FMCG',
+  'Insurance',
+  'Telecom',
+  'Real Estate',
+  'E-commerce',
+  'Education',
+  'Healthcare',
+  'Automotive',
+  'Travel & Hospitality',
+  'F&B',
+  'Technology',
+  'Logistics',
+  'Beauty & Cosmetics',
+  'Fashion & Retail',
+  'Other',
+];
 
 export interface IndustryDetectionResult {
   brandName: string;
@@ -11,23 +28,39 @@ export interface IndustryDetectionResult {
   suggestedCompetitors: string[];
 }
 
+// How each zone should shape competitor suggestions — a local-market zone
+// should surface brands actually known in that specific country, while
+// "international" should surface global players rather than defaulting to
+// whichever country the model happens to think of first.
+const ZONE_CONTEXT: Record<string, string> = {
+  vietnam:
+    'Vietnam — this is a domestic Vietnamese market brand. Suggest competitors that are well-known specifically in Vietnam (local Vietnamese brands, or foreign brands with a strong presence in Vietnam) — do not suggest brands that only operate in other countries.',
+  thailand:
+    'Thailand — this is a domestic Thai market brand. Suggest competitors that are well-known specifically in Thailand (local Thai brands, or foreign brands with a strong presence in Thailand) — do not suggest brands that only operate in other countries.',
+  indonesia:
+    'Indonesia — this is a domestic Indonesian market brand. Suggest competitors that are well-known specifically in Indonesia (local Indonesian brands, or foreign brands with a strong presence in Indonesia) — do not suggest brands that only operate in other countries.',
+  international:
+    'International/global — this brand competes globally, not in one specific country. Suggest well-known international/global competitor brands rather than brands tied to a single local market.',
+};
+
 function buildPrompt(params: { domain: string; zone: string; websiteText: WebsiteText | null }): string {
   const siteBlock = params.websiteText
     ? `Homepage title: ${params.websiteText.title || '(none)'}
 Meta description: ${params.websiteText.description || '(none)'}
 Page text sample: ${params.websiteText.textSample.slice(0, 1500) || '(none)'}`
     : '(The page could not be fetched — infer everything from the domain name alone.)';
+  const zoneContext = ZONE_CONTEXT[params.zone] || params.zone;
 
   return `You are a market research analyst. A visitor gave you their company website and region for a trial of a brand-visibility tracking tool. Based on the information below, identify the brand and its industry, and suggest real competitor brands.
 
 Website domain: ${params.domain}
-Region: ${params.zone}
+Region: ${zoneContext}
 ${siteBlock}
 
 Task:
 1. Guess the brand/company name (short, as it would appear in marketing copy).
 2. Classify the industry into exactly one of: ${TRIAL_INDUSTRIES.join(', ')}. Use "Other" only if truly none fit.
-3. Suggest 4 to 6 real, well-known competitor brand names that operate in the same industry and region.
+3. Suggest 4 to 6 real, well-known competitor brand names — follow the region guidance above precisely, since a competitor irrelevant to that market is worse than no suggestion at all.
 
 Return ONLY plain JSON, no explanation or markdown fence, in exactly this shape:
 {"brandName": "...", "industry": "...", "suggestedCompetitors": ["...", "..."]}`;

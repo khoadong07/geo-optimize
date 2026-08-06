@@ -1,6 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
-import { TrendingPeriod } from '../trending/trending-data';
+import { TrendingLang, TrendingPeriod } from '../trending/trending-data';
 
 export type TrendingTopicDocument = TrendingTopic & Document;
 
@@ -12,9 +12,12 @@ export class TrendingTopic {
   @Prop({ required: true, enum: ['week', 'month'] })
   period!: TrendingPeriod;
 
+  @Prop({ required: true, enum: ['en', 'vi'], default: 'vi' })
+  lang!: TrendingLang;
+
   @Prop({ required: true, trim: true })
   text!: string;
 }
 
 export const TrendingTopicSchema = SchemaFactory.createForClass(TrendingTopic);
-TrendingTopicSchema.index({ industry: 1, period: 1 });
+TrendingTopicSchema.index({ industry: 1, period: 1, lang: 1 });

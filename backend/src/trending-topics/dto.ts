@@ -8,6 +8,10 @@ export class CreateTrendingTopicDto {
   @IsIn(['week', 'month'])
   period!: 'week' | 'month';
 
+  @IsOptional()
+  @IsIn(['en', 'vi'])
+  lang?: 'en' | 'vi';
+
   @IsString()
   @MinLength(3)
   text!: string;
@@ -20,6 +24,10 @@ export class CreateTrendingTopicsBulkDto {
 
   @IsIn(['week', 'month'])
   period!: 'week' | 'month';
+
+  @IsOptional()
+  @IsIn(['en', 'vi'])
+  lang?: 'en' | 'vi';
 
   @IsArray()
   @ArrayMinSize(1)
@@ -36,6 +44,10 @@ export class UpdateTrendingTopicDto {
   @IsOptional()
   @IsIn(['week', 'month'])
   period?: 'week' | 'month';
+
+  @IsOptional()
+  @IsIn(['en', 'vi'])
+  lang?: 'en' | 'vi';
 
   @IsOptional()
   @IsString()

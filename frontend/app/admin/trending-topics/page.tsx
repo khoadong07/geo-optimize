@@ -4,16 +4,19 @@ import { FormEvent, useEffect, useMemo, useState } from 'react';
 import { API, authHeader } from '../admin-context';
 
 type Period = 'week' | 'month';
+type Lang = 'en' | 'vi';
 
 type TrendingTopic = {
   _id: string;
   industry: string;
   period: Period;
+  lang: Lang;
   text: string;
   createdAt?: string;
 };
 
 type PeriodFilter = 'all' | Period;
+type LangFilter = 'all' | Lang;
 
 export default function AdminTrendingTopicsPage() {
   const [topics, setTopics] = useState<TrendingTopic[] | null>(null);
@@ -23,12 +26,14 @@ export default function AdminTrendingTopicsPage() {
 
   const [industryFilter, setIndustryFilter] = useState('all');
   const [periodFilter, setPeriodFilter] = useState<PeriodFilter>('all');
+  const [langFilter, setLangFilter] = useState<LangFilter>('all');
   const [checkedIds, setCheckedIds] = useState<Set<string>>(new Set());
   const [deleteTargets, setDeleteTargets] = useState<TrendingTopic[] | null>(null);
   const [deleting, setDeleting] = useState(false);
 
   // Create-industry form — sets up a brand new industry with its weekly and/or monthly list in one step.
   const [newIndustryName, setNewIndustryName] = useState('');
+  const [newIndustryLang, setNewIndustryLang] = useState<Lang>('vi');
   const [newIndustryWeekly, setNewIndustryWeekly] = useState('');
   const [newIndustryMonthly, setNewIndustryMonthly] = useState('');
   const [creatingIndustry, setCreatingIndustry] = useState(false);
@@ -36,6 +41,7 @@ export default function AdminTrendingTopicsPage() {
   // Add-more form — appends questions (one per line) to an industry that already exists.
   const [addIndustry, setAddIndustry] = useState('');
   const [addPeriod, setAddPeriod] = useState<Period>('week');
+  const [addLang, setAddLang] = useState<Lang>('vi');
   const [addTexts, setAddTexts] = useState('');
   const [adding, setAdding] = useState(false);
 
@@ -43,6 +49,7 @@ export default function AdminTrendingTopicsPage() {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editIndustry, setEditIndustry] = useState('');
   const [editPeriod, setEditPeriod] = useState<Period>('week');
+  const [editLang, setEditLang] = useState<Lang>('vi');
   const [editText, setEditText] = useState('');
   const [savingEdit, setSavingEdit] = useState(false);
 
@@ -70,11 +77,16 @@ export default function AdminTrendingTopicsPage() {
   }, [industries]);
 
   const visibleTopics = (topics || []).filter(
-    (t) => (industryFilter === 'all' || t.industry === industryFilter) && (periodFilter === 'all' || t.period === periodFilter),
+    (t) =>
+      (industryFilter === 'all' || t.industry === industryFilter) &&
+      (periodFilter === 'all' || t.period === periodFilter) &&
+      (langFilter === 'all' || t.lang === langFilter),
   );
 
   const weekCount = (topics || []).filter((t) => t.period === 'week').length;
   const monthCount = (topics || []).filter((t) => t.period === 'month').length;
+  const enCount = (topics || []).filter((t) => t.lang === 'en').length;
+  const viCount = (topics || []).filter((t) => t.lang === 'vi').length;
 
   const allVisibleChecked = visibleTopics.length > 0 && visibleTopics.every((t) => checkedIds.has(t._id));
 
@@ -101,11 +113,11 @@ export default function AdminTrendingTopicsPage() {
       .filter(Boolean);
   }
 
-  async function postBulk(industry: string, period: Period, texts: string[]) {
+  async function postBulk(industry: string, period: Period, lang: Lang, texts: string[]) {
     const res = await fetch(`${API}/trending-topics/bulk`, {
       method: 'POST',
       headers: { ...authHeader(), 'Content-Type': 'application/json' },
-      body: JSON.stringify({ industry, period, texts }),
+      body: JSON.stringify({ industry, period, lang, texts }),
     });
     const data = await res.json().catch(() => ({}));
     return { ok: res.ok, message: data.message as string | undefined };
@@ -122,8 +134,8 @@ export default function AdminTrendingTopicsPage() {
     setSuccess('');
 
     const results = await Promise.all([
-      weekly.length ? postBulk(industry, 'week', weekly) : null,
-      monthly.length ? postBulk(industry, 'month', monthly) : null,
+      weekly.length ? postBulk(industry, 'week', newIndustryLang, weekly) : null,
+      monthly.length ? postBulk(industry, 'month', newIndustryLang, monthly) : null,
     ]);
     setCreatingIndustry(false);
 
@@ -134,7 +146,7 @@ export default function AdminTrendingTopicsPage() {
       return;
     }
     const total = weekly.length + monthly.length;
-    setSuccess(`Created "${industry}" with ${total} topic${total === 1 ? '' : 's'}.`);
+    setSuccess(`Created "${industry}" (${newIndustryLang.toUpperCase()}) with ${total} topic${total === 1 ? '' : 's'}.`);
     setNewIndustryName('');
     setNewIndustryWeekly('');
     setNewIndustryMonthly('');
@@ -148,13 +160,13 @@ export default function AdminTrendingTopicsPage() {
     setAdding(true);
     setError('');
     setSuccess('');
-    const result = await postBulk(addIndustry.trim(), addPeriod, texts);
+    const result = await postBulk(addIndustry.trim(), addPeriod, addLang, texts);
     setAdding(false);
     if (!result.ok) {
       setError(result.message || 'Could not add trending topics.');
       return;
     }
-    setSuccess(`Added ${texts.length} topic${texts.length === 1 ? '' : 's'} to "${addIndustry.trim()}".`);
+    setSuccess(`Added ${texts.length} topic${texts.length === 1 ? '' : 's'} to "${addIndustry.trim()}" (${addLang.toUpperCase()}).`);
     setAddTexts('');
     load();
   }
@@ -163,6 +175,7 @@ export default function AdminTrendingTopicsPage() {
     setEditingId(t._id);
     setEditIndustry(t.industry);
     setEditPeriod(t.period);
+    setEditLang(t.lang);
     setEditText(t.text);
     setError('');
     setSuccess('');
@@ -174,7 +187,7 @@ export default function AdminTrendingTopicsPage() {
     const res = await fetch(`${API}/trending-topics/${id}`, {
       method: 'PATCH',
       headers: { ...authHeader(), 'Content-Type': 'application/json' },
-      body: JSON.stringify({ industry: editIndustry.trim(), period: editPeriod, text: editText.trim() }),
+      body: JSON.stringify({ industry: editIndustry.trim(), period: editPeriod, lang: editLang, text: editText.trim() }),
     });
     const data = await res.json().catch(() => ({}));
     setSavingEdit(false);
@@ -210,7 +223,8 @@ export default function AdminTrendingTopicsPage() {
           <p className="gb-eyebrow">System admin</p>
           <h1 className="gb-title-lg">Trending topics</h1>
           <p className="gb-subtitle">
-            Manage the weekly/monthly trending questions surfaced during AI prompt generation. This feature is Vietnam-market only.
+            Manage the weekly/monthly trending questions surfaced during AI prompt generation, in both Vietnamese and
+            English — the Prompts page shows whichever language the viewer has selected.
           </p>
         </div>
       </div>
@@ -228,29 +242,45 @@ export default function AdminTrendingTopicsPage() {
           <div className="gb-stat-label">Industries</div>
         </div>
         <div className="gb-stat-tile">
-          <div className="gb-stat-num">{weekCount}</div>
-          <div className="gb-stat-label">Weekly topics</div>
+          <div className="gb-stat-num">
+            {viCount} / {enCount}
+          </div>
+          <div className="gb-stat-label">VI / EN topics</div>
         </div>
         <div className="gb-stat-tile">
-          <div className="gb-stat-num">{monthCount}</div>
-          <div className="gb-stat-label">Monthly topics</div>
+          <div className="gb-stat-num">
+            {weekCount} / {monthCount}
+          </div>
+          <div className="gb-stat-label">Weekly / Monthly</div>
         </div>
       </div>
 
       <div className="gb-card" style={{ marginBottom: 20 }}>
         <h2>Create new industry</h2>
         <p className="gb-card-sub">
-          Name the industry and paste its weekly and/or monthly question lists (one question per line). Fill in at least one list.
+          Name the industry, pick a language, and paste its weekly and/or monthly question lists (one question per line).
+          Fill in at least one list. Repeat for the other language if you want both.
         </p>
         <form onSubmit={handleCreateIndustry}>
-          <div className="gb-field">Industry name</div>
-          <input
-            className="gb-input"
-            value={newIndustryName}
-            onChange={(e) => setNewIndustryName(e.target.value)}
-            placeholder="e.g. Retail, Insurance, Real Estate"
-            required
-          />
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 140px', gap: 12 }}>
+            <div>
+              <div className="gb-field">Industry name</div>
+              <input
+                className="gb-input"
+                value={newIndustryName}
+                onChange={(e) => setNewIndustryName(e.target.value)}
+                placeholder="e.g. Retail, Insurance, Real Estate"
+                required
+              />
+            </div>
+            <div>
+              <div className="gb-field">Language</div>
+              <select className="gb-input" value={newIndustryLang} onChange={(e) => setNewIndustryLang(e.target.value as Lang)}>
+                <option value="vi">Vietnamese</option>
+                <option value="en">English</option>
+              </select>
+            </div>
+          </div>
 
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginTop: 4 }}>
             <div>
@@ -292,7 +322,7 @@ export default function AdminTrendingTopicsPage() {
         <p className="gb-card-sub">Append questions to an industry that already has topics.</p>
         {industries.length ? (
           <form onSubmit={handleAddMore}>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 160px', gap: 12 }}>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 130px 130px', gap: 12 }}>
               <div>
                 <div className="gb-field">Industry</div>
                 <select className="gb-input" value={addIndustry} onChange={(e) => setAddIndustry(e.target.value)}>
@@ -308,6 +338,13 @@ export default function AdminTrendingTopicsPage() {
                 <select className="gb-input" value={addPeriod} onChange={(e) => setAddPeriod(e.target.value as Period)}>
                   <option value="week">Weekly</option>
                   <option value="month">Monthly</option>
+                </select>
+              </div>
+              <div>
+                <div className="gb-field">Language</div>
+                <select className="gb-input" value={addLang} onChange={(e) => setAddLang(e.target.value as Lang)}>
+                  <option value="vi">Vietnamese</option>
+                  <option value="en">English</option>
                 </select>
               </div>
             </div>
@@ -351,6 +388,15 @@ export default function AdminTrendingTopicsPage() {
             {p === 'all' ? 'All periods' : p === 'week' ? 'Weekly' : 'Monthly'}
           </button>
         ))}
+        {(['all', 'vi', 'en'] as LangFilter[]).map((l) => (
+          <button
+            key={l}
+            className={`gb-btn gb-btn-ghost gb-chip${langFilter === l ? ' active' : ''}`}
+            onClick={() => setLangFilter(l)}
+          >
+            {l === 'all' ? 'All languages' : l.toUpperCase()}
+          </button>
+        ))}
         {checkedIds.size ? (
           <button
             className="gb-btn gb-btn-ghost"
@@ -375,6 +421,7 @@ export default function AdminTrendingTopicsPage() {
                   </th>
                   <th style={{ width: '14%' }}>Industry</th>
                   <th style={{ width: 90 }}>Period</th>
+                  <th style={{ width: 70 }}>Lang</th>
                   <th>Question</th>
                   <th></th>
                 </tr>
@@ -399,6 +446,12 @@ export default function AdminTrendingTopicsPage() {
                             </select>
                           </td>
                           <td>
+                            <select className="gb-input" value={editLang} onChange={(e) => setEditLang(e.target.value as Lang)}>
+                              <option value="vi">VI</option>
+                              <option value="en">EN</option>
+                            </select>
+                          </td>
+                          <td>
                             <input className="gb-input" value={editText} onChange={(e) => setEditText(e.target.value)} />
                           </td>
                           <td>
@@ -417,6 +470,9 @@ export default function AdminTrendingTopicsPage() {
                           <td>{t.industry}</td>
                           <td>
                             <span className="gb-badge neutral">{t.period === 'week' ? 'Weekly' : 'Monthly'}</span>
+                          </td>
+                          <td>
+                            <span className="gb-badge info">{t.lang.toUpperCase()}</span>
                           </td>
                           <td>{t.text}</td>
                           <td>

@@ -5,11 +5,11 @@ const INTENT_GUIDANCE: Record<PromptIntent, string> = {
   Discovery:
     'General discovery/search questions — the user does NOT yet know about a specific brand, they are just looking for a solution to a need (e.g. "what\'s the best app for...", "which one should I choose for...").',
   Comparison:
-    'Questions that directly compare the brand against one or more of the listed competitors (e.g. "A vs B: which should I choose", "compare A and B on...").',
+    'Questions comparing multiple options in the industry — may name specific competitors from the list (e.g. "X vs Y: which is better for...", "compare X and Y on..."), but must NEVER name the tracked brand itself. The point is to see whether the AI brings the tracked brand up on its own even though it was never mentioned.',
   Branded:
-    "Questions asking directly about this specific brand — its reputation, features, whether it's worth using, whether it's licensed/trustworthy.",
+    'Reputation/trust-style questions about the industry — which provider is most trustworthy, reliable, licensed, or well-regarded — phrased neutrally without naming the tracked brand or any competitor, so any brand that comes up in the answer does so organically.',
   'Long-tail':
-    'Long, specific, detailed questions about a niche situation or need related to the industry (not necessarily mentioning the brand or competitors).',
+    'Long, specific, detailed questions about a niche situation or need related to the industry — must not name the tracked brand or any competitor.',
 };
 
 const LANGUAGE_NAME: Record<'en' | 'vi', string> = {
@@ -33,12 +33,17 @@ function buildGenerationPrompt(params: {
 
   return `You are a market research expert. Task: generate questions that a real user might type into an AI assistant (like ChatGPT, Gemini) when searching for information related to the "${params.industry}" industry.
 
-Brand information:
+Brand information (for your context only — see the strict rule below on how it may appear in the questions):
 - Brand name: ${params.brandName}
 - Competitors: ${params.competitors.length ? params.competitors.join(', ') : 'not specified'}
 ${trendingBlock}
 Intent type to generate: ${params.intent}
 ${INTENT_GUIDANCE[params.intent]}
+
+CRITICAL — unbiased phrasing (this is the whole point of the exercise, do not skip it):
+- NEVER mention "${params.brandName}" by name inside any question. We are measuring whether the AI brings the brand up on its own, unprompted — naming it in the question would defeat that.
+- NEVER phrase a question as a leading/loaded yes-or-no confirmation that presupposes a brand is the best or better (e.g. do NOT write something like "Is ${params.brandName} the bank with the best interest rates?"). Instead ask the open, neutral version a real person with no prior opinion would type (e.g. "Which bank currently has the best interest rates?").
+- Every question must read as genuinely neutral market research, not a pitch or a confirmation check for any single brand.
 
 Generate exactly ${params.count} questions in ${languageName}, written naturally as a real native ${languageName}-speaking user would type them into an AI assistant — with varied phrasing and no duplicate meanings.
 

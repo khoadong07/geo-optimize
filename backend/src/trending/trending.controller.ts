@@ -8,10 +8,10 @@ export class TrendingController {
   constructor(private readonly trendingService: TrendingService) {}
 
   @Get()
-  get(@Query('industry') industry: string, @Query('period') period: string) {
+  get(@Query('industry') industry: string, @Query('period') period: string, @Query('lang') lang?: string) {
     if (!industry) {
       throw new BadRequestException('Missing "industry" query parameter');
     }
-    return this.trendingService.get(industry, period === 'month' ? 'month' : 'week');
+    return this.trendingService.get(industry, period === 'month' ? 'month' : 'week', lang === 'en' ? 'en' : 'vi');
   }
 }

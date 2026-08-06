@@ -17,11 +17,13 @@ import { detectIndustryAndCompetitors } from './industry-detect.util';
 import { TrialLead, TrialLeadDocument, TrialLeadStatus } from './trial-lead.schema';
 import { fetchWebsiteText } from './website-fetch.util';
 
+// No "Comparison" intent here on purpose — those ask A-vs-B questions naming
+// specific competitors, which the trial's auto-generated set skips. The
+// other 3 intents absorb its 3 slots so the total stays 10.
 const INTENT_COUNTS: Array<[PromptIntent, number]> = [
-  ['Discovery', 3],
-  ['Comparison', 3],
-  ['Branded', 2],
-  ['Long-tail', 2],
+  ['Discovery', 4],
+  ['Branded', 3],
+  ['Long-tail', 3],
 ];
 
 function normalizeDomain(input: string): string {

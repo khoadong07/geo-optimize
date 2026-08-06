@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { FormEvent, useEffect, useState } from 'react';
 import { industryLabel } from '../../../industry';
-import { interpolate, translations, useLanguage } from '../../../i18n';
+import { interpolate, useLanguage } from '../../../i18n';
 import { API, authHeader, useProjectContext } from '../project-context';
 
 const INTENTS = ['Discovery', 'Comparison', 'Branded', 'Long-tail'];
@@ -32,10 +32,6 @@ export default function PromptsPage() {
   const { lang, t } = useLanguage();
   const c = t.app.common;
   const p_ = t.app.prompts;
-  // Trending topics are Vietnam-market-only, so this section always speaks Vietnamese
-  // regardless of the app's EN/VI toggle.
-  const viC = translations.vi.app.common;
-  const viP = translations.vi.app.prompts;
   const [prompts, setPrompts] = useState<PromptRow[] | null>(null);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
@@ -120,12 +116,12 @@ export default function PromptsPage() {
   async function handleFetchTrending(period: 'week' | 'month') {
     setLoadingTrending(true);
     setError('');
-    const params = new URLSearchParams({ industry: project.industry || project.name, period });
+    const params = new URLSearchParams({ industry: project.industry || project.name, period, lang });
     const res = await fetch(`${API}/trending?${params.toString()}`, { headers: authHeader() });
     const data = await res.json();
     setLoadingTrending(false);
     if (!res.ok) {
-      setError(data.message || viP.couldNotLoadTrending);
+      setError(data.message || p_.couldNotLoadTrending);
       return;
     }
     setTrendingPeriod(period);
@@ -338,7 +334,7 @@ export default function PromptsPage() {
 
         {(project.zone || 'vietnam') === 'vietnam' ? (
           <>
-            <div className="gb-field">{viP.trendingTopicsLabel}</div>
+            <div className="gb-field">{p_.trendingTopicsLabel}</div>
             <div style={{ display: 'flex', gap: 10, alignItems: 'center', flexWrap: 'wrap' }}>
               <button
                 type="button"
@@ -346,7 +342,7 @@ export default function PromptsPage() {
                 onClick={() => handleFetchTrending('week')}
                 disabled={loadingTrending}
               >
-                {viP.trendingWeek}
+                {p_.trendingWeek}
               </button>
               <button
                 type="button"
@@ -354,11 +350,11 @@ export default function PromptsPage() {
                 onClick={() => handleFetchTrending('month')}
                 disabled={loadingTrending}
               >
-                {viP.trendingMonth}
+                {p_.trendingMonth}
               </button>
-              {loadingTrending ? <span style={{ fontSize: 12, color: 'var(--text-faint)' }}>{viC.loading}</span> : null}
+              {loadingTrending ? <span style={{ fontSize: 12, color: 'var(--text-faint)' }}>{c.loading}</span> : null}
               {selectedTrending.size ? (
-                <span style={{ fontSize: 12, color: 'var(--accent)' }}>{interpolate(viP.topicsSelected, { n: selectedTrending.size })}</span>
+                <span style={{ fontSize: 12, color: 'var(--accent)' }}>{interpolate(p_.topicsSelected, { n: selectedTrending.size })}</span>
               ) : null}
             </div>
 
